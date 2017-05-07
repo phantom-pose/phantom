@@ -1,0 +1,20 @@
+#pragma once
+
+#include <QWidget>
+#include <QPainter>
+#include "boxnet.h"
+
+int constexpr X_SCALE = 20;
+int constexpr Y_SCALE = 20;
+double constexpr Z_SCALE = 8/3 * 2;
+
+class NetPaintArea : public QWidget
+{
+    Q_OBJECT
+public:
+    explicit NetPaintArea(QWidget *parent = 0);
+    virtual void paintEvent(QPaintEvent * event);
+
+private:
+    BoxNet m_boxNet = { 5, 10, 15 };
+};
