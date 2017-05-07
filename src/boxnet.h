@@ -13,9 +13,9 @@ public:
     int getSizeX();
     int getSizeY();
     int getSizeZ();
-    unsigned char getSliceX(int num) const;
-    unsigned char getSliceY(int num) const;
-    unsigned char getSliceZ(int num) const;
+    unsigned char ** getSliceX(int num) const;
+    unsigned char ** getSliceY(int num) const;
+    unsigned char ** getSliceZ(int num) const;
 
 private:
     int m_sizeX, m_sizeY, m_sizeZ;

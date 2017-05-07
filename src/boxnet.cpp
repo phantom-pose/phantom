@@ -44,7 +44,7 @@ int BoxNet::getSizeY() { return m_sizeY; }
 
 int BoxNet::getSizeZ() { return m_sizeZ; }
 
-unsigned char BoxNet::getSliceY(int num) const
+unsigned char ** BoxNet::getSliceY(int num) const
 {
     if (num < 0 || num > m_sizeY) return nullptr;
     unsigned char ** slice = new unsigned char *[m_sizeZ];
@@ -60,7 +60,7 @@ unsigned char BoxNet::getSliceY(int num) const
     return slice;
 }
 
-unsigned char BoxNet::getSliceX(int num) const
+unsigned char ** BoxNet::getSliceX(int num) const
 {
     if (num < 0 || num > m_sizeX) return nullptr;
     unsigned char ** slice = new unsigned char *[m_sizeZ];
@@ -76,7 +76,7 @@ unsigned char BoxNet::getSliceX(int num) const
     return slice;
 }
 
-unsigned char BoxNet::getSliceZ(int num) const
+unsigned char ** BoxNet::getSliceZ(int num) const
 {
     if (num < 0 || num > m_sizeZ) return nullptr;
     unsigned char ** slice = new unsigned char *[m_sizeZ];
