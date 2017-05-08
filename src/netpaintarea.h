@@ -4,8 +4,8 @@
 #include <QPainter>
 #include "boxnet.h"
 
-int constexpr X_SCALE = 20;
-int constexpr Y_SCALE = 20;
+int constexpr X_SCALE = 3;
+int constexpr Y_SCALE = 3;
 double constexpr Z_SCALE = 8/3 * 2;
 
 class NetPaintArea : public QWidget
@@ -16,5 +16,5 @@ public:
     virtual void paintEvent(QPaintEvent * event);
 
 private:
-    BoxNet m_boxNet = { 5, 10, 15 };
+    BoxNet m_boxNet = { 299, 137, 348 };
 };

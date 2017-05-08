@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+#include <fstream>
 
 class BoxNet
 {
@@ -16,6 +18,9 @@ public:
     unsigned char ** getSliceX(int num) const;
     unsigned char ** getSliceY(int num) const;
     unsigned char ** getSliceZ(int num) const;
+    void fillFromFile(char const * filename);
+    void writeBinFile(char const * filename);
+    void fillFromBin(char const * filename);
 
 private:
     int m_sizeX, m_sizeY, m_sizeZ;

@@ -42,3 +42,15 @@ qt5_use_modules(${PROJECT_TEST_NAME} Widgets OpenGL)
 
 # Finish tests setting up.
 add_test(test ${PROJECT_TEST_NAME})
+
+macro(copy_files GLOBPAT DESTINATION)
+  file(GLOB COPY_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${GLOBPAT})
+  foreach(FILENAME ${COPY_FILES})
+    set(SRC "${CMAKE_CURRENT_SOURCE_DIR}/${FILENAME}")
+    set(DST "${DESTINATION}/${FILENAME}")
+    add_custom_command(TARGET ${PROJECT_TEST_NAME} PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${SRC} ${DST})
+  endforeach(FILENAME)
+endmacro(copy_files)
+
+set(DATA_FILES_LIST data/test.dat data/AF.dat)
+copy_files("${DATA_FILES_LIST}" ${CMAKE_CURRENT_BINARY_DIR})

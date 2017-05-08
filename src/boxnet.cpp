@@ -1,4 +1,5 @@
 #include "boxnet.h"
+#include "logger.h"
 
 BoxNet::BoxNet(int sizeX, int sizeY, int sizeZ)
     : m_sizeX(sizeX), m_sizeY(sizeY), m_sizeZ(sizeZ)
@@ -90,4 +91,51 @@ unsigned char ** BoxNet::getSliceZ(int num) const
         }
     }
     return slice;
+}
+
+void BoxNet::fillFromFile(char const * filename)
+{
+    std::ifstream f(filename);
+    char line[100];
+    int i = 0;
+    int ival, n;
+    if(f.is_open())
+    {
+        while (f.getline(line,100))
+        {
+            char *data = line;
+            while (sscanf(data, "%d%n", &ival, &n) == 1)
+            {
+                data += n;
+                m_list[i++] = (unsigned char)ival;
+            }
+        }
+        f.close();
+    } else {
+        printf("Cant open file\n");
+    }
+}
+
+void BoxNet::writeBinFile(char const * filename)
+{
+    int i = 0;
+    std::ofstream file(filename, std::ios::binary);
+    while (i < m_sizeX * m_sizeY * m_sizeZ)
+    {
+        file.write(reinterpret_cast<char const*>(&m_list[i]), sizeof(m_list[i]));
+        i++;
+    }
+    file.close();
+}
+
+void BoxNet::fillFromBin(char const * filename)
+{
+    int i = 0;
+    std::ifstream file(filename, std::ios::binary);
+    while (!file.eof())
+    {
+        file.read(reinterpret_cast<char*>(&m_list[i]), sizeof(m_list[i]));
+        i++;
+    }
+    file.close();
 }
