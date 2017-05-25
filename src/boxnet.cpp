@@ -2,7 +2,7 @@
 #include "logger.h"
 
 BoxNet::BoxNet(int sizeX, int sizeY, int sizeZ)
-    : m_sizeX(sizeX), m_sizeY(sizeY), m_sizeZ(sizeZ)
+    : m_xSize(sizeX), m_ySize(sizeY), m_zSize(sizeZ)
 {
     int length = sizeX * sizeY * sizeZ;
     m_list = new unsigned char[length];
@@ -24,7 +24,7 @@ unsigned char BoxNet::getByNum(int num)
 
 unsigned char BoxNet::getByXyz(int x, int y, int z)
 {
-    int num = z * m_sizeX * m_sizeY + y * m_sizeX + x;
+    int num = z * m_xSize * m_ySize + y * m_xSize + x;
     return m_list[num];
 }
 
@@ -35,26 +35,26 @@ void BoxNet::setByNum(int num, unsigned char value)
 
 void BoxNet::setByXyz(int x, int y, int z, unsigned char value)
 {
-    int num = z * m_sizeX * m_sizeY + y * m_sizeX + x;
+    int num = z * m_xSize * m_ySize + y * m_xSize + x;
     m_list[num] = value;
 }
 
-int BoxNet::getSizeX() { return m_sizeX; }
+int BoxNet::getSizeX() { return m_xSize; }
 
-int BoxNet::getSizeY() { return m_sizeY; }
+int BoxNet::getSizeY() { return m_ySize; }
 
-int BoxNet::getSizeZ() { return m_sizeZ; }
+int BoxNet::getSizeZ() { return m_zSize; }
 
 unsigned char ** BoxNet::getSliceY(int num) const
 {
-    if (num < 0 || num > m_sizeY) return nullptr;
-    unsigned char ** slice = new unsigned char *[m_sizeZ];
-    for (int iz = 0; iz < m_sizeZ; iz++)
+    if (num < 0 || num > m_ySize) return nullptr;
+    unsigned char ** slice = new unsigned char *[m_zSize];
+    for (int iz = 0; iz < m_zSize; iz++)
     {
-        slice[iz] = new unsigned char[m_sizeX];
-        for (int ix = 0; ix < m_sizeX; ix++)
+        slice[iz] = new unsigned char[m_xSize];
+        for (int ix = 0; ix < m_xSize; ix++)
         {
-            int n = iz * m_sizeX * m_sizeY + num * m_sizeX + ix;
+            int n = iz * m_xSize * m_ySize + num * m_xSize + ix;
             slice[iz][ix] = m_list[n];
         }
     }
@@ -63,14 +63,14 @@ unsigned char ** BoxNet::getSliceY(int num) const
 
 unsigned char ** BoxNet::getSliceX(int num) const
 {
-    if (num < 0 || num > m_sizeX) return nullptr;
-    unsigned char ** slice = new unsigned char *[m_sizeZ];
-    for (int iz = 0; iz < m_sizeZ; iz++)
+    if (num < 0 || num > m_xSize) return nullptr;
+    unsigned char ** slice = new unsigned char *[m_zSize];
+    for (int iz = 0; iz < m_zSize; iz++)
     {
-        slice[iz] = new unsigned char[m_sizeY];
-        for (int iy = 0; iy < m_sizeY; iy++)
+        slice[iz] = new unsigned char[m_ySize];
+        for (int iy = 0; iy < m_ySize; iy++)
         {
-            int n = iz * m_sizeX * m_sizeY + iy * m_sizeX + num;
+            int n = iz * m_xSize * m_ySize + iy * m_xSize + num;
             slice[iz][iy] = m_list[n];
         }
     }
@@ -79,14 +79,14 @@ unsigned char ** BoxNet::getSliceX(int num) const
 
 unsigned char ** BoxNet::getSliceZ(int num) const
 {
-    if (num < 0 || num > m_sizeZ) return nullptr;
-    unsigned char ** slice = new unsigned char *[m_sizeZ];
-    for (int iy = 0; iy < m_sizeY; iy++)
+    if (num < 0 || num > m_zSize) return nullptr;
+    unsigned char ** slice = new unsigned char *[m_zSize];
+    for (int iy = 0; iy < m_ySize; iy++)
     {
-        slice[iy] = new unsigned char[m_sizeX];
-        for (int ix = 0; ix < m_sizeX; ix++)
+        slice[iy] = new unsigned char[m_xSize];
+        for (int ix = 0; ix < m_xSize; ix++)
         {
-            int n = num * m_sizeX * m_sizeY + iy * m_sizeX + ix;
+            int n = num * m_xSize * m_ySize + iy * m_xSize + ix;
             slice[iy][ix] = m_list[n];
         }
     }
@@ -120,7 +120,7 @@ void BoxNet::writeBinFile(char const * filename)
 {
     int i = 0;
     std::ofstream file(filename, std::ios::binary);
-    while (i < m_sizeX * m_sizeY * m_sizeZ)
+    while (i < m_xSize * m_ySize * m_zSize)
     {
         file.write(reinterpret_cast<char const*>(&m_list[i]), sizeof(m_list[i]));
         i++;

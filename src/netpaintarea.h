@@ -15,6 +15,10 @@ public:
     explicit NetPaintArea(QWidget *parent = 0);
     virtual void paintEvent(QPaintEvent * event);
 
+private slots:
+    void setSliceNum(int sliceNum);
+
 private:
     BoxNet m_boxNet = { 299, 137, 348 };
+    int m_sliceNum = 0;
 };

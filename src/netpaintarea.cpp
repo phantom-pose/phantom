@@ -10,18 +10,7 @@ void NetPaintArea::paintEvent(QPaintEvent * event)
 {
     QPainter painter(this);
 
-//    int sliceX = m_boxNet.getSizeX();
-//    int sliceY = m_boxNet.getSizeY();
-
-//    for (int j = 0; j < sliceY; j++) {
-//        for (int i = 0; i < sliceX; i++) {
-//            QRect rectangle = { i * X_SCALE, j * Y_SCALE, X_SCALE, Y_SCALE };
-//            painter.drawRect(rectangle);
-//        }
-//    }
-
-
-    unsigned char ** slice = m_boxNet.getSliceZ(30);
+    unsigned char ** slice = m_boxNet.getSliceZ(m_sliceNum);
 
     for (int iy = 0; iy < m_boxNet.getSizeY(); iy++)
     {
@@ -35,4 +24,10 @@ void NetPaintArea::paintEvent(QPaintEvent * event)
         delete slice[iy];
     }
     delete slice;
+}
+
+void NetPaintArea::setSliceNum(int sliceNum)
+{
+    m_sliceNum = sliceNum;
+    update();
 }

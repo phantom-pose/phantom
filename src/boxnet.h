@@ -23,7 +23,7 @@ public:
     void fillFromBin(char const * filename);
 
 private:
-    int m_sizeX, m_sizeY, m_sizeZ;
+    int m_xSize, m_ySize, m_zSize;
     double m_propX = 3.0, m_propY = 3.0, m_propZ = 8.0;
     unsigned char* m_list;
 };
