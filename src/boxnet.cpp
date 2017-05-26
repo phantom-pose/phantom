@@ -77,17 +77,33 @@ unsigned char ** BoxNet::getSliceX(int num) const
     return slice;
 }
 
-unsigned char ** BoxNet::getSliceZ(int num) const
+//unsigned char ** BoxNet::getSliceZ(int num) const
+//{
+//    if (num < 0 || num > m_zSize) return nullptr;
+//    unsigned char ** slice = new unsigned char *[m_zSize];
+//    for (int iy = 0; iy < m_ySize; iy++)
+//    {
+//        slice[iy] = new unsigned char[m_xSize];
+//        for (int ix = 0; ix < m_xSize; ix++)
+//        {
+//            int n = num * m_xSize * m_ySize + iy * m_xSize + ix;
+//            slice[iy][ix] = m_list[n];
+//        }
+//    }
+//    return slice;
+//}
+
+Slice BoxNet::getSliceZ(int num) const
 {
-    if (num < 0 || num > m_zSize) return nullptr;
-    unsigned char ** slice = new unsigned char *[m_zSize];
+//    if (num < 0 || num > m_zSize) return nullptr;
+    Slice slice = { m_ySize, m_xSize };
+
     for (int iy = 0; iy < m_ySize; iy++)
     {
-        slice[iy] = new unsigned char[m_xSize];
         for (int ix = 0; ix < m_xSize; ix++)
         {
             int n = num * m_xSize * m_ySize + iy * m_xSize + ix;
-            slice[iy][ix] = m_list[n];
+            slice.setValue(ix, iy, m_list[n]);
         }
     }
     return slice;

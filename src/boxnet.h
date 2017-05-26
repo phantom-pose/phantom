@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <fstream>
+#include "slice.h"
 
 class BoxNet
 {
@@ -17,7 +18,11 @@ public:
     int getSizeZ();
     unsigned char ** getSliceX(int num) const;
     unsigned char ** getSliceY(int num) const;
-    unsigned char ** getSliceZ(int num) const;
+//    unsigned char ** getSliceZ(int num) const;
+//    Slice getSliceX(int num) const;
+//    Slice getSliceY(int num) const;
+    Slice getSliceZ(int num) const;
+
     void fillFromFile(char const * filename);
     void writeBinFile(char const * filename);
     void fillFromBin(char const * filename);

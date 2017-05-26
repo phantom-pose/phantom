@@ -3,6 +3,7 @@
 #include <QWidget>
 #include <QPainter>
 #include "boxnet.h"
+#include "slice.h"
 
 int constexpr X_SCALE = 3;
 int constexpr Y_SCALE = 3;
