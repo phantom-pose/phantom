@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
 #include "boxnet.h"
+#include "slice.h"
 
 TEST(boxNet_test, test_construction)
 {
@@ -23,4 +24,19 @@ TEST(boxNet_test, test_fillFromFile)
 //            }
 //        }
 //    }
+}
+
+TEST(boxNet_test, test_slice_return)
+{
+    BoxNet box = { 3, 4, 5 };
+    for (int i = 0; i < 3 * 4 * 5; i++) {
+        box.setByNum(i, i);
+    }
+
+    Slice slice = box.getSliceZ(1);
+    for (int y = 0; y < slice.getSizeY(); y++) {
+        for (int x = 0; x < slice.getSizeX(); x++) {
+            EXPECT_EQ(slice.getValue(x, y), 12 + y * 3 + x);
+        }
+    }
 }

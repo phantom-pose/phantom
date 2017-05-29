@@ -1,4 +1,5 @@
 #pragma once
+#include "logger.h"
 
 
 class Slice
@@ -6,7 +7,9 @@ class Slice
 public:
     Slice(int sizeX, int sizeY);
     Slice(int sizeX, int sizeY, int propX, int propY);
-    Slice(Slice && other);
+    Slice(Slice && obj);
+
+    Slice & operator=(Slice && obj);
 
     float getPropX();
     float getPropY();
@@ -18,7 +21,7 @@ public:
 
     ~Slice();
 private:
-    unsigned char * m_data;
+    unsigned char ** m_data;
     int m_xSize, m_ySize;
     float m_xProp = 1.00f, m_yProp = 1.00f;
 

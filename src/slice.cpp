@@ -17,19 +17,17 @@ Slice::Slice(int sizeX, int sizeY, int propX, int propY)
 
 // Конструктор перемещения
 Slice::Slice(Slice && obj)
-    : m_data(nullptr)
+    : m_data(obj.m_data), m_xSize(obj.m_xSize), m_ySize(obj.m_ySize),
+      m_xProp(obj.m_xProp), m_yProp(obj.m_yProp)
 {
-    // Copy the data pointer from the source object.
-    m_data = obj.m_data;
-
-    m_xSize = obj.m_xSize;
-    m_ySize = obj.m_ySize;
-    m_xProp = obj.m_xProp;
-    m_yProp = obj.m_yProp;
-
     // Release the data pointer from the source object so that
     // the destructor does not free the memory multiple times.
     obj.m_data = nullptr;
+    obj.m_xSize = 0;
+    obj.m_ySize = 0;
+    obj.m_xProp = 0;
+    obj.m_yProp = 0;
+    Logger::Instance() << "inside move constructor \n";
 }
 
 // Оператор перемещения
@@ -38,7 +36,12 @@ Slice & Slice::operator=(Slice && obj)
     if (this != &obj)
     {
         // Free the existing resource.
-        ~Slice();
+        if (m_data != nullptr) {
+            for (int iy = 0; iy < m_ySize; iy++) {
+                delete[] m_data[iy];
+            }
+            delete[] m_data;
+        }
         // Copy the data pointer from the source object.
         m_data = obj.m_data;
 
@@ -50,7 +53,12 @@ Slice & Slice::operator=(Slice && obj)
         // Release the data pointer from the source object so that
         // the destructor does not free the memory multiple times.
         obj.m_data = nullptr;
+        obj.m_xSize = 0;
+        obj.m_ySize = 0;
+        obj.m_xProp = 0;
+        obj.m_yProp = 0;
     }
+    Logger::Instance() << "inside move assignment \n";
     return *this;
 }
 

@@ -96,7 +96,7 @@ unsigned char ** BoxNet::getSliceX(int num) const
 Slice BoxNet::getSliceZ(int num) const
 {
 //    if (num < 0 || num > m_zSize) return nullptr;
-    Slice slice = { m_ySize, m_xSize };
+    Slice slice = { m_xSize, m_ySize };
 
     for (int iy = 0; iy < m_ySize; iy++)
     {
