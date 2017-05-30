@@ -1,11 +1,23 @@
 #include "netpaintarea.h"
 #include "logger.h"
 
+/*!
+ * \brief Конструктор NetPaintArea
+ * \param parent Родительский виджет
+ * При создании области отрисовки вызывается функция заполнения палитры из файла
+ * \todo На данный момент класс и конструкто содержит BoxNet, впоследствии будет убрано
+ */
+
 NetPaintArea::NetPaintArea(QWidget *parent) : QWidget(parent)
 {
     m_boxNet.fillFromBin("data/AF_bin.dat");
     fillPalette();
 }
+
+/*!
+ * \brief Метод отрисовки, вызывается при вызове update()
+ * \todo На данный момент отрисовывает Slice вдоль Z, впоследствии slice станет полем класса
+ */
 
 void NetPaintArea::paintEvent(QPaintEvent * event)
 {
@@ -24,11 +36,22 @@ void NetPaintArea::paintEvent(QPaintEvent * event)
     }
 }
 
+/*!
+ * \brief Установка значения m_sliceNum, метод будет вскоре переработан
+ * \param sliceNum Положение среза вдоль оси
+ * \todo В связи с переработкой класса он будет привязан к определенному Slice, а не BoxNet.
+ */
+
 void NetPaintArea::setSliceNum(int sliceNum)
 {
     m_sliceNum = sliceNum;
     update();
 }
+
+/*!
+ * \brief Метод заполнения палитры
+ * Заполняет палитру из файла data/palette.dat
+ */
 
 void NetPaintArea::fillPalette()
 {
@@ -49,4 +72,14 @@ void NetPaintArea::fillPalette()
     } else {
         printf("Cant open file\n");
     }
+}
+
+/*!
+ * \brief Метод установки среза
+ * \param slice Срез, который затем рисует данный класс
+ */
+
+void NetPaintArea::setSlice(Slice slice)
+{
+    m_slice = std::move(slice);
 }

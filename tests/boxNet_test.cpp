@@ -40,3 +40,35 @@ TEST(boxNet_test, test_slice_return)
         }
     }
 }
+
+TEST(boxNet_test, test_segmentation)
+{
+    BoxNet box = { 3, 4, 5 };
+    for (int i = 0; i < 3 * 4 * 5; i++) {
+        box.setByNum(i, i);
+    }
+    EXPECT_EQ(box.getSizeZ(), 5);
+
+    box.segmentation();
+
+    EXPECT_EQ(box.getSizeZ(), 10);
+
+    Slice slice0 = box.getSliceZ(0);
+    for (int y = 0; y < slice0.getSizeY(); y++) {
+        for (int x = 0; x < slice0.getSizeX(); x++) {
+            EXPECT_EQ(slice0.getValue(x, y), 0 + y * 3 + x);
+        }
+    }
+    Slice slice1 = box.getSliceZ(1);
+    for (int y = 0; y < slice1.getSizeY(); y++) {
+        for (int x = 0; x < slice1.getSizeX(); x++) {
+            EXPECT_EQ(slice1.getValue(x, y), 0 + y * 3 + x);
+        }
+    }
+    Slice slice2 = box.getSliceZ(2);
+    for (int y = 0; y < slice2.getSizeY(); y++) {
+        for (int x = 0; x < slice2.getSizeX(); x++) {
+            EXPECT_EQ(slice2.getValue(x, y), 12 + y * 3 + x);
+        }
+    }
+}

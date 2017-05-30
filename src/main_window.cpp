@@ -1,10 +1,20 @@
 #include "main_window.hpp"
 
+/*!
+ * \brief Конструктор MainWindow
+ * Вызывает функцию создания основной области
+ */
+
 MainWindow::MainWindow()
 {
     setWindowTitle("phantom");
     createMainArea();
 }
+
+/*!
+ * \brief Функция создания основной области
+ * Создаёт и располагает виждеты внутри основного окна
+ */
 
 void MainWindow::createMainArea()
 {

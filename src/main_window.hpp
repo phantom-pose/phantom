@@ -11,6 +11,11 @@
 #include "netpaintarea.h"
 #include "logger.h"
 
+/*!
+ * \brief Класс MainWindow - основное окно программы
+ * Содержит виждеты для управления программой и задаёт их параметры
+ */
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT

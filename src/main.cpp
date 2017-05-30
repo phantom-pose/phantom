@@ -1,6 +1,11 @@
 #include "main_window.hpp"
 #include <qdesktopwidget.h>
 
+/*!
+ * \brief main - основная функция программы
+ * Отсюда происходит вызов основного окна - MainWindow и задание его начальных параметров
+ */
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
