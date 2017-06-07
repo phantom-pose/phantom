@@ -8,44 +8,48 @@
  * \todo На данный момент класс и конструкто содержит BoxNet, впоследствии будет убрано
  */
 
-NetPaintArea::NetPaintArea(QWidget *parent) : QWidget(parent)
+NetPaintArea::NetPaintArea(QWidget *parent)
+    : QLabel(parent)
 {
-    m_boxNet.fillFromBin("data/AF_bin.dat");
+    fillPalette();
+}
+
+NetPaintArea::NetPaintArea(QWidget *parent, BoxNet const & boxNet)
+    : QLabel(parent), m_boxNet(&boxNet)
+{
     fillPalette();
 }
 
 /*!
  * \brief Метод отрисовки, вызывается при вызове update()
- * \todo На данный момент отрисовывает Slice вдоль Z, впоследствии slice станет полем класса
  */
 
 void NetPaintArea::paintEvent(QPaintEvent * event)
 {
-    QPainter painter(this);
     unsigned char value;
+//    float hScale = m_scale * m_hProp;
+//    float wScale = m_scale * m_wProp;
 
-    Slice slice = m_boxNet.getSliceZ(m_sliceNum);
+    int width = m_wProp * m_slice.getSizeX();
+    int height = m_hProp * m_slice.getSizeY();
 
-    for (int iy = 0; iy < m_boxNet.getSizeY(); iy++)
+    QPixmap pixmap = { width, height };
+    QPainter painter(&pixmap);
+
+    for (int iy = 0; iy < m_slice.getSizeY(); iy++)
     {
-        for (int ix = 0; ix < m_boxNet.getSizeX(); ix++)
+        for (int ix = 0; ix < m_slice.getSizeX(); ix++)
         {
-            value = slice.getValue(ix, iy);
-            painter.fillRect(X_SCALE * ix, Y_SCALE * iy, X_SCALE, Y_SCALE, m_palette[value]);
+            value = m_slice.getValue(ix, iy);
+            painter.fillRect( m_wProp * ix, m_hProp * iy, m_wProp, m_hProp, m_palette[value] );
         }
     }
-}
 
-/*!
- * \brief Установка значения m_sliceNum, метод будет вскоре переработан
- * \param sliceNum Положение среза вдоль оси
- * \todo В связи с переработкой класса он будет привязан к определенному Slice, а не BoxNet.
- */
+    int h = height * m_scale;
+    int w = width * m_scale;
 
-void NetPaintArea::setSliceNum(int sliceNum)
-{
-    m_sliceNum = sliceNum;
-    update();
+    setPixmap(pixmap.scaled( w, h ));
+    QLabel::paintEvent(event);
 }
 
 /*!
@@ -79,7 +83,46 @@ void NetPaintArea::fillPalette()
  * \param slice Срез, который затем рисует данный класс
  */
 
-void NetPaintArea::setSlice(Slice slice)
+void NetPaintArea::paintX(int sliceNum)
 {
-    m_slice = std::move(slice);
+    m_slice = m_boxNet->getSliceX(sliceNum);
+    update();
+}
+
+void NetPaintArea::paintY(int sliceNum)
+{
+    m_slice = m_boxNet->getSliceY(sliceNum);
+    update();
+}
+
+void NetPaintArea::paintZ(int sliceNum)
+{
+    m_slice = m_boxNet->getSliceZ(sliceNum);
+    update();
+}
+
+void NetPaintArea::setScales(float w, float h)
+{
+    (h > w) ? m_hScale = h/w : m_wScale = w/h;
+}
+
+void NetPaintArea::setProps(int w, int h)
+{
+    m_wProp = w;
+    m_hProp = h;
+}
+
+void NetPaintArea::setScale(float scale)
+{
+    m_scale = scale;
+}
+
+void NetPaintArea::incScale()
+{
+    m_scale += 0.1;
+}
+
+void NetPaintArea::decScale()
+{
+    m_scale -= 0.1;
 }

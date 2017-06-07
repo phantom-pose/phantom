@@ -5,7 +5,9 @@
  */
 
 Slice::Slice()
-{}
+{
+    allocateMemory();
+}
 
 /*!
  * \brief Конструктор со стандартными пропорциями 1:1
@@ -25,13 +27,12 @@ Slice::Slice(int sizeX, int sizeY)
  * \param sizeY Размер по оси Y
  * \param propX Пропорции по оси X
  * \param propY Пропорции по оси Y
- * \todo Возможная переделка пропорций под float
  */
 
-Slice::Slice(int sizeX, int sizeY, int propX, int propY)
+Slice::Slice(int sizeX, int sizeY, float propX, float propY)
     : m_xSize(sizeX), m_ySize(sizeY)
 {
-    (propY > propX) ? m_yProp = (float)propY/propX : m_xProp = (float)propX/propY;
+    (propY > propX) ? m_yProp = propY/propX : m_xProp = propX/propY;
     allocateMemory();
 }
 
@@ -162,3 +163,14 @@ unsigned char Slice::getValue(int x, int y) { return m_data[y][x]; }
  */
 
 void Slice::setValue(int x, int y, unsigned char value) { m_data[y][x] = value; }
+
+/*!
+ * \brief Метод устанавливает пропорции для ячеек
+ * \param w [w]idth - пропорция ячейки по горизонтальной оси
+ * \param h [h]eight - пропорция ячейки по вертикальной оси
+ */
+
+void Slice::setProps( float w, float h)
+{
+    (h > w) ? m_yProp = h/w : m_xProp = w/h;
+}

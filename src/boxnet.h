@@ -15,15 +15,23 @@
 class BoxNet
 {
 public:
+    BoxNet();
     BoxNet(int sizeX, int sizeY, int sizeZ);
+    BoxNet( BoxNet const & obj );
     ~BoxNet();
-    unsigned char getByNum(int num);
-    unsigned char getByXyz(int x, int y, int z);
+    unsigned char const & getByNum(int num) const;
+    unsigned char const & getByXyz(int x, int y, int z) const;
     void setByNum(int num, unsigned char value);
     void setByXyz(int x, int y, int z, unsigned char value);
-    int getSizeX();
-    int getSizeY();
-    int getSizeZ();
+
+    bool operator == (BoxNet const & obj) const;
+
+    int const & getSizeX() const;
+    int const & getSizeY() const;
+    int const & getSizeZ() const;
+
+    int const & getLength() const;
+
     Slice getSliceX(int num) const;
     Slice getSliceY(int num) const;
     Slice getSliceZ(int num) const;
@@ -33,9 +41,12 @@ public:
     void fillFromBin(char const * filename);
 
     void segmentation();
+    BoxNet &  operator = ( BoxNet const & obj );
 
 private:
-    int m_xSize, m_ySize, m_zSize, m_length;
+    int m_xSize = 0, m_ySize = 0, m_zSize = 0, m_length = 0;
     double m_propX = 3.0, m_propY = 3.0, m_propZ = 8.0;
     unsigned char* m_list;
 };
+
+std::ostream & operator << (std::ostream & os, BoxNet const & obj);

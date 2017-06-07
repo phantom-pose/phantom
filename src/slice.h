@@ -11,10 +11,12 @@ class Slice
 public:
     Slice();
     Slice(int sizeX, int sizeY);
-    Slice(int sizeX, int sizeY, int propX, int propY);
+    Slice(int sizeX, int sizeY, float propX, float propY);
     Slice(Slice && obj);
 
     Slice & operator=(Slice && obj);
+
+    void setProps( float w, float h);
 
     float getPropX();
     float getPropY();

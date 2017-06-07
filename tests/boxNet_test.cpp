@@ -2,7 +2,7 @@
 #include "boxnet.h"
 #include "slice.h"
 
-TEST(boxNet_test, test_construction)
+TEST(boxNet_test, test_sumple_constructor)
 {
     BoxNet bN = { 5, 10, 15 };
     EXPECT_EQ(bN.getSizeX(), 5);
@@ -10,20 +10,14 @@ TEST(boxNet_test, test_construction)
     EXPECT_EQ(bN.getSizeZ(), 15);
 }
 
-TEST(boxNet_test, test_fillFromFile)
+TEST(boxNet_test, test_copy_constructor)
 {
-//    BoxNet bN = { 299, 137, 348 };
-//    bN.fillFromFile("data/AF.dat");
-//    bN.writeBinFile("data/AF_bin.dat");
-//    BoxNet bN2 = { 299, 137, 348 };
-//    bN2.fillFromBin("data/AF_bin.dat");
-//    for (int i = 0; i < bN.getSizeX(); i++) {
-//        for (int j = 0; j < bN.getSizeY(); j++) {
-//            for (int k = 0; k < bN.getSizeZ(); k++) {
-//                EXPECT_EQ(bN.getByXyz(i,j,k), bN2.getByXyz(i,j,k));
-//            }
-//        }
-//    }
+    BoxNet box1 = { 3, 4, 5 };
+    for (int i = 0; i < 3 * 4 * 5; i++) {
+        box1.setByNum(i, i);
+    }
+    BoxNet box2 = { box1 };
+    EXPECT_EQ(box1, box2);
 }
 
 TEST(boxNet_test, test_slice_return)

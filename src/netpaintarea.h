@@ -1,34 +1,42 @@
 #pragma once
 
 #include <QWidget>
+#include <QLabel>
 #include <QPainter>
-#include "boxnet.h"
 #include "slice.h"
-
-int constexpr X_SCALE = 3;
-int constexpr Y_SCALE = 3;
-double constexpr Z_SCALE = 8/3 * 2;
+#include "boxnet.h"
 
 /*!
  * \brief NetPaintArea - Виждет области отрисовки двухмерного изображения
  */
 
-class NetPaintArea : public QWidget
+class NetPaintArea : public QLabel
 {
     Q_OBJECT
 public:
+    explicit NetPaintArea(QWidget *parent, BoxNet const & boxNet);
     explicit NetPaintArea(QWidget *parent = 0);
     virtual void paintEvent(QPaintEvent * event);
 
+    void setScales(float w, float h);
+    void setProps(int w, int h);
+    void setScale(float scale);
+
+    void incScale();
+    void decScale();
+
     void fillPalette();
-    void setSlice(Slice slice);
 
 private slots:
-    void setSliceNum(int sliceNum);
+    void paintX(int sliceNum);
+    void paintY(int sliceNum);
+    void paintZ(int sliceNum);
 
 private:
-    BoxNet m_boxNet = { 299, 137, 348 };
     int m_sliceNum = 0;
     QColor m_palette[141];
     Slice m_slice;
+    BoxNet const * m_boxNet;
+    int m_wProp = 1, m_hProp = 1;
+    float m_scale = 1.0, m_wScale = 1.0, m_hScale = 1.0;
 };

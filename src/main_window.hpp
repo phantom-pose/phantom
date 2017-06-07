@@ -7,9 +7,11 @@
 #include <QVBoxLayout>
 #include <QGridLayout>
 #include <QtWidgets>
+#include <QKeyEvent>
 
 #include "netpaintarea.h"
 #include "logger.h"
+#include "phantom.h"
 
 /*!
  * \brief Класс MainWindow - основное окно программы
@@ -21,8 +23,12 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 public:
     MainWindow();
+    void keyPressEvent( QKeyEvent * event );
+
 private slots:
     void createMainArea();
 private:
-    NetPaintArea * m_netPaintArea;
+    NetPaintArea *m_paintAreaX, *m_paintAreaY, *m_paintAreaZ;
+    Phantom * m_phantom;
+    QTabWidget * m_tab;
 };
