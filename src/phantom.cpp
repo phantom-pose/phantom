@@ -122,6 +122,11 @@ float const & Phantom::xScale() const { return m_xScale; }
 float const & Phantom::yScale() const { return m_yScale; }
 float const & Phantom::zScale() const { return m_zScale; }
 
+void Phantom::transliterate( Point3D <int> const & sizes, Point3D <int> const & position )
+{
+    m_boxNet.transliterate( sizes, position );
+}
+
 std::ostream & operator << (std::ostream & os, Phantom const & obj)
 {
     os << "|Phantom|\n\

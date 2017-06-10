@@ -1,6 +1,7 @@
 #include "gtest/gtest.h"
 #include "boxnet.h"
 #include "slice.h"
+#include "point3d.hpp"
 
 TEST(boxNet_test, test_sumple_constructor)
 {
@@ -65,4 +66,25 @@ TEST(boxNet_test, test_segmentation)
             EXPECT_EQ(slice2.getValue(x, y), 12 + y * 3 + x);
         }
     }
+}
+
+TEST(boxNet_test, position)
+{
+    BoxNet box = { 3, 4, 5 };
+    Point3D <int> point1 = box.position();
+    Point3D <int> point2;
+    EXPECT_EQ( point1, point2 );
+}
+
+TEST(boxNet_test, grow)
+{
+    BoxNet box = { 3, 4, 5 };
+    for (int i = 0; i < 3 * 4 * 5; i++) {
+        box.setByNum(i, i);
+    }
+
+    Point3D <int> sizes = { 5, 7, 9 };
+    Point3D <int> position = { 0, 0, 0 };
+
+    box.transliterate(sizes, position);
 }

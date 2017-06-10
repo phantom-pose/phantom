@@ -7,8 +7,19 @@
 
 MainWindow::MainWindow()
 {
+//    BoxNet box = { 3, 4, 5 };
+//    for (int i = 0; i < 3 * 4 * 5; i++) {
+//        box.setByNum(i, i + 30);
+//    }
+
+//    Point3D <int> sizes = { 5, 7, 9 };
+//    Point3D <int> position = { 1, 2, 3 };
+
+//    box.transliterate(sizes, position);
+
     setWindowTitle("phantom");
     m_phantom = new Phantom();
+//    m_phantom = new Phantom(box);
     m_paintAreaX = new NetPaintArea(0, m_phantom->boxNet());
     m_paintAreaX->setProps( 3, 4 );
     m_paintAreaY = new NetPaintArea(0, m_phantom->boxNet());

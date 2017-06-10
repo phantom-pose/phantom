@@ -2,6 +2,7 @@
 
 #include "boxnet.h"
 #include "slice.h"
+#include "point3d.hpp"
 
 /*!
  * \brief Основной класс для работы с воксельной моделью - Phantom
@@ -31,6 +32,8 @@ public:
     float const & zScale() const;
 
     BoxNet const & boxNet() const;
+
+    void transliterate( Point3D <int> const & sizes, Point3D <int> const & position );
 
 private:
     BoxNet m_boxNet;

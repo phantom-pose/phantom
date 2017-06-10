@@ -32,6 +32,7 @@ TEST(phantom_test, test_memory)
 //            EXPECT_EQ(slice.getValue(x, y), 12 + y * 3 + x);
 //        }
 //    }
+    delete phantom;
 }
 
 TEST(phantom_test, test_constructor)
@@ -53,10 +54,5 @@ TEST(phantom_test, test_constructor)
     box4 = &box;
     box3 = &phantom2->boxNet();
     EXPECT_EQ(*box3, box);
-
-    Logger::Instance() << *box3;
-
     delete phantom2;
-
-    Logger::Instance() << *box3;
 }

@@ -12,6 +12,7 @@
 #include "netpaintarea.h"
 #include "logger.h"
 #include "phantom.h"
+#include "point3d.hpp"
 
 /*!
  * \brief Класс MainWindow - основное окно программы

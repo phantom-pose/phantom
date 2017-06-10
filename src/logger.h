@@ -51,6 +51,15 @@ public:
         return *this;
     }
 
+    template<typename T, template<typename> class C>
+    Logger & operator << (C<T> const & obj)
+    {
+        if (m_terminalMode)
+            m_os << obj;
+        if (m_logfile.is_open() && m_fileMode)
+            m_logfile << obj;
+        return *this;
+    }
     void TerminalModeOn();
     void TerminalModeOff();
     void FileModeOn();

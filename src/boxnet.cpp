@@ -315,6 +315,72 @@ bool BoxNet::operator == (BoxNet const & obj) const
     return equal;
 }
 
+Point3D <int> const & BoxNet::position() const
+{
+    return m_position;
+}
+
+void  BoxNet::setPosition( Point3D <int> const & obj )
+{
+    m_position = obj;
+}
+
+void  BoxNet::setNymph( Point3D <int> const & obj )
+{
+    m_nymph = obj;
+}
+
+void BoxNet::transliterate( Point3D <int> const & sizes, Point3D <int> const & position )
+{
+    int dataSizeX = sizes.x();
+    int dataSizeY = sizes.y();
+    int dataSizeZ = sizes.z();
+    int dataLength = dataSizeX * dataSizeY * dataSizeZ;
+
+    // Выделяем память под новый массив
+    unsigned char * data = new unsigned char [ dataLength ];
+
+    // Заполняем его нулями
+    for (int i = 0; i < dataLength; i++) {
+        data[i] = 0;
+    }
+
+    int posX = position.x();
+    int posY = position.y();
+    int posZ = position.z();
+
+    int curPosX = 0;
+    int curPosY = 0;
+    int curPosZ = 0;
+
+    int n = 0;
+    unsigned char value = 0;
+    int nData = 0;
+
+    for (int iz = 0; iz < m_zSize; iz++) {
+        for (int iy = 0; iy < m_ySize; iy++) {
+            for (int ix = 0; ix < m_xSize; ix++) {
+                curPosX = ix + posX;
+                curPosY = iy + posY;
+                curPosZ = iz + posZ;
+                value = m_list[n];
+                nData = curPosZ * dataSizeX * dataSizeY + curPosY * dataSizeX + curPosX;
+                data[nData] = value;
+                n++;
+            }
+        }
+    }
+
+    delete[] m_list;
+    m_list = data;
+    m_xSize = dataSizeX;
+    m_ySize = dataSizeY;
+    m_zSize = dataSizeZ;
+    m_length = dataLength;
+}
+
+//int BoxNet::id()
+
 std::ostream & operator << (std::ostream & os, BoxNet const & obj)
 {
     os << "|BoxNet|\n\

@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include "slice.h"
+#include "point3d.hpp"
 
 /*!
  * \brief Класс BoxNet - представление сетки и работа с ней
@@ -25,6 +26,10 @@ public:
     void setByXyz(int x, int y, int z, unsigned char value);
 
     bool operator == (BoxNet const & obj) const;
+    bool operator > (BoxNet const & obj) const;
+    bool operator >= (BoxNet const & obj) const;
+    bool operator < (BoxNet const & obj) const;
+    bool operator <= (BoxNet const & obj) const;
 
     int const & getSizeX() const;
     int const & getSizeY() const;
@@ -43,10 +48,19 @@ public:
     void segmentation();
     BoxNet &  operator = ( BoxNet const & obj );
 
+    Point3D <int> const & position() const;
+    void setPosition( Point3D <int> const & obj );
+
+    void setNymph( Point3D <int> const & obj );
+
+    void transliterate( Point3D <int> const & sizes, Point3D <int> const & position );
+
 private:
     int m_xSize = 0, m_ySize = 0, m_zSize = 0, m_length = 0;
+    Point3D <int> m_nymph;
     double m_propX = 3.0, m_propY = 3.0, m_propZ = 8.0;
     unsigned char* m_list;
+    Point3D <int> m_position;
 };
 
 std::ostream & operator << (std::ostream & os, BoxNet const & obj);
