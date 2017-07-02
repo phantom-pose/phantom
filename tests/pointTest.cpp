@@ -1,6 +1,7 @@
 #include "gtest/gtest.h"
 #include "point3d.hpp"
 #include "logger.h"
+#include "rotationmatrix.h"
 
 TEST(point3D_test, construction)
 {
@@ -96,4 +97,23 @@ TEST(point3D_test, scale_operator)
     Point3D <float> point3 = point1 * scale;
     Point3D <float> point4 = { 19.476, 11.472, 9.468 };
     EXPECT_EQ( point3, point4 );
+}
+
+TEST(point3D_test, matrix)
+{
+    Point3D <float> point = { 0, 0, 0 };
+    RotationMatrix matrix = { point, 0, M_PI / 2, M_PI / 2 }; // вращение вокруг оси х
+
+    Point3D <float> p1 = { 0, 0, -1 };
+    Point3D <float> p2 = { 0, 1, 0 };
+    matrix.Rotate(p1);
+    EXPECT_EQ(p1, p2);
+}
+
+TEST(Point3D_test, setValue)
+{
+    Point3D <float> p1;
+    Point3D <float> p2 = { 1, 2, 3 };
+    p1.setValue(1, 2, 3);
+    EXPECT_EQ(p1, p2);
 }

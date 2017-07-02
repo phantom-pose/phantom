@@ -7,25 +7,43 @@
 
 MainWindow::MainWindow()
 {
-//    BoxNet box = { 3, 4, 5 };
-//    for (int i = 0; i < 3 * 4 * 5; i++) {
-//        box.setByNum(i, i + 30);
-//    }
-
-//    Point3D <int> sizes = { 5, 7, 9 };
-//    Point3D <int> position = { 1, 2, 3 };
-
-//    box.transliterate(sizes, position);
-
     setWindowTitle("phantom");
     m_phantom = new Phantom();
-//    m_phantom = new Phantom(box);
+
+//    m_phantom->pickLeftLeg();
+//    m_phantom->pickRightHand();
+//    m_phantom->pickLeftHand();
+//    m_phantom->pickRightLeg();
+//    m_phantom->readBin("rightLeg.bin");
+//    m_phantom->cutBin("rightHand.bin", 451, 498);
+//    m_phantom->cutBin("leftHand.bin", 457, 508);
+//    m_phantom->checkBin("data/bodyparts/leftLeg-1.bin");
+//    m_phantom->cutBin("rightLeg.bin", 177, 256);
+//    m_phantom->cutBin("leftLeg.bin", 177, 256);
+
+//    m_phantom->readBin("leftHand.bin");
+//    m_phantom->pickLeftHand();
+
+//    m_phantom->pickRightHand();
+//    m_phantom->readBin("rightHand.bin");
+
+//    m_phantom->pickLeftLeg();
+//    m_phantom->readBin("leftLeg.bin");
+//    Point3D <int> sizes = { 500, 300, 800 };
+//    Point3D <int> position = { 42, 13, 62 };
+//    m_phantom->transliterate(sizes, position);
+
+//    m_phantom->pickLegs();
+//    m_phantom->readBin("rightLeg.bin");
     m_paintAreaX = new NetPaintArea(0, m_phantom->boxNet());
     m_paintAreaX->setProps( 3, 4 );
+    m_paintAreaX->setAlignment(Qt::AlignTop);
     m_paintAreaY = new NetPaintArea(0, m_phantom->boxNet());
     m_paintAreaY->setProps( 3, 4 );
+    m_paintAreaY->setAlignment(Qt::AlignTop);
     m_paintAreaZ = new NetPaintArea(0, m_phantom->boxNet());
     m_paintAreaZ->setProps( 3, 3 );
+    m_paintAreaZ->setAlignment(Qt::AlignTop);
 
     createMainArea();
 }
@@ -57,6 +75,12 @@ void MainWindow::createMainArea()
     connect(upDownSBX, SIGNAL( valueChanged(int) ),  m_paintAreaX, SLOT( paintX(int) ));
     connect(upDownSBY, SIGNAL( valueChanged(int) ),  m_paintAreaY, SLOT( paintY(int) ));
 
+    QLabel * mouseLabel = new QLabel();
+
+    connect(m_paintAreaZ, SIGNAL( mouseChanged(QString) ), mouseLabel, SLOT( setText(QString) ));
+    connect(m_paintAreaX, SIGNAL( mouseChanged(QString) ), mouseLabel, SLOT( setText(QString) ));
+    connect(m_paintAreaY, SIGNAL( mouseChanged(QString) ), mouseLabel, SLOT( setText(QString) ));
+
 
     QScrollArea * scrollAreaZ = new QScrollArea();
     scrollAreaZ->setWidget(m_paintAreaZ);
@@ -80,6 +104,7 @@ void MainWindow::createMainArea()
     upDownLayout->addWidget(upDownSBZ);
     upDownLayout->addWidget(upDownSBY);
     upDownLayout->addWidget(upDownSBX);
+    upDownLayout->addWidget(mouseLabel);
 
     mainLayout->addLayout(upDownLayout, 0, 0, Qt::AlignTop);
     mainLayout->addWidget(m_tab, 0, 1);

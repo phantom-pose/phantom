@@ -12,6 +12,18 @@ Phantom::Phantom()
     m_boxNet = { 299, 137, 348 };
     m_boxNet.fillFromBin( "data/AF_bin.dat" );
     m_boxNet.segmentation();
+
+    m_leftLeg1 = new BodyPart();
+    m_leftLeg1->fillData("data/bodyparts/leftLeg-1.bin");
+    m_leftLeg1->setRotPoint( { 351, 162, 521 } );
+
+    Point3D <float> rotP = { 351, 162, 521 }; // левое колено
+    RotationMatrix matrix = { rotP, 0, M_PI / 2, M_PI / 6 };
+    m_leftLeg1->setMatrix(matrix);
+
+
+//    makeNet(*m_leftLeg1, 1, 1);
+    check(*m_leftLeg1);
 }
 
 /*!
@@ -122,9 +134,325 @@ float const & Phantom::xScale() const { return m_xScale; }
 float const & Phantom::yScale() const { return m_yScale; }
 float const & Phantom::zScale() const { return m_zScale; }
 
-void Phantom::transliterate( Point3D <int> const & sizes, Point3D <int> const & position )
+void Phantom::grow( Point3D <int> const & sizes, Point3D <int> const & position )
 {
-    m_boxNet.transliterate( sizes, position );
+    m_boxNet.grow( sizes, position );
+}
+
+Point3D <float> Phantom::center(int num) const
+{
+    Point3D <int> pos = m_boxNet.getXYZ(num);
+    float x = pos.x() + 0.5;
+    float y = pos.y() + 0.5;
+    float z = pos.z() + 0.5;
+    return { x * m_xScale, y * m_yScale , z * m_zScale };
+}
+
+Point3D <float> Phantom::center(Point3D <int> const & pos) const
+{
+    float x = pos.x() + 0.5;
+    float y = pos.y() + 0.5;
+    float z = pos.z() + 0.5;
+    return { x * m_xScale, y * m_yScale , z * m_zScale };
+}
+
+void Phantom::pickRightLeg()
+{
+    for (int k = 0; k < 338; k++) {
+        Slice slice = m_boxNet.getSliceZ(k);
+        for (int j = 0; j < slice.getSizeY(); j++) {
+            int skin = 0;
+            for (int i = 0; i < slice.getSizeX()/2 + 3; i++) {
+                unsigned char val = slice.getValue(i, j);
+                if (val != 0) {
+                    if (val == 125 || val == 141) {
+                        skin++;
+                    }
+                    unsigned char nextVal = slice.getValue(i + 1, j);
+                    unsigned char next2Val = slice.getValue(i + 2, j);
+                    if (val == 125 && nextVal == 0 && i > 140) {
+                        int num = m_boxNet.getNum(i, j, k);
+//                        m_rightLeg.push_back(num);
+                        break;
+                    }
+                    if (val == 125 && nextVal == 125 && next2Val == 119 && i > 140) {
+                        int num = m_boxNet.getNum(i, j, k);
+//                        m_rightLeg.push_back(num);
+                        break;
+                    }
+                    if (i < slice.getSizeX()/2 && skin > 0) {
+                        int num = m_boxNet.getNum(i, j, k);
+//                        m_rightLeg.push_back(num);
+                    }
+                }
+            }
+        }
+    }
+//    writeBinFile("rightLeg.bin", m_rightLeg);
+}
+
+void Phantom::pickLeftLeg()
+{
+    for (int k = 0; k < 338; k++) {
+        Slice slice = m_boxNet.getSliceZ(k);
+        for (int j = 0; j < slice.getSizeY(); j++) {
+            int skin = 0;
+            for (int i = slice.getSizeX(); i > slice.getSizeX()/2 - 7; i--) {
+                unsigned char val = slice.getValue(i, j);
+                if (val != 0) {
+                    if (val == 125 || val == 141) {
+                        skin++;
+                    }
+                    unsigned char nextVal = slice.getValue(i - 1, j);
+                    unsigned char next2Val = slice.getValue(i - 2, j);
+                    if (val == 125 && nextVal == 0 && i < 170) {
+                        int num = m_boxNet.getNum(i, j, k);
+//                        m_boxNet.setByNum(num, 70);
+//                        m_leftLeg.push_back(num);
+                        break;
+                    }
+                    if (val == 125 && nextVal == 125 && next2Val == 119 && i < 160) {
+                        int num = m_boxNet.getNum(i, j, k);
+//                        m_boxNet.setByNum(num, 70);
+//                        m_leftLeg.push_back(num);
+                        break;
+                    }
+                    if (skin > 0) {
+                        int num = m_boxNet.getNum(i, j, k);
+//                        m_boxNet.setByNum(num, 70);
+//                        m_leftLeg.push_back(num);
+                    }
+                }
+            }
+        }
+    }
+//    writeBinFile("leftLeg.bin", m_leftLeg);
+//    for(int i = 0; i < 10; i++) {
+//        Logger::Instance() << m_leftLeg[m_leftLeg.size() - 1 - i] << " ";
+//    }
+//    Logger::Instance() << "\n";
+//    Logger::Instance() << "legSize = " << m_leftLeg.size() << "\n";
+}
+
+void Phantom::pickRightHand()
+{
+    for (int k = 322; k < 556; k++) {
+        Slice slice = m_boxNet.getSliceZ(k);
+        for (int j = 0; j < slice.getSizeY(); j++) {
+            for (int i = 0; i < slice.getSizeX()/2; i++) {
+                unsigned char val = slice.getValue(i, j);
+                if (val != 0) {
+                    if (val == 123 || val == 125) break;
+                    int num = m_boxNet.getNum(i, j, k);
+//                    m_boxNet.setByNum(num, 70);
+//                    m_rightHand.push_back(num);
+                }
+            }
+        }
+    }
+//    writeBinFile("rightHand.bin", m_rightHand);
+}
+
+void Phantom::pickLeftHand()
+{
+    for (int k = 316; k < 562; k++) {
+        Slice slice = m_boxNet.getSliceZ(k);
+        for (int j = 0; j < slice.getSizeY(); j++) {
+            for (int i = slice.getSizeX(); i > slice.getSizeX()/2; i--) {
+                unsigned char val = slice.getValue(i, j);
+                if (val != 0) {
+                    if (val == 123 || val == 125) break;
+                    int num = m_boxNet.getNum(i, j, k);
+//                    m_boxNet.setByNum(num, 70);
+//                    m_leftHand.push_back(num);
+                }
+                if (k == 550 || k == 551) {
+                    unsigned char nextVal = slice.getValue(i - 1, j);
+                    if (val == 124 && nextVal == 117) {
+                        break;
+                    }
+                }
+            }
+        }
+    }
+//    writeBinFile("leftHand.bin", m_leftHand);
+}
+
+void Phantom::writeBinFile(char const * filename, std::vector<int> const & v)
+{
+    std::ofstream file(filename, std::ios::binary);
+    for (auto it = v.begin(); it != v.end(); it++) {
+        int num = *it;
+        file.write(reinterpret_cast<char const*>(&num), sizeof(num));
+    }
+    file.close();
+}
+
+void Phantom::readBin(char const * filename)
+{
+    int num = 0;
+    std::ifstream file(filename, std::ios::binary);
+    while (!file.eof())
+    {
+        file.read(reinterpret_cast<char*>(&num), sizeof(num));
+//        m_leftLeg1.push_back(num);
+    }
+    file.close();
+//    Logger::Instance() << "legSize = " << m_leftLeg1.size() << "\n";
+//    for(int i = 0; i < 10; i++) {
+//        Logger::Instance() << m_leftLeg1[m_leftLeg1.size() - i - 1] << " ";
+//    }
+//    Logger::Instance() << "\n";
+}
+
+void Phantom::checkBin(char const * filename)
+{
+    int num = 0;
+    std::ifstream file(filename, std::ios::binary);
+    while (!file.eof())
+    {
+        file.read(reinterpret_cast<char*>(&num), sizeof(num));
+        m_boxNet.setByNum(num, 70);
+    }
+    file.close();
+}
+
+void Phantom::check(BodyPart const & bp)
+{
+    for (auto it = bp.data.begin(); it != bp.data.end(); it++) {
+        m_boxNet.setByNum(*it, 70);
+    }
+}
+
+void Phantom::cutBin(char const * filename, int firstEdge, int secondEdge)
+{
+    int num = 0, z = 0;
+    int square = m_boxNet.getSizeX() * m_boxNet.getSizeY();
+    char name1[40];
+    char name2[40];
+    char name3[40];
+    sprintf(name1, "1-%s", filename);
+    sprintf(name2, "2-%s", filename);
+    sprintf(name3, "3-%s", filename);
+    std::ifstream input(filename, std::ios::binary);
+    std::ofstream output1(name1, std::ios::binary);
+    std::ofstream output2(name2, std::ios::binary);
+    std::ofstream output3(name3, std::ios::binary);
+    while (!input.eof())
+    {
+        input.read(reinterpret_cast<char*>(&num), sizeof(num));
+        z = num / square;
+        if (z <= firstEdge) {
+            output1.write(reinterpret_cast<char const*>(&num), sizeof(num));
+        } else if (z <= secondEdge) {
+            output2.write(reinterpret_cast<char const*>(&num), sizeof(num));
+        } else {
+            output3.write(reinterpret_cast<char const*>(&num), sizeof(num));
+        }
+    }
+    input.close();
+    output1.close();
+    output2.close();
+    output3.close();
+}
+
+void Phantom::makeNet(BodyPart & bp, float pitch, float yaw)
+{
+    int minX = 1000, maxX = 0, minY = 1000, maxY = 0, minZ = 1000, maxZ = 0;
+
+    Point3D <float> rotPoint = bp.getRotPoint();
+    RotationMatrix matrix = bp.getMatrix();
+    for (auto it = bp.data.begin(); it != bp.data.end(); it++) {
+        Point3D <float> centerPoint = center(*it);
+        Point3D <float> _centerPoint = centerPoint - rotPoint;
+        matrix.Rotate(_centerPoint);
+        _centerPoint = _centerPoint + rotPoint;
+        // находим максимальные и минамальные точки
+        if (minX > _centerPoint.x()) { minX = _centerPoint.x(); }
+        if (maxX < _centerPoint.x()) { maxX = _centerPoint.x(); }
+        if (minY > _centerPoint.y()) { minY = _centerPoint.y(); }
+        if (maxY < _centerPoint.y()) { maxY = _centerPoint.y(); }
+        if (minZ > _centerPoint.z()) { minZ = _centerPoint.z(); }
+        if (maxZ < _centerPoint.z()) { maxZ = _centerPoint.z(); }
+    }
+
+    int aX, bX, aY, bY, aZ, bZ; // превышение старых границ
+
+    aX = (minX < 0) ? - minX / m_xScale + 1 : 0;
+    aY = (minY < 0) ? - minY / m_yScale + 1 : 0;
+    aZ = (minZ < 0) ? - minZ / m_zScale + 1 : 0;
+    float _bX = maxX - m_xScale * m_boxNet.getSizeX();
+    float _bY = maxY - m_yScale * m_boxNet.getSizeY();
+    float _bZ = maxZ - m_zScale * m_boxNet.getSizeZ();
+    bX = (_bX > 0) ? _bX / m_xScale + 1 : 0;
+    bY = (_bY > 0) ? _bY / m_yScale + 1 : 0;
+    bZ = (_bZ > 0) ? _bZ / m_zScale + 1 : 0;
+
+    int sizeX = aX + m_boxNet.getSizeX() + bX;
+    int sizeY = aY + m_boxNet.getSizeY() + bY;
+    int sizeZ = aZ + m_boxNet.getSizeZ() + bZ;
+
+    Point3D <int> size = { sizeX, sizeY, sizeZ };
+    Point3D <int> position = { aX, aY, aZ };
+
+    m_boxNet.setNymphPos(position);
+    m_boxNet.setNymphSize(size);
+
+    for(std::vector<int>::size_type i = 0; i != bp.data.size(); i++) {
+        bp.data[i] = m_boxNet.translitNum(bp.data[i]);
+    }
+
+    m_boxNet.grow(size, position);
+}
+
+//void Phantom::rotateBodyPart(BodyPart const & bp, float pitch, float yaw)
+//{
+//    int minX = 1000, maxX = 0, minY = 1000, maxY = 0, minZ = 1000, maxZ = 0;
+
+//    Point3D <float> rotPoint = bp.getRotPoint();
+//    RotationMatrix matrix = { 0, M_PI / 2 };
+//    for (auto it = bp.data.begin(); it != bp.data.end(); it++) {
+//        Point3D <float> centerPoint = center(*it);
+//        Point3D <float> _centerPoint = centerPoint - rotPoint;
+//        matrix.Rotate(_centerPoint, - M_PI / 6);
+//        _centerPoint = _centerPoint + rotPoint;
+//        // находим максимальные и минамальные точки
+//        if (minX > _centerPoint.x()) { minX = _centerPoint.x(); }
+//        if (maxX < _centerPoint.x()) { maxX = _centerPoint.x(); }
+//        if (minY > _centerPoint.y()) { minY = _centerPoint.y(); }
+//        if (maxY < _centerPoint.y()) { maxY = _centerPoint.y(); }
+//        if (minZ > _centerPoint.z()) { minZ = _centerPoint.z(); }
+//        if (maxZ < _centerPoint.z()) { maxZ = _centerPoint.z(); }
+//    }
+
+//    int aX, bX, aY, bY, aZ, bZ; // превышение старых границ
+
+//    aX = (minX < 0) ? - minX / m_xScale + 1 : 0;
+//    aY = (minY < 0) ? - minY / m_yScale + 1 : 0;
+//    aZ = (minZ < 0) ? - minZ / m_zScale + 1 : 0;
+//    float _bX = maxX - m_xScale * m_boxNet.getSizeX();
+//    float _bY = maxY - m_yScale * m_boxNet.getSizeY();
+//    float _bZ = maxZ - m_zScale * m_boxNet.getSizeZ();
+//    bX = (_bX > 0) ? _bX / m_xScale + 1 : 0;
+//    bY = (_bY > 0) ? _bY / m_yScale + 1 : 0;
+//    bZ = (_bZ > 0) ? _bZ / m_zScale + 1 : 0;
+
+//    int sizeX = aX + m_boxNet.getSizeX() + bX;
+//    int sizeY = aY + m_boxNet.getSizeY() + bY;
+//    int sizeZ = aZ + m_boxNet.getSizeZ() + bZ;
+
+//    Point3D <int> size = { sizeX, sizeY, sizeZ };
+//    Point3D <int> position = { aX, aY, aZ };
+
+//    m_boxNet.grow(size, position);
+//}
+
+Point3D <int> Phantom::getXYZ(Point3D <float> const & point) const
+{
+    int x = point.x() / m_xScale;
+    int y = point.y() / m_yScale;
+    int z = point.z() / m_zScale;
+    return { x, y, z };
 }
 
 std::ostream & operator << (std::ostream & os, Phantom const & obj)

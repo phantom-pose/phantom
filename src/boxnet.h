@@ -35,6 +35,8 @@ public:
     int const & getSizeY() const;
     int const & getSizeZ() const;
 
+    Point3D <int> getXYZ(int num) const;
+
     int const & getLength() const;
 
     Slice getSliceX(int num) const;
@@ -51,13 +53,16 @@ public:
     Point3D <int> const & position() const;
     void setPosition( Point3D <int> const & obj );
 
-    void setNymph( Point3D <int> const & obj );
+    void setNymphSize( Point3D <int> const & obj );
+    void setNymphPos( Point3D <int> const & obj );
 
-    void transliterate( Point3D <int> const & sizes, Point3D <int> const & position );
+    void grow( Point3D <int> const & sizes, Point3D <int> const & position );
+    int getNum(int x, int y, int z);
+    int translitNum(int num);
 
 private:
     int m_xSize = 0, m_ySize = 0, m_zSize = 0, m_length = 0;
-    Point3D <int> m_nymph;
+    Point3D <int> m_nymphSize, m_nymphPos;
     double m_propX = 3.0, m_propY = 3.0, m_propZ = 8.0;
     unsigned char* m_list;
     Point3D <int> m_position;

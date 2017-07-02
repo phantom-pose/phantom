@@ -5,6 +5,7 @@
 #include <QPainter>
 #include "slice.h"
 #include "boxnet.h"
+#include <QMouseEvent>
 
 /*!
  * \brief NetPaintArea - Виждет области отрисовки двухмерного изображения
@@ -32,9 +33,15 @@ private slots:
     void paintY(int sliceNum);
     void paintZ(int sliceNum);
 
+protected:
+    void mousePressEvent(QMouseEvent *e);
+
+signals:
+    void mouseChanged(QString str);
+
 private:
     int m_sliceNum = 0;
-    QColor m_palette[141];
+    QColor m_palette[142];
     Slice m_slice;
     BoxNet const * m_boxNet;
     int m_wProp = 1, m_hProp = 1;

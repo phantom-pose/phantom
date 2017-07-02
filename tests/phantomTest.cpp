@@ -56,3 +56,29 @@ TEST(phantom_test, test_constructor)
     EXPECT_EQ(*box3, box);
     delete phantom2;
 }
+
+TEST(phantom_test, center)
+{
+    BoxNet box = { 3, 4, 5 };
+    for (int i = 0; i < 3 * 4 * 5; i++) {
+        box.setByNum(i, i);
+    }
+    Phantom phantom = { box };
+
+    Point3D <float> p0 = phantom.center(0);
+    Point3D <float> _p0 = { 0.9375, 0.9375, 1.25};
+
+    Point3D <float> p1 = phantom.center(1);
+    Point3D <float> _p1 = { 2.8125, 0.9375, 1.25};
+
+    Point3D <float> p17 = phantom.center(17);
+    Point3D <float> _p17 = { 4.6875, 2.8125, 3.75};
+
+    Point3D <float> p59 = phantom.center(59);
+    Point3D <float> _p59 = { 4.6875, 6.5625, 11.25};
+
+    EXPECT_EQ(p0, _p0);
+    EXPECT_EQ(p1, _p1);
+    EXPECT_EQ(p17, _p17);
+    EXPECT_EQ(p59, _p59);
+}

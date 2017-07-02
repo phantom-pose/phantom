@@ -143,7 +143,7 @@ Slice BoxNet::getSliceX(int num) const
         for (int iy = 0; iy < m_ySize; iy++)
         {
             int n = iz * m_xSize * m_ySize + iy * m_xSize + num;
-            slice.setValue(iy, m_zSize - 1 - iz, m_list[n]);
+            slice.setValue(iy, iz, m_list[n]);
         }
     }
     return slice;
@@ -168,7 +168,7 @@ Slice BoxNet::getSliceY(int num) const
         for (int ix = 0; ix < m_xSize; ix++)
         {
             int n = iz * m_xSize * m_ySize + num * m_xSize + ix;
-            slice.setValue(ix, m_zSize - 1 - iz, m_list[n]);
+            slice.setValue(ix, iz, m_list[n]);
         }
     }
     return slice;
@@ -325,12 +325,17 @@ void  BoxNet::setPosition( Point3D <int> const & obj )
     m_position = obj;
 }
 
-void  BoxNet::setNymph( Point3D <int> const & obj )
+void  BoxNet::setNymphSize( Point3D <int> const & obj )
 {
-    m_nymph = obj;
+    m_nymphSize = obj;
 }
 
-void BoxNet::transliterate( Point3D <int> const & sizes, Point3D <int> const & position )
+void  BoxNet::setNymphPos( Point3D <int> const & obj )
+{
+    m_nymphPos = obj;
+}
+
+void BoxNet::grow( Point3D <int> const & sizes, Point3D <int> const & position )
 {
     int dataSizeX = sizes.x();
     int dataSizeY = sizes.y();
@@ -379,7 +384,31 @@ void BoxNet::transliterate( Point3D <int> const & sizes, Point3D <int> const & p
     m_length = dataLength;
 }
 
-//int BoxNet::id()
+Point3D <int> BoxNet::getXYZ(int num) const
+{
+    int z = num / ( m_xSize * m_ySize );
+    int y = (num - z * ( m_xSize * m_ySize )) / m_xSize;
+    int x = (num - z * ( m_xSize * m_ySize )) % m_xSize;
+    return { x, y, z };
+}
+
+int BoxNet::getNum(int x, int y, int z)
+{
+    return z * m_xSize * m_ySize + y * m_xSize + x;
+}
+
+int BoxNet::translitNum(int num)
+{
+    int z = num / ( m_xSize * m_ySize );
+    int y = (num - z * ( m_xSize * m_ySize )) / m_xSize;
+    int x = (num - z * ( m_xSize * m_ySize )) % m_xSize;
+
+    int _x = x + m_nymphPos.x();
+    int _y = y + m_nymphPos.y();
+    int _z = z + m_nymphPos.z();
+
+    return _z * m_nymphSize.x() * m_nymphSize.y() + _y * m_nymphSize.x() + _x;
+}
 
 std::ostream & operator << (std::ostream & os, BoxNet const & obj)
 {

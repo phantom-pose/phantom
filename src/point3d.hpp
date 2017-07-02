@@ -159,6 +159,13 @@ public:
         return m_x >= obj.m_x && m_y >= obj.m_y && m_z >= obj.m_z;
     }
 
+    void setValue(T x, T y, T z)
+    {
+        m_x = x;
+        m_y = y;
+        m_z = z;
+    }
+
 private:
     /*!
      * \brief Служебный метод определения равенства двух float чисел с точностью kEps

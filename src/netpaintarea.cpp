@@ -41,7 +41,7 @@ void NetPaintArea::paintEvent(QPaintEvent * event)
         for (int ix = 0; ix < m_slice.getSizeX(); ix++)
         {
             value = m_slice.getValue(ix, iy);
-            painter.fillRect( m_wProp * ix, m_hProp * iy, m_wProp, m_hProp, m_palette[value] );
+            painter.fillRect( m_wProp * ix, m_hProp * (m_slice.getSizeY() - iy - 1), m_wProp, m_hProp, m_palette[value] );
         }
     }
 
@@ -125,4 +125,19 @@ void NetPaintArea::incScale()
 void NetPaintArea::decScale()
 {
     m_scale -= 0.1;
+}
+
+void  NetPaintArea::mousePressEvent(QMouseEvent *e)
+{
+    int x = e->x();
+    int y = e->y();
+
+    float width = m_wProp * m_scale;
+    float height = m_hProp * m_scale;
+
+    int _x = x/width;
+    int _y = m_slice.getSizeY() - y/height;
+
+    QString str = QString("%1:%2").arg(_x).arg(_y);
+    emit mouseChanged(str);
 }

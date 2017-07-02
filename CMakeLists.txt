@@ -52,5 +52,5 @@ macro(copy_files GLOBPAT DESTINATION)
   endforeach(FILENAME)
 endmacro(copy_files)
 
-set(DATA_FILES_LIST data/test.dat data/AF.dat data/AF_organs.dat data/palette.dat)
+set(DATA_FILES_LIST data/test.dat data/AF.dat data/AF_organs.dat data/palette.dat data/AF_bin.dat)
 copy_files("${DATA_FILES_LIST}" ${CMAKE_CURRENT_BINARY_DIR})
