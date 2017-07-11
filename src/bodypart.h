@@ -17,6 +17,7 @@ public:
     Point3D <float> getRotPoint() const;
     void setRotPoint( Point3D <float> const & rotPoint );
     void setMatrix( RotationMatrix const & matrix );
+    Point3D <float> getRotPoint();
     RotationMatrix getMatrix() const;
 
 private:

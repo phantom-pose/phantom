@@ -27,6 +27,11 @@ void BodyPart::setRotPoint( Point3D <float> const & rotPoint )
     m_matrix.setRotPoint(rotPoint);
 }
 
+Point3D<float> BodyPart::getRotPoint()
+{
+    return m_matrix.getRotPoint();
+}
+
 void BodyPart::setMatrix( RotationMatrix const & matrix )
 {
     if ( ! m_matrixExist ) {

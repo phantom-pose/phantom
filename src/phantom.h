@@ -21,8 +21,10 @@ public:
 
     unsigned char getValue(int num);
     unsigned char getValue(int x, int y, int z);
+    unsigned char getValue(Point3D <float> point);
     void setValue(int num, unsigned char value);
     void setValue(int x, int y, int z, unsigned char value);
+    void setValue(Point3D <float> point, unsigned char value);
 
     Point3D <float> center(int num) const;
     Point3D <float> center(Point3D <int> const & pos) const;
@@ -55,7 +57,8 @@ public:
     void cutBin(char const * filename, int firstEdge, int secondEdge);
 
 //    void rotateBodyPart(BodyPart const & bp, float pitch, float yaw);
-    void makeNet(BodyPart & bp, float pitch, float yaw);
+    void makeNet();
+    void rotate();
 
 private:
     BoxNet m_boxNet;

@@ -13,17 +13,31 @@ Phantom::Phantom()
     m_boxNet.fillFromBin( "data/AF_bin.dat" );
     m_boxNet.segmentation();
 
-    m_leftLeg1 = new BodyPart();
-    m_leftLeg1->fillData("data/bodyparts/leftLeg-1.bin");
-    m_leftLeg1->setRotPoint( { 351, 162, 521 } );
+//    m_leftLeg1 = new BodyPart();
+//    m_leftLeg1->fillData("data/bodyparts/leftLeg-1.bin");
+//    m_leftLeg1->setRotPoint( { 351, 162, 521 } );
 
+    BodyPart * leftLeg1 = new BodyPart("data/bodyparts/leftLeg-1.bin");
     Point3D <float> rotP = { 351, 162, 521 }; // левое колено
-    RotationMatrix matrix = { rotP, 0, M_PI / 2, M_PI / 6 };
-    m_leftLeg1->setMatrix(matrix);
+    RotationMatrix matrix = { rotP, 0, M_PI / 2, M_PI / 2 };
+//    m_leftLeg1->setMatrix(matrix);
+    leftLeg1->setMatrix(matrix);
 
+    BodyPart * leftHand1 = new BodyPart("data/bodyparts/leftHand-1.bin");
+    RotationMatrix matrix2 = { { 443, 134, 1471 }, 0, M_PI / 2, -M_PI / 2 };
+    leftHand1->setMatrix(matrix2);
 
-//    makeNet(*m_leftLeg1, 1, 1);
-    check(*m_leftLeg1);
+    m_bodyparts.push_back(leftLeg1);
+    m_bodyparts.push_back(leftHand1);
+
+//    checkBin("rightHand.bin");
+
+//    makeNet();
+//    rotate();
+
+//    for (auto bp = m_bodyparts.begin(); bp != m_bodyparts.end(); bp++) {
+//        check(**bp);
+//    }
 }
 
 /*!
@@ -46,6 +60,14 @@ Phantom::Phantom( BoxNet const & box )
 unsigned char Phantom::getValue(int num)
 {
     m_boxNet.getByNum(num);
+}
+
+unsigned char Phantom::getValue( Point3D <float> point )
+{
+    int x = point.x() / m_xScale;
+    int y = point.y() / m_yScale;
+    int z = point.z() / m_zScale;
+    m_boxNet.getByXyz(x, y, z);
 }
 
 /*!
@@ -82,6 +104,14 @@ void Phantom::setValue(int num, unsigned char value)
 
 void Phantom::setValue(int x, int y, int z, unsigned char value)
 {
+    m_boxNet.setByXyz(x, y, z, value);
+}
+
+void Phantom::setValue(Point3D <float> point, unsigned char value)
+{
+    int x = point.x() / m_xScale;
+    int y = point.y() / m_yScale;
+    int z = point.z() / m_zScale;
     m_boxNet.setByXyz(x, y, z, value);
 }
 
@@ -207,19 +237,19 @@ void Phantom::pickLeftLeg()
                     unsigned char next2Val = slice.getValue(i - 2, j);
                     if (val == 125 && nextVal == 0 && i < 170) {
                         int num = m_boxNet.getNum(i, j, k);
-//                        m_boxNet.setByNum(num, 70);
+                        m_boxNet.setByNum(num, 70);
 //                        m_leftLeg.push_back(num);
                         break;
                     }
                     if (val == 125 && nextVal == 125 && next2Val == 119 && i < 160) {
                         int num = m_boxNet.getNum(i, j, k);
-//                        m_boxNet.setByNum(num, 70);
+                        m_boxNet.setByNum(num, 70);
 //                        m_leftLeg.push_back(num);
                         break;
                     }
                     if (skin > 0) {
                         int num = m_boxNet.getNum(i, j, k);
-//                        m_boxNet.setByNum(num, 70);
+                        m_boxNet.setByNum(num, 70);
 //                        m_leftLeg.push_back(num);
                     }
                 }
@@ -244,7 +274,7 @@ void Phantom::pickRightHand()
                 if (val != 0) {
                     if (val == 123 || val == 125) break;
                     int num = m_boxNet.getNum(i, j, k);
-//                    m_boxNet.setByNum(num, 70);
+                    m_boxNet.setByNum(num, 70);
 //                    m_rightHand.push_back(num);
                 }
             }
@@ -255,16 +285,17 @@ void Phantom::pickRightHand()
 
 void Phantom::pickLeftHand()
 {
+    std::vector <int> leftHand;
     for (int k = 316; k < 562; k++) {
         Slice slice = m_boxNet.getSliceZ(k);
         for (int j = 0; j < slice.getSizeY(); j++) {
-            for (int i = slice.getSizeX(); i > slice.getSizeX()/2; i--) {
+            for (int i = slice.getSizeX() - 1; i > slice.getSizeX()/2; i--) {
                 unsigned char val = slice.getValue(i, j);
                 if (val != 0) {
                     if (val == 123 || val == 125) break;
                     int num = m_boxNet.getNum(i, j, k);
-//                    m_boxNet.setByNum(num, 70);
-//                    m_leftHand.push_back(num);
+                    m_boxNet.setByNum(num, 70);
+//                    leftHand.push_back(num);
                 }
                 if (k == 550 || k == 551) {
                     unsigned char nextVal = slice.getValue(i - 1, j);
@@ -275,7 +306,7 @@ void Phantom::pickLeftHand()
             }
         }
     }
-//    writeBinFile("leftHand.bin", m_leftHand);
+//    writeBinFile("leftHand.bin", leftHand);
 }
 
 void Phantom::writeBinFile(char const * filename, std::vector<int> const & v)
@@ -356,24 +387,23 @@ void Phantom::cutBin(char const * filename, int firstEdge, int secondEdge)
     output3.close();
 }
 
-void Phantom::makeNet(BodyPart & bp, float pitch, float yaw)
+void Phantom::makeNet()
 {
     int minX = 1000, maxX = 0, minY = 1000, maxY = 0, minZ = 1000, maxZ = 0;
 
-    Point3D <float> rotPoint = bp.getRotPoint();
-    RotationMatrix matrix = bp.getMatrix();
-    for (auto it = bp.data.begin(); it != bp.data.end(); it++) {
-        Point3D <float> centerPoint = center(*it);
-        Point3D <float> _centerPoint = centerPoint - rotPoint;
-        matrix.Rotate(_centerPoint);
-        _centerPoint = _centerPoint + rotPoint;
-        // находим максимальные и минамальные точки
-        if (minX > _centerPoint.x()) { minX = _centerPoint.x(); }
-        if (maxX < _centerPoint.x()) { maxX = _centerPoint.x(); }
-        if (minY > _centerPoint.y()) { minY = _centerPoint.y(); }
-        if (maxY < _centerPoint.y()) { maxY = _centerPoint.y(); }
-        if (minZ > _centerPoint.z()) { minZ = _centerPoint.z(); }
-        if (maxZ < _centerPoint.z()) { maxZ = _centerPoint.z(); }
+    for (auto bp = m_bodyparts.begin(); bp != m_bodyparts.end(); bp++) {
+        RotationMatrix matrix = (*bp)->getMatrix();
+        for (auto it = (*bp)->data.begin(); it != (*bp)->data.end(); it++) {
+            Point3D <float> _centerPoint = center(*it);
+            matrix.Rotate(_centerPoint);
+            // находим максимальные и минамальные точки
+            if (minX > _centerPoint.x()) { minX = _centerPoint.x(); }
+            if (maxX < _centerPoint.x()) { maxX = _centerPoint.x(); }
+            if (minY > _centerPoint.y()) { minY = _centerPoint.y(); }
+            if (maxY < _centerPoint.y()) { maxY = _centerPoint.y(); }
+            if (minZ > _centerPoint.z()) { minZ = _centerPoint.z(); }
+            if (maxZ < _centerPoint.z()) { maxZ = _centerPoint.z(); }
+        }
     }
 
     int aX, bX, aY, bY, aZ, bZ; // превышение старых границ
@@ -394,58 +424,135 @@ void Phantom::makeNet(BodyPart & bp, float pitch, float yaw)
 
     Point3D <int> size = { sizeX, sizeY, sizeZ };
     Point3D <int> position = { aX, aY, aZ };
+    Point3D <float> _position = { aX * m_xScale, aY * m_yScale, aZ * m_zScale };
 
     m_boxNet.setNymphPos(position);
     m_boxNet.setNymphSize(size);
 
-    for(std::vector<int>::size_type i = 0; i != bp.data.size(); i++) {
-        bp.data[i] = m_boxNet.translitNum(bp.data[i]);
+
+    for (auto bp = m_bodyparts.begin(); bp != m_bodyparts.end(); bp++) {
+
+        Point3D <float> rotPoint = (*bp)->getRotPoint();
+        (*bp)->setRotPoint(rotPoint + _position);
+
+        for (std::vector<int>::size_type i = 0; i != (*bp)->data.size(); i++) {
+            (*bp)->data[i] = m_boxNet.translitNum((*bp)->data[i]);
+        }
     }
 
     m_boxNet.grow(size, position);
 }
 
-//void Phantom::rotateBodyPart(BodyPart const & bp, float pitch, float yaw)
-//{
-//    int minX = 1000, maxX = 0, minY = 1000, maxY = 0, minZ = 1000, maxZ = 0;
+void Phantom::rotate()
+{
+    unsigned char color, color2, color3;
+    int n = 0;
+    Point3D <float> xShift = { m_xScale, 0, 0 };
+    Point3D <float> yShift = { 0, m_yScale, 0 };
+    Point3D <float> zShift = { 0, 0, m_zScale };
 
-//    Point3D <float> rotPoint = bp.getRotPoint();
-//    RotationMatrix matrix = { 0, M_PI / 2 };
-//    for (auto it = bp.data.begin(); it != bp.data.end(); it++) {
-//        Point3D <float> centerPoint = center(*it);
-//        Point3D <float> _centerPoint = centerPoint - rotPoint;
-//        matrix.Rotate(_centerPoint, - M_PI / 6);
-//        _centerPoint = _centerPoint + rotPoint;
-//        // находим максимальные и минамальные точки
-//        if (minX > _centerPoint.x()) { minX = _centerPoint.x(); }
-//        if (maxX < _centerPoint.x()) { maxX = _centerPoint.x(); }
-//        if (minY > _centerPoint.y()) { minY = _centerPoint.y(); }
-//        if (maxY < _centerPoint.y()) { maxY = _centerPoint.y(); }
-//        if (minZ > _centerPoint.z()) { minZ = _centerPoint.z(); }
-//        if (maxZ < _centerPoint.z()) { maxZ = _centerPoint.z(); }
-//    }
+    for (auto bp = m_bodyparts.begin(); bp != m_bodyparts.end(); bp++) {
+        RotationMatrix matrix = (*bp)->getMatrix();
+        for (auto it = (*bp)->data.begin(); it != (*bp)->data.end(); it++) {
+            color = m_boxNet.getByNum(*it);
+            Point3D <float> centerPoint = center(*it);
+            matrix.Rotate(centerPoint);
+            setValue(centerPoint, color);
 
-//    int aX, bX, aY, bY, aZ, bZ; // превышение старых границ
+            Point3D <int> xyz = getXYZ(centerPoint);
+//            setValue(xyz.x(),xyz.y(),xyz.z(), color);
 
-//    aX = (minX < 0) ? - minX / m_xScale + 1 : 0;
-//    aY = (minY < 0) ? - minY / m_yScale + 1 : 0;
-//    aZ = (minZ < 0) ? - minZ / m_zScale + 1 : 0;
-//    float _bX = maxX - m_xScale * m_boxNet.getSizeX();
-//    float _bY = maxY - m_yScale * m_boxNet.getSizeY();
-//    float _bZ = maxZ - m_zScale * m_boxNet.getSizeZ();
-//    bX = (_bX > 0) ? _bX / m_xScale + 1 : 0;
-//    bY = (_bY > 0) ? _bY / m_yScale + 1 : 0;
-//    bZ = (_bZ > 0) ? _bZ / m_zScale + 1 : 0;
 
-//    int sizeX = aX + m_boxNet.getSizeX() + bX;
-//    int sizeY = aY + m_boxNet.getSizeY() + bY;
-//    int sizeZ = aZ + m_boxNet.getSizeZ() + bZ;
+            Point3D <float> cp1 = centerPoint - xShift;
+            Point3D <float> cp2 = centerPoint + xShift;
+            Point3D <float> cp3 = centerPoint - yShift;
+            Point3D <float> cp4 = centerPoint + yShift;
+            Point3D <float> cp5 = centerPoint - zShift;
+            Point3D <float> cp6 = centerPoint + zShift;
+            std::vector < Point3D <float> > points = { cp1, cp2, cp3, cp4, cp5, cp6 };
 
-//    Point3D <int> size = { sizeX, sizeY, sizeZ };
-//    Point3D <int> position = { aX, aY, aZ };
+            unsigned char cp3col = getValue(cp3);
+            unsigned char cp4col = getValue(cp4);
+            unsigned char cp5col = getValue(cp5);
+            unsigned char cp6col = getValue(cp6);
+//            if (cp3col == 0) {
+//                setValue(cp3, 70);
+//            }
+//            if (cp4col == 0) {
+//                setValue(cp4, 70);
+//            }
+//            if (cp5col == 0) {
+//                setValue(cp5, 70);
+//            }
+//            if (cp6col == 0) {
+//                setValue(cp6, 70);
+//            }
+//            setValue(cp1, 70);
+//            setValue(cp2, 70);
+//            setValue(cp3, 70);
+//            setValue(cp4, 70);
+//            setValue(cp5, 70);
+//            setValue(cp6, 70);
 
-//    m_boxNet.grow(size, position);
-//}
+//            if (cp1.y() < 10 || cp2.y() < 10 || cp3.y() < 10 || cp4.y() < 10 || cp5.y() < 10 || cp6.y() < 10) {
+//                n++;
+//                Logger::Instance() << "Something happen " << n << "times\n";
+//            }
+
+//            if (centerPoint.x() < 10) {
+//                setValue(centerPoint, 70);
+////                n++;
+////                Logger::Instance() << "Something happen " << n << "times\n";
+//            }
+
+//            for (auto itcp = points.begin(); itcp != points.end(); itcp++) {
+//                unsigned char curColor = getValue(*itcp);
+
+//                Point3D <int> xyz = getXYZ(*itcp);
+//                int num = m_boxNet.getNum(xyz.x(), xyz.y(), xyz.z());
+//                setValue(num, curColor);
+
+////                if (curColor == 0) {
+////                    Point3D <int> xyz = getXYZ(*itcp);
+////                    int num = m_boxNet.getNum(xyz.x(), xyz.y(), xyz.z());
+////                    matrix.negaRotate(*itcp);
+////                    unsigned char prevColor = getValue(*itcp);
+////                    setValue(num, curColor);
+////                }
+//            }
+
+
+
+//            for (int k = 0; k < 3; k++) {
+//                for (int j = 0; j < 3; j++) {
+//                    for (int i = 0; i < 3; i++) {
+//                        int _i = xyz.x() - 1 + i;
+//                        int _j = xyz.y() - 1 + j;
+//                        int _k = xyz.z() - 1 + k;
+////                        setValue(_i, _j, _k, color);
+
+////                        if (_i >= 0 && _j >= 0 && _k >= 0 ) {
+//                            num = m_boxNet.getNum(_i, _j, _k);
+////                            setValue(num, 70);
+//                            color2 = m_boxNet.getByNum(num);
+//                            if (color2 == 0) {
+//                                setValue(_i, _j, _k, color);
+//                                Point3D <float> prevCenter = center(num);
+//////                                setValue(prevCenter, 70);
+//                                matrix.negaRotate(prevCenter);
+//                                color3 = getValue(prevCenter);
+////    //                            m_boxNet.setByNum(num, color);
+//                                if (color3 != 0) {
+//                                    setValue(num, 70);
+//                                }
+//                            }
+////                        }
+//                    }
+//                }
+//            }
+        }
+    }
+}
 
 Point3D <int> Phantom::getXYZ(Point3D <float> const & point) const
 {
