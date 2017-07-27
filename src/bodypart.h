@@ -14,11 +14,13 @@ public:
 //    std::vector <int> & getData();
 //    int next();
     std::vector <int> data;
-    Point3D <float> getRotPoint() const;
-    void setRotPoint( Point3D <float> const & rotPoint );
+    std::vector <RotationMatrix> matrices;
+//    Point3D <float> getRotPoint() const;
+//    void setRotPoint( Point3D <float> const & rotPoint );
     void setMatrix( RotationMatrix const & matrix );
-    Point3D <float> getRotPoint();
-    RotationMatrix getMatrix() const;
+//    Point3D <float> getRotPoint();
+//    std::vector <RotationMatrix> const & getMatrices();
+//    RotationMatrix getMatrix() const;
 
 private:
 

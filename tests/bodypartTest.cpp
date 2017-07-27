@@ -14,9 +14,9 @@ TEST(boxNet_test, fill)
 //    Point3D <float> p2 = leftHand2.getRotPoint();
 //    Logger::Instance() << p2;
 
-    leftHand2.setRotPoint( { 1.12, 2.3, 3.66 } );
-    Point3D <float> p = leftHand2.getRotPoint();
-    Logger::Instance() << p;
+//    leftHand2.setRotPoint( { 1.12, 2.3, 3.66 } );
+//    Point3D <float> p = leftHand2.getRotPoint();
+//    Logger::Instance() << p;
 
 //    for (auto it = leftHand2.data.begin(); it != leftHand2.data.end(); it++) {
 //        n++;

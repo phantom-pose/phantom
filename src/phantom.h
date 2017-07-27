@@ -28,6 +28,9 @@ public:
 
     Point3D <float> center(int num) const;
     Point3D <float> center(Point3D <int> const & pos) const;
+    Point3D <float> center(Point3D <float> const & pos) const;
+    Point3D <float> quarterOne(int num) const;
+    Point3D <float> quarterTwo(int num) const;
     Point3D <int> getXYZ(Point3D <float> const & point) const;
 
     Slice getSliceX(int num) const;
