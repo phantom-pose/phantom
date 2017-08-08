@@ -27,3 +27,14 @@ TEST(matrix_test, complexRotate)
     matrix.Rotate(p1);
     EXPECT_EQ(p1, p2);
 }
+
+TEST(matrix_test, negaRotate)
+{
+    RotationMatrix matrix = { { 1, 2, 3 }, 0, M_PI / 3, M_PI / 6 };
+
+    Point3D <float> p1 = { 42, 11, 74 };
+    Point3D <float> p2 = p1;
+    matrix.Rotate(p1);
+    matrix.negaRotate(p1);
+    EXPECT_EQ(p1, p2);
+}

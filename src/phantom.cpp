@@ -62,7 +62,7 @@ Phantom::Phantom( BoxNet const & box )
 
 unsigned char Phantom::getValue(int num)
 {
-    m_boxNet.getByNum(num);
+    return m_boxNet.getByNum(num);
 }
 
 unsigned char Phantom::getValue( Point3D <float> point )
@@ -70,7 +70,7 @@ unsigned char Phantom::getValue( Point3D <float> point )
     int x = point.x() / m_xScale;
     int y = point.y() / m_yScale;
     int z = point.z() / m_zScale;
-    m_boxNet.getByXyz(x, y, z);
+    return m_boxNet.getByXyz(x, y, z);
 }
 
 /*!
@@ -191,10 +191,8 @@ Point3D <float> Phantom::center(Point3D <int> const & pos) const
 
 Point3D <float> Phantom::center(Point3D <float> const & pos) const
 {
-    float x = pos.x() + 0.5;
-    float y = pos.y() + 0.5;
-    float z = pos.z() + 0.5;
-    return { x * m_xScale, y * m_yScale , z * m_zScale };
+    Point3D <int> c = getXYZ(pos);
+    return center(c);
 }
 
 Point3D <float> Phantom::quarterOne(int num) const
@@ -476,11 +474,12 @@ void Phantom::makeNet()
 
 void Phantom::rotate()
 {
-    unsigned char color;
+    unsigned char color, color1, color2;
+
     for (auto bp = m_bodyparts.begin(); bp != m_bodyparts.end(); bp++) {
         for (auto it = (*bp)->data.begin(); it != (*bp)->data.end(); it++) {
             color = m_boxNet.getByNum(*it);
-            // Точки внутри вокселя, которые при любом повороте покроют требуемую область
+            // Точки внутри вокселя, которые при любом повороте покроют требуемую область - 'четвертаки'
             Point3D <float> firstQuarter = quarterOne(*it);
             Point3D <float> secondQuarter = quarterTwo(*it);
             // Находим кандидатов на перекрашивание
@@ -490,24 +489,26 @@ void Phantom::rotate()
                 matrix.Rotate(secondQuarter);
             }
 
-            // Находим центр этой/этих ячеек
+            // Находим центры ячеек куда попали четвертаки
             Point3D <float> fq = center(firstQuarter);
             Point3D <float> sq = center(secondQuarter);
-
-            // Находим цвет !!!!TODO обратный поворот!!!!
-            for (auto pm = (*bp)->matrices.begin(); pm != (*bp)->matrices.end(); pm++) {
+            // Копируем их
+            Point3D <float> _fq = fq;
+            Point3D <float> _sq = sq;
+            // И смотрим чем они были до поворота
+            for (auto pm = (*bp)->matrices.rbegin(); pm != (*bp)->matrices.rend(); pm++) {
                 RotationMatrix matrix = *pm;
-                matrix.Rotate(firstQuarter);
-                matrix.Rotate(secondQuarter);
+                matrix.negaRotate(fq);
+                matrix.negaRotate(sq);
             }
-            matrix.negaRotate(fq);
-            matrix.negaRotate(sq);
-            unsigned char fqCol = getValue(fq);
-            unsigned char sqCol = getValue(sq);
+            // Находим их прежний цвет
+            color1 = getValue(fq);
+            color2 = getValue(sq);
 
-            setValue(firstQuarter, color);
-            setValue(secondQuarter, color);
-//            setValue(*it, 0);
+            setValue(_fq, color1);
+//            std::cout << fq;
+            setValue(_sq, color2);
+////            setValue(*it, 0);
         }
     }
 }
