@@ -14,6 +14,10 @@
 #include "phantom.h"
 #include "point3d.hpp"
 
+#include "json/json.h"
+#include <fstream>
+#include <string>
+
 /*!
  * \brief Класс MainWindow - основное окно программы
  * Содержит виждеты для управления программой и задаёт их параметры
@@ -28,8 +32,11 @@ public:
 
 private slots:
     void createMainArea();
+    void showScenario();
+    void setBox();
 private:
     NetPaintArea *m_paintAreaX, *m_paintAreaY, *m_paintAreaZ;
     Phantom * m_phantom;
     QTabWidget * m_tab;
+    QWidget * scenario;
 };

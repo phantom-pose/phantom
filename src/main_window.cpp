@@ -10,6 +10,10 @@ MainWindow::MainWindow()
     setWindowTitle("phantom");
     m_phantom = new Phantom();
 
+//    m_phantom = new Phantom( box );
+//    m_phantom->grow( { 200, 200, 200 }, { 50, 50, 50 } );
+
+
 //    m_phantom->pickLeftLeg();
 //    m_phantom->pickRightHand();
 //    m_phantom->pickLeftHand();
@@ -69,7 +73,10 @@ void MainWindow::createMainArea()
     QSpinBox * upDownSBY = new QSpinBox();
     upDownSBY->setMaximum( m_phantom->boxSizeY() - 1 );
 
-    QSpinBox * testSB = new QSpinBox();
+    QPushButton * scenario = new QPushButton("Scenario");
+    connect(scenario, SIGNAL(clicked()), this, SLOT(showScenario()));
+    QPushButton * setBoxBtn = new QPushButton("setBox");
+    connect(setBoxBtn, SIGNAL(clicked()), this, SLOT(setBox()));
 
     connect(upDownSBZ, SIGNAL( valueChanged(int) ),  m_paintAreaZ, SLOT( paintZ(int) ));
     connect(upDownSBX, SIGNAL( valueChanged(int) ),  m_paintAreaX, SLOT( paintX(int) ));
@@ -108,6 +115,8 @@ void MainWindow::createMainArea()
 
     mainLayout->addLayout(upDownLayout, 0, 0, Qt::AlignTop);
     mainLayout->addWidget(m_tab, 0, 1);
+    mainLayout->addWidget(scenario, 0, 0);
+    mainLayout->addWidget(setBoxBtn, 0, 0);
     mainLayout->setColumnStretch(1, 10);
 }
 
@@ -137,4 +146,43 @@ void MainWindow::keyPressEvent( QKeyEvent * event )
             m_paintAreaX->decScale();
         }
     }
+}
+
+void MainWindow::showScenario()
+{
+    scenario = new QWidget;
+    QGridLayout * scGrid = new QGridLayout(scenario);
+    QHBoxLayout * mainScLo = new QHBoxLayout();
+    QPushButton * addButton = new QPushButton();
+
+    Json::Value val;
+    std::ifstream file("data/rotPoints.json", std::ifstream::binary);
+    file >> val;
+    cout << val;
+    file.close();
+
+//    mainScLo->addWidget(addButton);
+//    mainScLo->addLayout(scGrid);
+    scenario->show();
+}
+
+void MainWindow::setBox()
+{
+    BoxNet box = { 100, 100, 100 };
+    for (int iz = 0; iz < 100; iz++) {
+        for (int iy = 0; iy < 100; iy++) {
+            for (int ix = 0; ix < 100; ix++) {
+                int x = ix - 50;
+                int y = iy - 50;
+                float hyp = sqrt(x*x + y*y);
+
+                if (hyp < 20) {
+                    box.setByXyz(ix, iy, iz, 141);
+                } else if (hyp < 25 && hyp >= 20) {
+                    box.setByXyz(ix, iy, iz, 50);
+                }
+            }
+        }
+    }
+    m_phantom->setBox(box);
 }

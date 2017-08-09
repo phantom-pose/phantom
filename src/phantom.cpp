@@ -13,25 +13,19 @@ Phantom::Phantom()
     m_boxNet.fillFromBin( "data/AF_bin.dat" );
     m_boxNet.segmentation();
 
-//    m_leftLeg1 = new BodyPart();
-//    m_leftLeg1->fillData("data/bodyparts/leftLeg-1.bin");
-//    m_leftLeg1->setRotPoint( { 351, 162, 521 } );
-
     BodyPart * leftLeg1 = new BodyPart("data/bodyparts/leftLeg-1.bin");
     Point3D <float> rotP = { 351, 162, 521 }; // левое колено
     RotationMatrix matrix = { rotP, 0, M_PI / 2, M_PI / 2 };
     leftLeg1->setMatrix(matrix);
+    RotationMatrix matrix3 = { { 406, 134, 884 }, 0, M_PI / 2, -M_PI / 1.5 };
+    leftLeg1->setMatrix(matrix3);
 
     BodyPart * leftHand1 = new BodyPart("data/bodyparts/leftHand-1.bin");
     RotationMatrix matrix2 = { { 443, 134, 1471 }, 0, M_PI / 2, -M_PI / 2 };
     leftHand1->setMatrix(matrix2);
 
-    RotationMatrix matrix3 = { { 406, 134, 884 }, 0, M_PI / 2, -M_PI / 1.5 };
-
-    leftLeg1->setMatrix(matrix3);
-
-    m_bodyparts.push_back(leftLeg1);
-    m_bodyparts.push_back(leftHand1);
+    //m_bodyparts.push_back(leftLeg1);
+    //m_bodyparts.push_back(leftHand1);
 
 //    checkBin("rightHand.bin");
 
@@ -116,6 +110,11 @@ void Phantom::setValue(Point3D <float> point, unsigned char value)
     int y = point.y() / m_yScale;
     int z = point.z() / m_zScale;
     m_boxNet.setByXyz(x, y, z, value);
+}
+
+void Phantom::setBox(BoxNet const & box)
+{
+    m_boxNet = box;
 }
 
 /*!

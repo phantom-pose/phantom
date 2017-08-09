@@ -25,6 +25,7 @@ public:
     void setValue(int num, unsigned char value);
     void setValue(int x, int y, int z, unsigned char value);
     void setValue(Point3D <float> point, unsigned char value);
+    void setBox(BoxNet const & box);
 
     Point3D <float> center(int num) const;
     Point3D <float> center(Point3D <int> const & pos) const;
