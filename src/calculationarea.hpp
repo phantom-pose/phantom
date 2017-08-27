@@ -18,8 +18,8 @@ public:
 
     bool hasInsideBox(Vector3D v);
     bool hasInsideBox(Point3D <float> const & pt);
-    int findBeginPoint(Vector3D const & segment, Point3D <float> & pt);
-    int linePlaneIntersect(float & len, Vector3D const & segment, Vector3D const & plane, Point3D <float> & pt);
+    int findBeginPoint(Line & line);
+    int linePlaneIntersect(float & len, Line const & line, Vector3D const & plane, Point3D <float> & pt);
     void startIterations(Line & line);
 
 private:
@@ -28,4 +28,5 @@ private:
     float m_yScale = 1.875;
     float m_zScale = 2.50;
     Point3D <float> m_boxSize;
+    std::vector <Vector3D> m_planes; // Содержит 6 проскостей основной коробки
 };

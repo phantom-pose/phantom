@@ -13,8 +13,11 @@ public:
     std::vector <Segment> segments;
     Point3D <float> getPosition() const;
     Point3D <float> getDirection() const;
-    void addSegment(float const & len, unsigned char const & col);
+    void addSegment(float const & s, unsigned char const & col);
+    void shiftPosition(float const & delta);
 private:
+    void normalization();
+
     float m_x0 = 0.0f, m_y0 = 0.0f, m_z0 = 0.0f;
     float m_x = 0.0f, m_y = 0.0f, m_z = 1.0f;
     float m_llen = 0.0f; // last len

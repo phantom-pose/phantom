@@ -7,6 +7,22 @@ CalculationArea::CalculationArea( BoxNet const & box )
     float yLen = m_yScale * m_boxNet.getSizeY();
     float zLen = m_zScale * m_boxNet.getSizeZ();
     m_boxSize = { xLen, yLen, zLen };
+
+    // Математически плоскость определяется точкой и нормалью
+    // Считаем, что точка расположена снаружи
+    // Box состоит из 6ти плоскостей:
+    //     { 0, 0, 0 }     { 0, 0, 1 }
+    //     { 0, 0, 0 }     { 0, 1, 0 }
+    //     { 0, 0, 0 }     { 1, 0, 0 }
+    //     { xLen, 0, 0 }  { -1, 0, 0 }
+    //     { 0, yLen, 0 }  { 0, -1, 0 }
+    //     { 0, 0, zLen }  { 0, 0, -1 }
+    m_planes.push_back({ { 0, 0, 0 }, { 0, 0, 1 } });
+    m_planes.push_back({ { 0, 0, 0 }, { 0, 1, 0 } });
+    m_planes.push_back({ { 0, 0, 0 }, { 1, 0, 0 } });
+    m_planes.push_back({ { xLen, 0, 0 }, { -1, 0, 0 } });
+    m_planes.push_back({ { 0, yLen, 0 }, { 0, -1, 0 } });
+    m_planes.push_back({ { 0, 0, zLen }, { 0, 0, -1 } });
 }
 
 unsigned char CalculationArea::getValue( Point3D <float> point )
@@ -33,60 +49,55 @@ bool CalculationArea::hasInsideBox(Point3D <float> const & pt) {
     return pt > zero && pt < m_boxSize;
 }
 
-int CalculationArea::findBeginPoint(Vector3D const & segment, Point3D <float> & pt) {
-    // Для начала необходимо отобрать 3 возможные плоскости для первого пересечения
-    // математически плоскость определяется точкой и нормалью
-    // Считаем, что точка расположена снаружи
-    // Box состоит из 6ти плоскостей:
-    //     { 0, 0, 0 }     { 0, 0, 1 }
-    //     { 0, 0, 0 }     { 0, 1, 0 }
-    //     { 0, 0, 0 }     { 1, 0, 0 }
-    //     { xLen, 0, 0 }  { -1, 0, 0 }
-    //     { 0, yLen, 0 }  { 0, -1, 0 }
-    //     { 0, 0, zLen }  { 0, 0, -1 }
-    std::vector <Vector3D> planes;
-    planes.push_back({ { 0, 0, 0 }, { 0, 0, 1 } });
-    planes.push_back({ { 0, 0, 0 }, { 0, 1, 0 } });
-    planes.push_back({ { 0, 0, 0 }, { 1, 0, 0 } });
-    planes.push_back({ { m_boxSize.x(), 0, 0 }, { -1, 0, 0 } });
-    planes.push_back({ { 0, m_boxSize.y(), 0 }, { 0, -1, 0 } });
-    planes.push_back({ { 0, 0, m_boxSize.z() }, { 0, 0, -1 } });
+int CalculationArea::findBeginPoint(Line & line) {
 
     float len = std::numeric_limits<float>::max();
-    for (auto it = planes.begin(); it != planes.end(); it++) {
-        int err = linePlaneIntersect(len, segment, *it, pt);
-        if (!err) {
-            return 0;
+    float templen;
+    Point3D <float> pt;
+    int code = 1; // Код результата устанавливаю в значение 1
+    for (auto it = m_planes.begin(); it != m_planes.end(); it++) {
+        templen = len;
+        int err = linePlaneIntersect(len, line, *it, pt);
+        // Если хоть какие-нибудь плоскости были пересечены, то функция уже отработала нормально => code = 0
+        if (!err)
+            code = 0;
+    }
+    if (!code) {
+        // На данном этапе в pt находится точка входа, в templen и len ближняя и дальняя точки, но неизвестно где какая
+        if (len > templen) {
+
         }
     }
     return 1;
 }
 
-int CalculationArea::linePlaneIntersect(float & len, Vector3D const & segment, Vector3D const & plane, Point3D <float> & pt) {
+int CalculationArea::linePlaneIntersect(float & len, Line const & line, Vector3D const & plane, Point3D <float> & pt) {
 
-    Point3D <float> u = segment.getDirection();
-    Point3D <float> w = segment.getPosition() - plane.getPosition();
+    Point3D <float> u = line.getDirection();
+    Point3D <float> w = line.getPosition() - plane.getPosition();
     float D = plane.getDirection() * u;
     float N = -(plane.getDirection() * w);
 
     if (fabs(D) < kEps) {
         if (fabs(N) < kEps)
-            return 2; // прямая принадлежит плоскости
+            return 1; // луч принадлежит плоскости
         else
-            return 1; // Не пересекает
+            return 2; // луч параллелен плоскости
     }
     float s = N / D;
     if (s < 0)
-        return 0;
-    Point3D <float> point = segment.getPosition() + u * s;
-    Point3D <float> checkdot = point + plane.getDirection();
-    if ( hasInsideBox(checkdot) ) {
-        if (len > s) {
+        return 3; // луч направлен в другую от плоскости сторону
+    Point3D <float> point = line.getPosition() + u * s;
+    Point3D <float> checkdot = point + plane.getDirection(); // немного смещаемся в сторону нормали для оценки попадания внутрь
+    if ( hasInsideBox(checkdot) ) { // если точка принадлежит грани основного блока
+        if (len > s) { // Значит мы движемся к ближней точке при условии, что первоначально len - достаточно велико
             len = s;
             pt = point;
-            return 0; // всё успешно, плоскость найдена
+        } else { // Значит сначала мы попали на ближнюю проскость, а теперь на дальней
+            //запомним длину до неё, но не точку, точка нам нужна только на входе
+            len = s;
         }
-        return 3; // плоскость найдена, но дальняя
+        return 0;
     }
     return 4; // плоскость пересекает, но за пределами коробки
 }
@@ -101,7 +112,7 @@ void CalculationArea::startIterations(Line & line) {
     float Size[3];
     int Oct[3];
     int Adj[3];
-    // Запишу направление в массив, оно не меняется | НЕ МЕНЯЕТСЯ |
+    // Запишу направление | НЕ МЕНЯЕТСЯ |
     Dir[0] = line.getDirection().x();
     Dir[1] = line.getDirection().y();
     Dir[2] = line.getDirection().z();
