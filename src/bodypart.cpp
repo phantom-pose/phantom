@@ -46,3 +46,11 @@ void BodyPart::setMatrix( RotationMatrix const & matrix )
 //{
 //    return m_matrices;
 //}
+
+//std::ostream & operator << (std::ostream & os, BodyPart const & obj)
+//{
+//    for (auto matrix = obj.matrices.begin(); matrix != obj.matrices.end(); matrix++) {
+////        os << *matrix;
+//    }
+//    return os;
+//}

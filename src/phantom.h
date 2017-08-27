@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "boxnet.h"
 #include "slice.h"
@@ -8,6 +8,10 @@
 #include "bodypart.h"
 #include <memory>
 #include "rotationmatrix.h"
+
+#include "json/json.h"
+#include <fstream>
+#include <string>
 
 /*!
  * \brief Основной класс для работы с воксельной моделью - Phantom
@@ -63,6 +67,7 @@ public:
 //    void rotateBodyPart(BodyPart const & bp, float pitch, float yaw);
     void makeNet();
     void rotate();
+    void loadScenario();
 
 private:
     BoxNet m_boxNet;
@@ -73,6 +78,7 @@ private:
 //    std::vector<int> m_leftLeg1, m_leftLeg2, m_leftLeg, m_rightLeg, m_leftHand, m_rightHand;
     BodyPart * m_leftLeg1;
     std::vector <BodyPart*> m_bodyparts;
+    Point3D <float> m_rotpoints[8];
 };
 
 std::ostream & operator << (std::ostream & os, Phantom const & obj);

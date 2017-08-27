@@ -33,6 +33,7 @@ public:
 private slots:
     void createMainArea();
     void showScenario();
+    void loadScenario();
     void setBox();
 private:
     NetPaintArea *m_paintAreaX, *m_paintAreaY, *m_paintAreaZ;

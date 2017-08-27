@@ -73,8 +73,8 @@ void MainWindow::createMainArea()
     QSpinBox * upDownSBY = new QSpinBox();
     upDownSBY->setMaximum( m_phantom->boxSizeY() - 1 );
 
-    QPushButton * scenario = new QPushButton("Scenario");
-    connect(scenario, SIGNAL(clicked()), this, SLOT(showScenario()));
+    QPushButton * scenario = new QPushButton("Scen");
+    connect(scenario, SIGNAL(clicked()), this, SLOT(loadScenario()));
     QPushButton * setBoxBtn = new QPushButton("setBox");
     connect(setBoxBtn, SIGNAL(clicked()), this, SLOT(setBox()));
 
@@ -112,11 +112,11 @@ void MainWindow::createMainArea()
     upDownLayout->addWidget(upDownSBY);
     upDownLayout->addWidget(upDownSBX);
     upDownLayout->addWidget(mouseLabel);
+    upDownLayout->addWidget(scenario);
+    upDownLayout->addWidget(setBoxBtn);
 
     mainLayout->addLayout(upDownLayout, 0, 0, Qt::AlignTop);
     mainLayout->addWidget(m_tab, 0, 1);
-    mainLayout->addWidget(scenario, 0, 0);
-    mainLayout->addWidget(setBoxBtn, 0, 0);
     mainLayout->setColumnStretch(1, 10);
 }
 
@@ -184,5 +184,11 @@ void MainWindow::setBox()
             }
         }
     }
+    box.grow({ 200, 200, 200 }, { 50, 50, 50 });
     m_phantom->setBox(box);
+}
+
+void MainWindow::loadScenario()
+{
+    m_phantom->loadScenario();
 }

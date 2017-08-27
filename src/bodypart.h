@@ -30,3 +30,5 @@ private:
     RotationMatrix m_matrix;
     bool m_matrixExist = false;
 };
+
+//std::ostream & operator << (std::ostream & os, BodyPart const & obj);

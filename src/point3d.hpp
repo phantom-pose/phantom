@@ -166,6 +166,10 @@ public:
         m_z = z;
     }
 
+    float operator * (Point3D const & obj) const {
+        return m_x * obj.m_x + m_y * obj.m_y + m_z * obj.m_z;
+    }
+
 private:
     /*!
      * \brief Служебный метод определения равенства двух float чисел с точностью kEps
