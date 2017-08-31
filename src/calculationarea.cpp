@@ -49,29 +49,41 @@ bool CalculationArea::hasInsideBox(Point3D <float> const & pt) {
     return pt > zero && pt < m_boxSize;
 }
 
-int CalculationArea::findBeginPoint(Line & line) {
-
-    float len = std::numeric_limits<float>::max();
-    float templen;
-    Point3D <float> pt;
+// Для луча снаружи основного блока
+int CalculationArea::prepLineOut(Line & line) {
+    float len = 0.0f;
+    float lens[2];
+    int i = 0;
     int code = 1; // Код результата устанавливаю в значение 1
     for (auto it = m_planes.begin(); it != m_planes.end(); it++) {
-        templen = len;
-        int err = linePlaneIntersect(len, line, *it, pt);
+        int err = linePlaneIntersect(len, line, *it);
+        //std::cout << "err = " << err << "\n";
         // Если хоть какие-нибудь плоскости были пересечены, то функция уже отработала нормально => code = 0
-        if (!err)
+        if (!err) {
+            lens[i] = len;
+            i++;
             code = 0;
+        }
+        // Обрабатываю параллельные компоненты
+        // Т.е. узнаём пересечения с какими плоскостями никогда не произойдет
+        // TODO **Сделать обработку параллельности**
     }
     if (!code) {
-        // На данном этапе в pt находится точка входа, в templen и len ближняя и дальняя точки, но неизвестно где какая
-        if (len > templen) {
-
+        // На данном этапе в templen и len ближняя и дальняя точки, но неизвестно где какая
+        if (lens[1] > lens[0]) {
+            line.shiftPosition(lens[0]);
+            line.setMaxLen(lens[1]-lens[0]);
+        } else {
+            line.shiftPosition(lens[1]);
+            line.setMaxLen(lens[0]-lens[1]);
         }
+        //std::cout << lens[0] << " " << lens[1] << " " << i << "\n";
+        return 0;
     }
     return 1;
 }
 
-int CalculationArea::linePlaneIntersect(float & len, Line const & line, Vector3D const & plane, Point3D <float> & pt) {
+int CalculationArea::linePlaneIntersect(float & len, Line const & line, Vector3D const & plane) {
 
     Point3D <float> u = line.getDirection();
     Point3D <float> w = line.getPosition() - plane.getPosition();
@@ -89,14 +101,10 @@ int CalculationArea::linePlaneIntersect(float & len, Line const & line, Vector3D
         return 3; // луч направлен в другую от плоскости сторону
     Point3D <float> point = line.getPosition() + u * s;
     Point3D <float> checkdot = point + plane.getDirection(); // немного смещаемся в сторону нормали для оценки попадания внутрь
+    //std::cout << point << "\n";
+    //std::cout << checkdot << "\n";
     if ( hasInsideBox(checkdot) ) { // если точка принадлежит грани основного блока
-        if (len > s) { // Значит мы движемся к ближней точке при условии, что первоначально len - достаточно велико
-            len = s;
-            pt = point;
-        } else { // Значит сначала мы попали на ближнюю проскость, а теперь на дальней
-            //запомним длину до неё, но не точку, точка нам нужна только на входе
-            len = s;
-        }
+        len = s;
         return 0;
     }
     return 4; // плоскость пересекает, но за пределами коробки
@@ -104,62 +112,84 @@ int CalculationArea::linePlaneIntersect(float & len, Line const & line, Vector3D
 
 void CalculationArea::startIterations(Line & line) {
 
-    // Установлю первоначальное значение цвета (невозможный цвет)
-    unsigned char color = 142;
-    float Dir[3];
-    int In[3];
-    float Bp[3];
-    float Size[3];
-    int Oct[3];
-    int Adj[3];
+    // Извлеку максимально возможную длину из line для проверок выхода за пределы блока
+    float stopLen = line.getMaxLen() + 0.001;
     // Запишу направление | НЕ МЕНЯЕТСЯ |
+    float Dir[3];
     Dir[0] = line.getDirection().x();
     Dir[1] = line.getDirection().y();
     Dir[2] = line.getDirection().z();
-    // Найдем октант в который распространяется луч | НЕ МЕНЯЕТСЯ |
+    // Вычисляем вспомогательный массив для итераций, показывает октант в который идет распространение
+    int Oct[3];
     Oct[0] = ( Dir[0] > 0 ) ? 1 : -1;
     Oct[1] = ( Dir[1] > 0 ) ? 1 : -1;
     Oct[2] = ( Dir[2] > 0 ) ? 1 : -1;
     // Вычисляем добавку, зависящую от направления | НЕ МЕНЯЕТСЯ |
+    int Adj[3];
     Adj[0] = ( Dir[0] > 0 ) ? 1 : 0;
     Adj[1] = ( Dir[1] > 0 ) ? 1 : 0;
     Adj[2] = ( Dir[2] > 0 ) ? 1 : 0;
     // Начальная точка для итераций | НЕ МЕНЯЕТСЯ |
+    float Bp[3];
     Bp[0] = line.getPosition().x();
     Bp[1] = line.getPosition().y();
     Bp[2] = line.getPosition().z();
     // Найдем индексы ячейки с которой начинаются итерации
-    In[0] = (Bp[0] + Oct[0] * 0.001) / m_xScale;
-    In[1] = (Bp[1] + Oct[1] * 0.001) / m_yScale;
-    In[2] = (Bp[2] + Oct[2] * 0.001) / m_zScale;
+    int In[3];
+    In[0] = (Bp[0] + Dir[0] * 0.01) / m_xScale;
+    In[1] = (Bp[1] + Dir[1] * 0.01) / m_yScale;
+    In[2] = (Bp[2] + Dir[2] * 0.01) / m_zScale;
+    // Установлю первоначальное значение цвета
+    unsigned char color = m_boxNet.getByXyz(In[0], In[1], In[2]);
     // Запишем размеры ячеек в массив для единообразия
+    float Size[3];
     Size[0] = m_xScale;
     Size[1] = m_yScale;
     Size[2] = m_zScale;
-
+    // Уравнение на каждой итерации leni = ( ( In[i] + Adj[i] ) * Size[i] - Bp[i] ) / Dir[i];
+    // i - компонента (x,y,z)
+    // В уравнении меняется только In[i], представлю его в виде y = kx + b
+    float k[3];
+    k[0] = Size[0] / Dir[0];
+    k[1] = Size[1] / Dir[1];
+    k[2] = Size[2] / Dir[2];
+    float b[3];
+    b[0] = (Adj[0] * Size[0] - Bp[0]) / Dir[0];
+    //std::cout << b[0] << "\n";
+    b[1] = (Adj[1] * Size[1] - Bp[1]) / Dir[1];
+    //std::cout << b[1] << "\n";
+    b[2] = (Adj[2] * Size[2] - Bp[2]) / Dir[2];
+    //std::cout << b[2] << "\n";
     // Крутимся пока не выйдем за пределы основного блока
+    float minLen = 0;
     while(1) {
         // Найдём минимальную длину !от начальной точки! и соответствующий ей индекс (x, y или z)
-        float minLen = std::numeric_limits<float>::max();
+        float tempLen = minLen;
+        minLen = std::numeric_limits<float>::max();
         float leni;
         int _i;
         for (int i = 0; i < 3; i++) {
-            leni = ( ( In[i] + Adj[i] ) * Size[i] - Bp[i] ) * Oct[i] / Dir[i];
+            leni = k[i] * In[i] + b[i];
+            //std::cout << leni << "\n";
             if (leni < minLen) {
                 minLen = leni;
                 _i = i;
             }
         }
-        // Проверяем эту длину на выход за пределы основного блока
-
         // Извлекаем цвет
         unsigned char _color = m_boxNet.getByXyz(In[0], In[1], In[2]);
         // Сравниваем с предыдущим
         if (color != _color) {
+            // В случае несовпадения меняю текущее значение цвета и записываю новый отрезок в line
+            line.addSegment(tempLen, color);
             color = _color;
         }
+        // Проверяем эту длину на выход за пределы основного блока
+        if (minLen > stopLen) {
+            line.addSegment(tempLen, color);
+            break;
+        }
         // Передвигаем индекс In в сторону направления распространения
-        In[_i] = In[_i] * Oct[_i];
-        //
+        In[_i] = In[_i] + Oct[_i];
     }
 }

@@ -15,6 +15,8 @@ public:
     Point3D <float> getDirection() const;
     void addSegment(float const & s, unsigned char const & col);
     void shiftPosition(float const & delta);
+    void setMaxLen(float const & maxlen);
+    float getMaxLen() const;
 private:
     void normalization();
 
@@ -23,3 +25,5 @@ private:
     float m_llen = 0.0f; // last len
     float m_maxLen = 0.0f;
 };
+
+std::ostream & operator << (std::ostream & os, Line const & obj);

@@ -37,3 +37,21 @@ void Line::normalization()
     m_y /= hyp;
     m_z /= hyp;
 }
+
+void Line::setMaxLen(float const & maxlen) { m_maxLen = maxlen; }
+
+float Line::getMaxLen() const { return m_maxLen; }
+
+std::ostream & operator << (std::ostream & os, Line const & obj)
+{
+    os << "|Line|\n\
+        position  = {" << obj.getPosition() << "}\n\
+        direction = {" << obj.getDirection() << "}\n\
+        maxLen    = {" << obj.getMaxLen() << "}\n";
+    int i = 0;
+    for (auto it = obj.segments.begin(); it != obj.segments.end(); it++) {
+        os << "segment "<< i << ": pos = " << (*it).pos << " len = " << (*it).len << " col = " << int((*it).col) << "\n";
+        i++;
+    }
+    return os;
+}

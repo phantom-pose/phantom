@@ -11,11 +11,29 @@ TEST(calculationArea_test, test_sumple_constructor)
 
 TEST(calculationArea_test, test_findBeginPoint)
 {
-    BoxNet box = { 20, 20, 20 };
+    BoxNet box = { 100, 100, 100 };
+    for (int iz = 0; iz < 100; iz++) {
+        for (int iy = 0; iy < 100; iy++) {
+            for (int ix = 0; ix < 100; ix++) {
+                int x = ix - 50;
+                int y = iy - 50;
+                float hyp = sqrt(x*x + y*y);
+
+                if (hyp < 20) {
+                    box.setByXyz(ix, iy, iz, 141);
+                } else if (hyp < 25 && hyp >= 20) {
+                    box.setByXyz(ix, iy, iz, 50);
+                }
+            }
+        }
+    }
+
     CalculationArea area = { box };
 
     Point3D <float> beginPoint;
-    Line ray = { { -5, 5, 5 }, { 1, 0, 0 } };
-    int err = area.findBeginPoint(ray);
-
+    Line ray = { { -1, -1, -2 }, { 1, 1.3, 1 } };
+    int err = area.prepLineOut(ray);
+    area.startIterations(ray);
+    Logger::Instance() << "error = " << err;
+    Logger::Instance() << ray;
 }

@@ -49,6 +49,43 @@ MainWindow::MainWindow()
     m_paintAreaZ->setProps( 3, 3 );
     m_paintAreaZ->setAlignment(Qt::AlignTop);
 
+    /////////////////////////////////////////////////////////////////////////
+    BoxNet box = { 100, 100, 100 };
+    for (int iz = 0; iz < 100; iz++) {
+        for (int iy = 0; iy < 100; iy++) {
+            for (int ix = 0; ix < 100; ix++) {
+                int x = ix - 50;
+                int y = iy - 50;
+                float hyp = sqrt(x*x + y*y);
+
+                if (hyp < 20) {
+                    box.setByXyz(ix, iy, iz, 141);
+                } else if (hyp < 25 && hyp >= 20) {
+                    box.setByXyz(ix, iy, iz, 50);
+                }
+            }
+        }
+    }
+
+    CalculationArea area = { box };
+    std::vector <Line> lines;
+//    for (int i = 0; i < 185; i++) {
+//        Line ray = { { float(i), -10, 50 }, { 0, 3, 0 } };
+//        int err = area.prepLineOut(ray);
+//        if (!err) {
+//            area.startIterations(ray);
+//            lines.push_back(ray);
+//        }
+//    }
+
+    Line ray = { { 90, -10, 10 }, { 0, 3, 0 } };
+    int err = area.prepLineOut(ray);
+    area.startIterations(ray);
+    lines.push_back(ray);
+    Logger::Instance() << lines;
+
+    m_lineArea = new LinePaintArea(0, lines);
+
     createMainArea();
 }
 
@@ -104,9 +141,15 @@ void MainWindow::createMainArea()
     scrollAreaY->setBackgroundRole(QPalette::Dark);
     scrollAreaY->setWidgetResizable( true );
 
+    QScrollArea * scrollLinesArea = new QScrollArea();
+    scrollLinesArea->setWidget(m_lineArea);
+    scrollLinesArea->setBackgroundRole(QPalette::Dark);
+    scrollLinesArea->setWidgetResizable( true );
+
     m_tab->addTab(scrollAreaZ, "Horizontal");
     m_tab->addTab(scrollAreaY, "Frontal");
     m_tab->addTab(scrollAreaX, "Profile");
+    m_tab->addTab(scrollLinesArea, "Lines");
 
     upDownLayout->addWidget(upDownSBZ);
     upDownLayout->addWidget(upDownSBY);
@@ -133,6 +176,9 @@ void MainWindow::keyPressEvent( QKeyEvent * event )
         else if ( m_tab->currentIndex() == 2 ) {
             m_paintAreaX->incScale();
         }
+        else if ( m_tab->currentIndex() == 3 ) {
+            m_lineArea->incScale();
+        }
     }
     if (event->key() == Qt::Key_Minus)
     {
@@ -144,6 +190,9 @@ void MainWindow::keyPressEvent( QKeyEvent * event )
         }
         else if ( m_tab->currentIndex() == 2 ) {
             m_paintAreaX->decScale();
+        }
+        else if ( m_tab->currentIndex() == 3 ) {
+            m_lineArea->decScale();
         }
     }
 }
@@ -184,7 +233,7 @@ void MainWindow::setBox()
             }
         }
     }
-    box.grow({ 200, 200, 200 }, { 50, 50, 50 });
+    //box.grow({ 200, 200, 200 }, { 50, 50, 50 });
     m_phantom->setBox(box);
 }
 

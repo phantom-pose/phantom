@@ -18,6 +18,10 @@
 #include <fstream>
 #include <string>
 
+#include "line.h"
+#include "linepaintarea.h"
+#include "calculationarea.hpp"
+
 /*!
  * \brief Класс MainWindow - основное окно программы
  * Содержит виждеты для управления программой и задаёт их параметры
@@ -37,6 +41,7 @@ private slots:
     void setBox();
 private:
     NetPaintArea *m_paintAreaX, *m_paintAreaY, *m_paintAreaZ;
+    LinePaintArea *m_lineArea;
     Phantom * m_phantom;
     QTabWidget * m_tab;
     QWidget * scenario;

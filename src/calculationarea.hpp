@@ -18,8 +18,8 @@ public:
 
     bool hasInsideBox(Vector3D v);
     bool hasInsideBox(Point3D <float> const & pt);
-    int findBeginPoint(Line & line);
-    int linePlaneIntersect(float & len, Line const & line, Vector3D const & plane, Point3D <float> & pt);
+    int prepLineOut(Line & line);
+    int linePlaneIntersect(float & len, Line const & line, Vector3D const & plane);
     void startIterations(Line & line);
 
 private:
