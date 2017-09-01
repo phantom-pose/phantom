@@ -67,7 +67,8 @@ MainWindow::MainWindow()
         }
     }
 
-    CalculationArea area = { box };
+    CalculationArea area = { m_phantom->boxNet() };
+
     std::vector <Line> lines;
 //    for (int i = 0; i < 185; i++) {
 //        Line ray = { { float(i), -10, 50 }, { 0, 3, 0 } };
@@ -78,7 +79,7 @@ MainWindow::MainWindow()
 //        }
 //    }
 
-    Line ray = { { 90, -10, 10 }, { 0, 3, 0 } };
+    Line ray = { { 0, 0, -1 }, { 561, 257, 1740 } };
     int err = area.prepLineOut(ray);
     area.startIterations(ray);
     lines.push_back(ray);

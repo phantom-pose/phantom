@@ -2,6 +2,7 @@
 #include "calculationarea.hpp"
 #include "boxnet.h"
 #include "logger.h"
+#include "phantom.h"
 
 TEST(calculationArea_test, test_sumple_constructor)
 {
@@ -27,11 +28,12 @@ TEST(calculationArea_test, test_findBeginPoint)
             }
         }
     }
+    Phantom phantom;
 
-    CalculationArea area = { box };
+    CalculationArea area = { phantom.boxNet() };
 
-    Point3D <float> beginPoint;
-    Line ray = { { -1, -1, -2 }, { 1, 1.3, 1 } };
+//    Line ray = { { -1, -1, -2 }, { 1, 1.3, 1 } };
+    Line ray = { { 0, 0, -1 }, { 561, 257, 1740 } };
     int err = area.prepLineOut(ray);
     area.startIterations(ray);
     Logger::Instance() << "error = " << err;
