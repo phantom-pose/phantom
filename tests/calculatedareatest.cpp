@@ -30,12 +30,12 @@ TEST(calculationArea_test, test_findBeginPoint)
     }
     Phantom phantom;
 
-    CalculationArea area = { phantom.boxNet() };
+    CalculationArea area = { box };
 
-//    Line ray = { { -1, -1, -2 }, { 1, 1.3, 1 } };
-    Line ray = { { 0, 0, -1 }, { 561, 257, 1740 } };
+    Line ray = { { -1, -1, -2 }, { 1, 1.3, 1 } };
+//    Line ray = { { 0, 0, -1 }, { 561, 257, 1740 } };
     int err = area.prepLineOut(ray);
     area.startIterations(ray);
-    Logger::Instance() << "error = " << err;
+//    Logger::Instance() << "error = " << err;
     Logger::Instance() << ray;
 }

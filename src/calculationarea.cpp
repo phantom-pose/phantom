@@ -113,7 +113,7 @@ int CalculationArea::linePlaneIntersect(float & len, Line const & line, Vector3D
 void CalculationArea::startIterations(Line & line) {
 
     // Извлеку максимально возможную длину из line для проверок выхода за пределы блока
-    float stopLen = line.getMaxLen() + 0.001;
+    float stopLen = line.getMaxLen() - 0.001;
     // Запишу направление | НЕ МЕНЯЕТСЯ |
     float Dir[3];
     Dir[0] = line.getDirection().x();
@@ -140,7 +140,9 @@ void CalculationArea::startIterations(Line & line) {
     In[1] = (Bp[1] + Dir[1] * 0.01) / m_yScale;
     In[2] = (Bp[2] + Dir[2] * 0.01) / m_zScale;
     // Установлю первоначальное значение цвета
+//    std::cout << m_boxNet;
     unsigned char color = m_boxNet.getByXyz(In[0], In[1], In[2]);
+//    unsigned char color = 12;
     // Запишем размеры ячеек в массив для единообразия
     float Size[3];
     Size[0] = m_xScale;
@@ -178,6 +180,7 @@ void CalculationArea::startIterations(Line & line) {
         }
         // Извлекаем цвет
         unsigned char _color = m_boxNet.getByXyz(In[0], In[1], In[2]);
+//        unsigned char _color = 12;
         // Сравниваем с предыдущим
         if (color != _color) {
             // В случае несовпадения меняю текущее значение цвета и записываю новый отрезок в line
