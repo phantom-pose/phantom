@@ -111,6 +111,7 @@ int CalculationArea::linePlaneIntersect(float & len, Line const & line, Vector3D
 }
 
 void CalculationArea::startIterations(Line & line) {
+    int p = 0;
 
     // Извлеку максимально возможную длину из line для проверок выхода за пределы блока
     float stopLen = line.getMaxLen() - 0.001;
@@ -140,9 +141,7 @@ void CalculationArea::startIterations(Line & line) {
     In[1] = (Bp[1] + Dir[1] * 0.01) / m_yScale;
     In[2] = (Bp[2] + Dir[2] * 0.01) / m_zScale;
     // Установлю первоначальное значение цвета
-//    std::cout << m_boxNet;
     unsigned char color = m_boxNet.getByXyz(In[0], In[1], In[2]);
-//    unsigned char color = 12;
     // Запишем размеры ячеек в массив для единообразия
     float Size[3];
     Size[0] = m_xScale;
@@ -164,12 +163,14 @@ void CalculationArea::startIterations(Line & line) {
     //std::cout << b[2] << "\n";
     // Крутимся пока не выйдем за пределы основного блока
     float minLen = 0;
+    float tempLen;
+    float leni;
+    int _i;
     while(1) {
+        p++;
         // Найдём минимальную длину !от начальной точки! и соответствующий ей индекс (x, y или z)
-        float tempLen = minLen;
+        tempLen = minLen;
         minLen = std::numeric_limits<float>::max();
-        float leni;
-        int _i;
         for (int i = 0; i < 3; i++) {
             leni = k[i] * In[i] + b[i];
             //std::cout << leni << "\n";
@@ -195,4 +196,5 @@ void CalculationArea::startIterations(Line & line) {
         // Передвигаем индекс In в сторону направления распространения
         In[_i] = In[_i] + Oct[_i];
     }
+    std::cout << "p = " << p << "\n";
 }

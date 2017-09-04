@@ -74,8 +74,8 @@ unsigned char const & BoxNet::getByNum(int num) const
 
 unsigned char const & BoxNet::getByXyz(int x, int y, int z) const
 {
-    int num = z * m_xSize * m_ySize + y * m_xSize + x;
-    return m_list[num];
+//    int num = z * m_xSize * m_ySize + y * m_xSize + x;
+    return m_list[z * m_xSize * m_ySize + y * m_xSize + x];
 }
 
 /*!
