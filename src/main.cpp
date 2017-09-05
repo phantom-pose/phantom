@@ -1,5 +1,6 @@
 #include "main_window.hpp"
 #include <qdesktopwidget.h>
+#include "joint.h"
 
 /*!
  * \brief main - основная функция программы
