@@ -149,6 +149,62 @@ BezierCoords3D * FindAlpha3(Plane * plane1, Plane * plane2, Point3D<float> * poi
     return result;
 }
 
+Point3D<float> * FindPoint3(Plane * plane1, Plane * plane2, BezierCoords3D * bc)
+{
+    float a = bc->alpha();
+    float b = bc->beta();
+    float t = bc->t();
+    auto n = plane1->getN(); auto n1 = plane2->getN();
+    float nx = -(n.getDirection().x());
+    float ny = -(n.getDirection().y());
+    float nz = -(n.getDirection().z());
+    float nx_1 = n1.getDirection().x();
+    float ny_1 = n1.getDirection().y();
+    float nz_1 = n1.getDirection().z();
+    auto e1 = plane1->getE1(); auto e2 = plane1->getE2();
+    float e1x = e1.getDirection().x();
+    float e1y = e1.getDirection().y();
+    float e1z = e1.getDirection().z();
+    float e2x = e2.getDirection().x();
+    float e2y = e2.getDirection().y();
+    float e2z = e2.getDirection().z();
+    auto p0 = e1.getPosition();
+    float x0 = p0.x(); float y0 = p0.y(); float z0 = p0.z();
+    auto e1_1 = plane1->getE1(); auto e2_1 = plane1->getE2();
+    float e1x_1 = e1_1.getDirection().x();
+    float e1y_1 = e1_1.getDirection().y();
+    float e1z_1 = e1_1.getDirection().z();
+    float e2x_1 = e2_1.getDirection().x();
+    float e2y_1 = e2_1.getDirection().y();
+    float e2z_1 = e2_1.getDirection().z();
+    auto p0_1 = e1.getPosition();
+    float x0_1 = p0_1.x(); float y0_1 = p0_1.y(); float z0_1 = p0_1.z();
+    double dl = COEF*(
+                nx*((e1x_1-e1x)*a + (e2x_1-e2x)*b + (x0_1-x0)) +
+                ny*((e1y_1-e1y)*a + (e2y_1-e2y)*b + (y0_1-y0)) +
+                nz*((e1z_1-e1z)*a + (e2z_1-e2z)*b + (z0_1-z0))
+                );
+    double dl_1 = COEF*(
+                -nx_1*((e1x_1-e1x)*a + (e2x_1-e2x)*b + (x0_1-x0)) +
+                -ny_1*((e1y_1-e1y)*a + (e2y_1-e2y)*b + (y0_1-y0)) +
+                -nz_1*((e1z_1-e1z)*a + (e2z_1-e2z)*b + (z0_1-z0))
+                );
+    float x = t*t*t*(2*x0+2*a*e1x+2*b*e2x+3*nx*dl-2*x0_1-2*a*e1x_1-2*b*e2x_1-3*nx_1*dl_1) +
+            t*t*(-3*x0-3*a*e1x-3*e2x-6*nx*dl-6*x0_1-6*a*e1x_1-6*b*e2x_1-6*nx_1*dl_1) +
+            t*3*nx*dl +
+            x0+a*e1x+b*e2x;
+    float y = t*t*t*(2*y0+2*a*e1y+2*b*e2y+3*ny*dl-2*y0_1-2*a*e1y_1-2*b*e2y_1-3*ny_1*dl_1) +
+            t*t*(-3*y0-3*a*e1y-3*e2y-6*ny*dl-6*y0_1-6*a*e1y_1-6*b*e2y_1-6*ny_1*dl_1) +
+            t*3*ny*dl +
+            y0+a*e1y+b*e2y;
+   float z = t*t*t*(2*z0+2*a*e1z+2*b*e2z+3*nz*dl-2*z0_1-2*a*e1z_1-2*b*e2z_1-3*nz_1*dl_1) +
+            t*t*(-3*z0-3*a*e1z-3*e2z-6*nz*dl-6*z0_1-6*a*e1z_1-6*b*e2z_1-6*nz_1*dl_1) +
+            t*3*nz*dl +
+            z0+a*e1z+b*e2z;
+    Point3D<float> * result = new Point3D<float>(x, y, z);
+    return result;
+}
+
 Joint::~Joint()
 {
     delete m_startPlane1;
@@ -159,5 +215,8 @@ Joint::~Joint()
 
 bool Joint::getStartPoint(Point3D <float> * end, Point3D <float> * start)
 {
+    auto bezier = FindAlpha3(m_endPlane1, m_endPlane2, end);
+    auto point = FindPoint3(m_startPlane1, m_startPlane2, bezier);
+    *start = *point;
     return true;
 }
