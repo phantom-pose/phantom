@@ -216,6 +216,12 @@ Joint::~Joint()
 bool Joint::getStartPoint(Point3D <float> * end, Point3D <float> * start)
 {
     auto bezier = FindAlpha3(m_endPlane1, m_endPlane2, end);
+    if (bezier->alpha() < 0 || bezier->alpha() > 1
+            || bezier->beta() < 0 || bezier->beta() > 1
+            || bezier->t() < 0 || bezier->t() > 1)
+    {
+        return false;
+    }
     auto point = FindPoint3(m_startPlane1, m_startPlane2, bezier);
     *start = *point;
     return true;
