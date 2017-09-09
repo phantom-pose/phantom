@@ -79,13 +79,17 @@ MainWindow::MainWindow()
 //        }
 //    }
 
+    double * tk = new double [1500];
+    unsigned char * ck = new unsigned char [1500];
+    int k = 0;
+
     for (int i = 0; i < 10000; i++) {
         Line ray = { { 0, 0, -1 }, { 561, 257, 1740 } };
         int err = area.prepLineOut(ray);
-        area.startIterations(ray);
+        area.startIterations(ray, tk, ck, k);
     }
 //    lines.push_back(ray);
-    Logger::Instance() << lines;
+    Logger::Instance() << "k = " << k;
 
     m_lineArea = new LinePaintArea(0, lines);
 

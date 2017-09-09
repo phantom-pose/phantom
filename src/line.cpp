@@ -39,8 +39,29 @@ void Line::normalization()
 }
 
 void Line::setMaxLen(float const & maxlen) { m_maxLen = maxlen; }
+void Line::setParallel(int const & parallel) { m_parallel = parallel; }
+void Line::setParallel()
+{
+    if (fabs(m_x) > 0.5) {
+        m_parallel = 0;
+    } else
+    if (fabs(m_y) > 0.5) {
+        m_parallel = 1;
+    } else
+    if (fabs(m_z) > 0.5) {
+        m_parallel = 2;
+    }
+}
+
+bool Line::hasParallel() const
+{
+    if (m_parallel >= 0)
+        return true;
+    return false;
+}
 
 float Line::getMaxLen() const { return m_maxLen; }
+int Line::getParallel() const { return m_parallel; }
 
 std::ostream & operator << (std::ostream & os, Line const & obj)
 {

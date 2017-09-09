@@ -34,6 +34,7 @@ public:
     int const & getSizeX() const;
     int const & getSizeY() const;
     int const & getSizeZ() const;
+    int getSize(int const & index) const;
 
     Point3D <int> getXYZ(int num) const;
 
@@ -64,7 +65,7 @@ private:
     int m_xSize = 0, m_ySize = 0, m_zSize = 0, m_length = 0;
     Point3D <int> m_nymphSize, m_nymphPos;
     double m_propX = 3.0, m_propY = 3.0, m_propZ = 8.0;
-    unsigned char* m_list;
+    unsigned char*** m_list;
     Point3D <int> m_position;
 };
 

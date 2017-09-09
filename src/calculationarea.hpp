@@ -18,9 +18,13 @@ public:
 
     bool hasInsideBox(Vector3D v);
     bool hasInsideBox(Point3D <float> const & pt);
+    int searchIntersect(Line & line, double * tk, unsigned char * ck, int & k);
     int prepLineOut(Line & line);
+    int prepLineIn(Line & line);
     int linePlaneIntersect(float & len, Line const & line, Vector3D const & plane);
     void startIterations(Line & line);
+    void startParallelIterations(Line & line, int const & index, double * tk, unsigned char * ck, int & k);
+    void startIterations(Line const & line, double * tk, unsigned char * ck, int & k);
 
 private:
     BoxNet m_boxNet;
