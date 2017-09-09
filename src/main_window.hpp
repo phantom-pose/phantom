@@ -17,6 +17,8 @@
 #include "json/json.h"
 #include <fstream>
 #include <string>
+#include "joint.h"
+#include "plane.h"
 
 /*!
  * \brief Класс MainWindow - основное окно программы

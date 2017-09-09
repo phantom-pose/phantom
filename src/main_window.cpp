@@ -184,5 +184,16 @@ void MainWindow::setBox()
             }
         }
     }
+    box.grow( { 200, 200, 200 }, { 50, 50, 50 } );
+
+    Plane s1 = { { 76, 76, 50 }, { 76, 124, 50 }, { 124, 76, 50 } };
+    Plane e1 = { { 76, 76, 50 }, { 76, 124, 50 }, { 124, 76, 50 } };
+    Plane s2 = { { 76, 76, 149}, { 76, 124, 149 }, { 124, 76, 149 } };
+    Plane e2 = { { 100, 100, 120 }, { 100, 134, 120 }, { 134, 100, 120 } };
+    Plane * ep1 = &e1;
+    Plane * ep2 = &e2;
+    Plane * sp1 = &s1;
+    Plane * sp2 = &s2;
+    Joint joint = { sp1, sp2, ep1, ep2 };
     m_phantom->setBox(box);
 }
