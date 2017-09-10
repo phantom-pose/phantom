@@ -205,14 +205,6 @@ Point3D<float> * FindPoint3(Plane * plane1, Plane * plane2, BezierCoords3D * bc)
     return result;
 }
 
-Joint::~Joint()
-{
-    delete m_startPlane1;
-    delete m_startPlane2;
-    delete m_endPlane1;
-    delete m_endPlane2;
-}
-
 bool Joint::getStartPoint(Point3D <float> * end, Point3D <float> * start)
 {
     auto bezier = FindAlpha3(m_endPlane1, m_endPlane2, end);
