@@ -70,7 +70,7 @@ TEST(calculationArea_test, test_searchIntersect)
     CalculationArea area = { box };
 
     Line ray1 = { { 90, -1, 20 }, { 0, 1, 0 } }; // Out
-    Line ray2 = { { 90, 100, 20 }, { 0.01, -1, 1 } }; // In
+    Line ray2 = { { 90, 100, 20 }, { 0, -1, 1 } }; // In
     double * tk = new double [10];
     unsigned char * ck = new unsigned char [10];
     int k = 0;
@@ -81,4 +81,9 @@ TEST(calculationArea_test, test_searchIntersect)
     for (int i = 0; i < k; i++) {
         std::cout << i << ") len = " << tk[i] << " col = " << int(ck[i]) << "\n";
     }
+//    int k1 = 5;
+//    std::cout << " 1 = " << bool(k1 & 1) << "\n";
+//    std::cout << " 2 = " << bool(k1 & 2) << "\n";
+//    std::cout << " 3 = " << bool(k1 & 4) << "\n";
+//    std::cout << " 4 = " << bool(k1 & ) << "\n";
 }

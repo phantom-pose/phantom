@@ -25,6 +25,8 @@ public:
     void startIterations(Line & line);
     void startParallelIterations(Line & line, int const & index, double * tk, unsigned char * ck, int & k);
     void startIterations(Line const & line, double * tk, unsigned char * ck, int & k);
+    void startIterations(Line const & line, int fbIndex, double * tk, unsigned char * ck, int & k);
+
 
 private:
     BoxNet m_boxNet;

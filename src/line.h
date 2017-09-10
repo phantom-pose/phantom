@@ -19,7 +19,7 @@ public:
     void setParallel(int const & parallel);
     void setParallel();
     float getMaxLen() const;
-    int getParallel() const;
+    int getPFactor() const;
     bool hasParallel() const;
 private:
     void normalization();
@@ -28,7 +28,7 @@ private:
     float m_x = 0.0f, m_y = 0.0f, m_z = 1.0f;
     float m_llen = 0.0f; // last len
     float m_maxLen = 0.0f;
-    int m_parallel = -1;
+    int m_pFactor = 0;
 };
 
 std::ostream & operator << (std::ostream & os, Line const & obj);

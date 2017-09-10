@@ -4,12 +4,14 @@ Line::Line(float xPos, float yPos, float zPos, float xDir, float yDir, float zDi
     :m_x0(xPos), m_y0(yPos), m_z0(zPos), m_x(xDir), m_y(yDir), m_z(zDir)
 {
     normalization();
+    setParallel();
 }
 
 Line::Line(Point3D <float> pos, Point3D <float> dir)
     :m_x0(pos.x()), m_y0(pos.y()), m_z0(pos.z()), m_x(dir.x()), m_y(dir.y()), m_z(dir.z())
 {
     normalization();
+    setParallel();
 }
 
 // Геттеры. обычные.
@@ -39,29 +41,26 @@ void Line::normalization()
 }
 
 void Line::setMaxLen(float const & maxlen) { m_maxLen = maxlen; }
-void Line::setParallel(int const & parallel) { m_parallel = parallel; }
+void Line::setParallel(int const & parallel) { m_pFactor = parallel; }
 void Line::setParallel()
 {
-    if (fabs(m_x) > 0.5) {
-        m_parallel = 0;
-    } else
-    if (fabs(m_y) > 0.5) {
-        m_parallel = 1;
-    } else
-    if (fabs(m_z) > 0.5) {
-        m_parallel = 2;
-    }
+    if ( fabs(m_x) < kEps )
+        m_pFactor += 1;
+    if ( fabs(m_y) < kEps )
+        m_pFactor += 2;
+    if ( fabs(m_z) < kEps )
+        m_pFactor += 4;
 }
 
 bool Line::hasParallel() const
 {
-    if (m_parallel >= 0)
+    if (m_pFactor)
         return true;
     return false;
 }
 
 float Line::getMaxLen() const { return m_maxLen; }
-int Line::getParallel() const { return m_parallel; }
+int Line::getPFactor() const { return m_pFactor; }
 
 std::ostream & operator << (std::ostream & os, Line const & obj)
 {

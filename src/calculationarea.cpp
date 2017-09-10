@@ -54,8 +54,6 @@ int CalculationArea::prepLineOut(Line & line) {
     float len = 0.0f;
     float lens[2];
     int i = 0;
-    int parallel = 0;
-    int code = 1; // Код результата устанавливаю в значение 1
     for (auto it = m_planes.begin(); it != m_planes.end(); it++) {
         int err = linePlaneIntersect(len, line, *it);
         //std::cout << "err = " << err << "\n";
@@ -63,18 +61,9 @@ int CalculationArea::prepLineOut(Line & line) {
         if (!err) {
             lens[i] = len;
             i++;
-            code = 0;
-        }
-        // Обрабатываю параллельные компоненты
-        // Т.е. узнаём пересечения с какими плоскостями никогда не произойдет
-        // В данном случае прямая будет параллельна всегда сразу 4м плоскостям,
-        // что вычеркивает из рассмотрения 2 компоненты в итерационной процедуре
-        if (err == 2 && !parallel) {
-            parallel = 1;
-            line.setParallel();
         }
     }
-    if (!code && i == 2) {
+    if (i == 2) {
         // На данном этапе в templen и len ближняя и дальняя точки, но неизвестно где какая
         if (lens[1] > lens[0]) {
             line.shiftPosition(lens[0]);
@@ -93,25 +82,14 @@ int CalculationArea::prepLineOut(Line & line) {
 int CalculationArea::prepLineIn(Line & line) {
     float len = 0.0f;
     int i = 0;
-    int parallel = 0;
-    int code = 1; // Код результата устанавливаю в значение 1
     for (auto it = m_planes.begin(); it != m_planes.end(); it++) {
         int err = linePlaneIntersect(len, line, *it);
         // Если хоть какие-нибудь плоскости были пересечены, то функция уже отработала нормально => code = 0
         if (!err) {
-            code = 0;
             i++;
         }
-        // Обрабатываю параллельные компоненты
-        // Т.е. узнаём пересечения с какими плоскостями никогда не произойдет
-        // В данном случае рассмотрим параллельность двум плоскостям
-        // что вычеркивает из рассмотрения 2 компоненты в итерационной процедуре
-        if (err == 2 && !parallel) {
-            parallel = 1;
-            line.setParallel();
-        }
     }
-    if (!code && i == 1) {
+    if (i == 1) {
             line.setMaxLen(len);
         //std::cout << lens[0] << " " << lens[1] << " " << i << "\n";
         return 0;
@@ -326,6 +304,101 @@ void CalculationArea::startIterations(Line const & line, double * tk, unsigned c
     }
 }
 
+void CalculationArea::startIterations(Line const & line, int fbIndex, double * tk, unsigned char * ck, int & k) {
+    // fbIndex - запрещённый индекс
+    // Извлеку максимально возможную длину из line для проверок выхода за пределы блока
+    float stopLen = line.getMaxLen() - 0.001;
+    // Запишу направление | НЕ МЕНЯЕТСЯ |
+    float Dir[3];
+    Dir[0] = line.getDirection().x();
+    Dir[1] = line.getDirection().y();
+    Dir[2] = line.getDirection().z();
+    // Вычисляем вспомогательный массив для итераций, показывает октант в который идет распространение
+    int Oct[3];
+    Oct[0] = ( Dir[0] > 0 ) ? 1 : -1;
+    Oct[1] = ( Dir[1] > 0 ) ? 1 : -1;
+    Oct[2] = ( Dir[2] > 0 ) ? 1 : -1;
+    // Вычисляем добавку, зависящую от направления | НЕ МЕНЯЕТСЯ |
+    int Adj[3];
+    Adj[0] = ( Dir[0] > 0 ) ? 1 : 0;
+    Adj[1] = ( Dir[1] > 0 ) ? 1 : 0;
+    Adj[2] = ( Dir[2] > 0 ) ? 1 : 0;
+    // Начальная точка для итераций | НЕ МЕНЯЕТСЯ |
+    float Bp[3];
+    Bp[0] = line.getPosition().x();
+    Bp[1] = line.getPosition().y();
+    Bp[2] = line.getPosition().z();
+    // Найдем индексы ячейки с которой начинаются итерации
+    int In[3];
+    In[0] = (Bp[0] + Dir[0] * 0.01) / m_xScale;
+    In[1] = (Bp[1] + Dir[1] * 0.01) / m_yScale;
+    In[2] = (Bp[2] + Dir[2] * 0.01) / m_zScale;
+    // Установлю первоначальное значение цвета
+    unsigned char color = m_boxNet.getByXyz(In[0], In[1], In[2]);
+    // Запишем размеры ячеек в массив для единообразия
+    float Size[3];
+    Size[0] = m_xScale;
+    Size[1] = m_yScale;
+    Size[2] = m_zScale;
+    // Уравнение на каждой итерации leni = ( ( In[i] + Adj[i] ) * Size[i] - Bp[i] ) / Dir[i];
+    // i - компонента (x,y,z)
+    // В уравнении меняется только In[i], представлю его в виде y = kx + b
+    Dir[fbIndex] = 1;
+    float K[3];
+    K[0] = Size[0] / Dir[0];
+    K[1] = Size[1] / Dir[1];
+    K[2] = Size[2] / Dir[2];
+    float b[3];
+    b[0] = (Adj[0] * Size[0] - Bp[0]) / Dir[0];
+    //std::cout << b[0] << "\n";
+    b[1] = (Adj[1] * Size[1] - Bp[1]) / Dir[1];
+    //std::cout << b[1] << "\n";
+    b[2] = (Adj[2] * Size[2] - Bp[2]) / Dir[2];
+    //std::cout << b[2] << "\n";
+    // Крутимся пока не выйдем за пределы основного блока
+    float minLen = 0;
+    float tempLen;
+    float leni;
+    int _i;
+    k = 0;
+    float lastLen = 0;
+    while(1) {
+        // Найдём минимальную длину !от начальной точки! и соответствующий ей индекс (x, y или z)
+        tempLen = minLen;
+        minLen = std::numeric_limits<float>::max();
+        for (int i = 0; i < 3; i++) {
+            if (i != fbIndex) {
+                leni = K[i] * In[i] + b[i];
+                //std::cout << leni << "\n";
+                if (leni < minLen) {
+                    minLen = leni;
+                    _i = i;
+                }
+            }
+        }
+        // Извлекаем цвет
+        unsigned char _color = m_boxNet.getByXyz(In[0], In[1], In[2]);
+        // Сравниваем с предыдущим
+        if (color != _color) {
+            tk[k] = tempLen - lastLen;
+            ck[k] = color;
+            k++;
+            lastLen = tempLen;
+            color = _color;
+        }
+        // Проверяем эту длину на выход за пределы основного блока
+        if (minLen > stopLen) {
+            tk[k] = tempLen - lastLen;
+            ck[k] = color;
+            k++;
+            lastLen = tempLen;
+            break;
+        }
+        // Передвигаем индекс In в сторону направления распространения
+        In[_i] = In[_i] + Oct[_i];
+    }
+}
+
 void CalculationArea::startParallelIterations(Line & line, int const & index, double * tk, unsigned char * ck, int & k)
 {
     // Запишу направление | НЕ МЕНЯЕТСЯ |
@@ -389,9 +462,23 @@ int CalculationArea::searchIntersect(Line & line, double * tk, unsigned char * c
     }
     // Оцениваем нет ли параллельности
     if ( line.hasParallel() ) {
-        int index = line.getParallel();
-//        startParallelIterations(line, index, tk, ck, k);
-        return 1; // параллельно TOTO доделать параллельность
+        int pFactor = line.getPFactor();
+        std::cout << "PFACTOR == " << pFactor << "\n";
+        // Определяем тип параллельности и обрабатываем его
+        if (pFactor == 1) { // имеет проекции y и z
+            startIterations(line, 0, tk, ck, k);
+            std::cout << "HAS Y AND Z\n";
+        } else if (pFactor == 2) { // имеет проекции x и z
+            startIterations(line, 1, tk, ck, k);
+        } else if (pFactor == 4) { // имеет проекции x и y
+            startIterations(line, 2, tk, ck, k);
+        } else if (pFactor == 3) { // Имеет только проекцию z
+            startParallelIterations(line, 2, tk, ck, k);
+        } else if (pFactor == 5) { // Имеет только проекцию y
+            startParallelIterations(line, 1, tk, ck, k);
+        } else if (pFactor == 6) { // Имеет только проекцию x
+            startParallelIterations(line, 0, tk, ck, k);
+        }
     } else {
         startIterations(line, tk, ck, k);
 //        std::cout << "NO PARALLEL"<< "\n";
