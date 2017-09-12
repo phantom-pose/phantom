@@ -90,7 +90,7 @@ int CalculationArea::prepLineIn(Line & line) {
         }
     }
     if (i == 1) {
-            line.setMaxLen(len);
+        line.setMaxLen(len);
         //std::cout << lens[0] << " " << lens[1] << " " << i << "\n";
         return 0;
     }
@@ -455,19 +455,22 @@ int CalculationArea::searchIntersect(Line & line, double * tk, unsigned char * c
 {
     // Находим, луч снаружи или внутри основного блока
     // Подготавливаем его
+    int err;
     if ( hasInsideBox(line.getPosition()) ) {
-        prepLineIn(line);
+        err = prepLineIn(line);
     } else {
-        prepLineOut(line);
+        err = prepLineOut(line);
     }
+    if (err)
+        return err;
     // Оцениваем нет ли параллельности
     if ( line.hasParallel() ) {
         int pFactor = line.getPFactor();
-        std::cout << "PFACTOR == " << pFactor << "\n";
+//        std::cout << "PFACTOR == " << pFactor << "\n";
         // Определяем тип параллельности и обрабатываем его
         if (pFactor == 1) { // имеет проекции y и z
             startIterations(line, 0, tk, ck, k);
-            std::cout << "HAS Y AND Z\n";
+//            std::cout << "HAS Y AND Z\n";
         } else if (pFactor == 2) { // имеет проекции x и z
             startIterations(line, 1, tk, ck, k);
         } else if (pFactor == 4) { // имеет проекции x и y
