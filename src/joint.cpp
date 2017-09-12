@@ -1,5 +1,6 @@
 #include "joint.h"
 #include "newt.h"
+#include <iostream>
 
 float constexpr COEF = 0.5;
 
@@ -144,7 +145,7 @@ BezierCoords3D * FindAlpha3(Plane * plane1, Plane * plane2, Point3D<float> * poi
     x[0] = a;
     x[1] = b;
     x[2] = t;
-    mnewt(func, x, 100, 2);
+    mnewt(func, x, 100, 3);
     BezierCoords3D * result = new BezierCoords3D(x[0], x[1], x[2]);
     return result;
 }
@@ -158,9 +159,11 @@ Point3D<float> * FindPoint3(Plane * plane1, Plane * plane2, BezierCoords3D * bc)
     float nx = -(n.getDirection().x());
     float ny = -(n.getDirection().y());
     float nz = -(n.getDirection().z());
+    std::cout << "n" << nx << ' ' << ny << ' ' << nz << std::endl;
     float nx_1 = n1.getDirection().x();
     float ny_1 = n1.getDirection().y();
     float nz_1 = n1.getDirection().z();
+    std::cout << "n" << nx_1 << ' ' << ny_1 << ' ' << nz_1 << std::endl;
     auto e1 = plane1->getE1(); auto e2 = plane1->getE2();
     float e1x = e1.getDirection().x();
     float e1y = e1.getDirection().y();
@@ -168,6 +171,8 @@ Point3D<float> * FindPoint3(Plane * plane1, Plane * plane2, BezierCoords3D * bc)
     float e2x = e2.getDirection().x();
     float e2y = e2.getDirection().y();
     float e2z = e2.getDirection().z();
+    std::cout << "n" << e1x << ' ' << e1y << ' ' << e1z << std::endl;
+    std::cout << "n" << e2x << ' ' << e2y << ' ' << e2z << std::endl;
     auto p0 = e1.getPosition();
     float x0 = p0.x(); float y0 = p0.y(); float z0 = p0.z();
     auto e1_1 = plane1->getE1(); auto e2_1 = plane1->getE2();
@@ -212,6 +217,10 @@ bool Joint::getStartPoint(Point3D <float> * end, Point3D <float> * start)
             || bezier->beta() < 0 || bezier->beta() > 1
             || bezier->t() < 0 || bezier->t() > 1)
     {
+        std::cout << bezier->alpha() << ' ' << bezier->t() << ' ' << bezier->beta() <<std::endl;
+        //test
+        auto p = FindPoint3(m_endPlane1, m_endPlane2, new BezierCoords3D(0.6, 0.6, 0.6));
+        std::cout << *p << std::endl;
         return false;
     }
     auto point = FindPoint3(m_startPlane1, m_startPlane2, bezier);
