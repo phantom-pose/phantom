@@ -2,6 +2,7 @@
 
 #include "plane.h"
 #include "point3d.hpp"
+#include "iostream"
 
 class Joint {
 public:
@@ -11,8 +12,11 @@ public:
      */
     Joint( Plane * start1, Plane * start2, Plane * end1, Plane * end2 )
         :  m_startPlane1(start1), m_startPlane2(start2), m_endPlane1(end1), m_endPlane2(end2)
+    {
+        //std::cout << m_startPlane1->getN().getDirection().z() << "lol";
+    }
+    ~Joint()
     {}
-    ~Joint();
 
     /*!
      * \brief поиск координаты в исходном положении плоскостей

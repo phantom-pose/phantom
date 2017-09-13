@@ -184,5 +184,35 @@ void MainWindow::setBox()
             }
         }
     }
+    box.grow( { 200, 200, 200 }, { 50, 50, 50 } );
+
+    Plane s1 = { { 76 * 1.875, 76 * 1.875, 50 * 2.5 }, { 124 * 1.875, 76 * 1.875, 50 * 2.5 }, { 76 * 1.875, 124 * 1.875, 50 * 2.5 } };
+    Plane e1 = { { 76 * 1.875, -(124-76)*0.5*0.866 - 45 * 2.5 * 0.5 + 76 * 1.875, 50 * 2.5 + 45 * 2.5 * 0.1339 + (124-76)/4 }, { 124 * 1.875, -(124-76)*0.5*0.866 - 45 * 2.5 * 0.5 + 76 * 1.875, 50 * 2.5 + 45 * 2.5 * 0.1339 + (124-76)/4 }, { 76 * 1.875, (124-76)*0.5*0.866 - 45 * 2.5 * 0.5 + 76 * 1.875, 50 * 2.5 + 45 * 2.5 * 0.1339 - (124-76)/4 } };
+    Plane s2 = { { 76 * 1.875, 76 * 1.875, 50 * 2.5 }, { 76 * 1.875, 124 * 1.875, 50 * 2.5 }, { 76 * 1.875, 76 * 1.875, 140 * 2.5 } };
+    Plane e2 = { { 76 * 1.875, 76 * 1.875, 50 * 2.5 }, { 76 * 1.875, 124 * 1.875, 50 * 2.5 }, { 76 * 1.875, 76 * 1.875, 140 * 2.5 } };
+    Plane * ep1 = &e1;
+    Plane * ep2 = &e2;
+    Plane * sp1 = &s1;
+    Plane * sp2 = &s2;
+    Joint joint = { sp1, sp2, ep1, ep2 };
+
+    Point3D <float> end = { 150, 150, 150 };
+    Point3D <float> start;
+    Point3D <float> * pend = &end;
+    Point3D <float> * pstart = &start;
+
     m_phantom->setBox(box);
+    bool hasDef = joint.getStartPoint( pend, pstart );
+    std::cout << hasDef << std::endl;
+    std::cout << start << std::endl;
+
+    for (int iz = 0; iz < 200; iz++) {
+        for (int iy = 0; iy < 200; iy++) {
+            for (int ix = 0; ix < 200; ix++) {
+                //bool hasDef = joint.getStartPoint( pend, pstart );
+                //std::cout << start;
+            }
+        }
+    }
+
 }
