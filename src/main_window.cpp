@@ -194,6 +194,7 @@ void MainWindow::setBox()
     Plane * ep2 = &e2;
     Plane * sp1 = &s1;
     Plane * sp2 = &s2;
+    std::cout << e1;
     std::cout << ep1->getE2().getDirection().z() << "lol";
     Joint joint = { sp1, sp2, ep1, ep2 };
 

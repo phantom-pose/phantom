@@ -77,6 +77,7 @@ void Vector3D::setEndpoint(float const & x, float const & y, float const & z)
     m_x = m_x1 - m_x0;
     m_y = m_y1 - m_y0;
     m_z = m_z1 - m_z0;
+//    std::cout << m_x << " " << m_y << " " << m_z << "\n";
     m_len = sqrt( m_x*m_x + m_y*m_y + m_z*m_z );
     normalization();
 }
@@ -216,4 +217,14 @@ void Vector3D::normalization()
     m_x /= hyp;
     m_y /= hyp;
     m_z /= hyp;
+}
+
+std::ostream & operator << (std::ostream & os, Vector3D const & obj)
+{
+    os << "|Vector3D|\n\
+        Position  = " << obj.getPosition() << "\n\
+        Direction = " << obj.getDirection() << "\n\
+        Endpoint  = " << obj.getEndpoint() << "\n\
+        Length    = " << obj.getLength() << "\n";
+    return os;
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include "point3d.hpp"
 #include <cmath>
+#include "logger.h"
 
 /*!
  * \brief The Vector3D class Класс представляет из себя вектор с началом в точке m_*0 и концом в точке m_*1
@@ -43,3 +44,5 @@ private:
     float m_x1 = 0.0f, m_y1 = 0.0f, m_z1 = 1.0f;
     float m_len = 1.0f;
 };
+
+std::ostream & operator << (std::ostream & os, Vector3D const & obj);

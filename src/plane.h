@@ -1,5 +1,6 @@
 #pragma once
 #include "vector3d.h"
+#include "logger.h"
 
 class Plane
 {
@@ -14,8 +15,8 @@ public:
     Plane( Vector3D const & e1, Vector3D const & e2);
     // Геттеры
     Vector3D getN();
-    Vector3D getE1();
-    Vector3D getE2();
+    Vector3D getE1() const;
+    Vector3D getE2() const;
     float getLen1();
     float getLen2();
     Point3D <float> getPosition();
@@ -24,3 +25,5 @@ private:
     Vector3D m_e1 = { 1, 0, 0 };
     Vector3D m_e2 = { 0, 1, 0 };
 };
+
+std::ostream & operator << (std::ostream & os, Plane const & obj);
