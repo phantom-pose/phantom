@@ -1,10 +1,9 @@
 #pragma once
 
 #include "calculationarea.hpp"
-#include "UnitVector.h"
 
 namespace utils
 {
     int VoxelObjInit( char const * filename );
-    int VoxelObjRay(TUnitVec const & uv, double * tk, unsigned char * ck, int & k);
+    int VoxelObjRay(float x, float y, float z, float ox, float oy, float oz, double * tk, unsigned char * ck, int & k);
 }

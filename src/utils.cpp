@@ -13,9 +13,9 @@ namespace utils
         return 0;
     }
 
-    int VoxelObjRay(TUnitVec const & uv, double * tk, unsigned char * ck, int & k)
+    int VoxelObjRay(float x, float y, float z, float ox, float oy, float oz, double * tk, unsigned char * ck, int & k)
     {
-        Line ray = { float(uv.x), float(uv.y), float(uv.z), float(uv.ox), float(uv.oy), float(uv.oz) };
+        Line ray = { x, y, z, ox, oy, oz };
         int err = ca->searchIntersect(ray, tk, ck, k);
         if (!err)
             return err;

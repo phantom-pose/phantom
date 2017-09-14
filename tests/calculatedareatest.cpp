@@ -77,9 +77,11 @@ TEST(calculationArea_test, test_searchIntersect)
     unsigned char * ck = new unsigned char [10];
     int k = 0;
 //    area.searchIntersect(ray1, tk, ck, k);
-    area.searchIntersect(ray1, tk, ck, k);
+//    area.searchIntersect(ray1, tk, ck, k);
 //    Logger::Instance() << ray1;
-    Logger::Instance() << ray1;
+    utils::VoxelObjInit("data/AF_bin.dat");
+    utils::VoxelObjRay( 0, 0, -1, 561, 257, 1740, tk, ck, k );
+//    Logger::Instance() << ray1;
     for (int i = 0; i < k; i++) {
         std::cout << i << ") len = " << tk[i] << " col = " << int(ck[i]) << "\n";
     }
@@ -89,6 +91,4 @@ TEST(calculationArea_test, test_searchIntersect)
 //    std::cout << " 3 = " << bool(k1 & 4) << "\n";
 //    std::cout << " 4 = " << bool(k1 & ) << "\n";
 //    TUnitVec vec(90, 100, 20, 0, -1, 1 );
-
-    utils::VoxelObjInit("data/AF_bin.dat");
 }
