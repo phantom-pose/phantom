@@ -263,6 +263,12 @@ BezierCoords3D * FindAlpha3(Plane * plane1, Plane * plane2, Point3D<float> * poi
         mnewt(func, x, 100, 3);
     }
     BezierCoords3D * result = new BezierCoords3D(x[0], x[1], x[2]);
+    delete [] fvec;
+    for (int i = 0; i < 3; i++)
+    {
+        delete [] fjac[i];
+    }
+    delete [] fjac;
     return result;
 }
 
@@ -335,9 +341,12 @@ bool Joint::getStartPoint(Point3D <float> * end, Point3D <float> * start)
             || bezier->t() < 0 || bezier->t() > 1)
     {
         std::cout << bezier->alpha() << ' ' << bezier->t() << ' ' << bezier->beta() <<std::endl;
+        delete bezier;
         return false;
     }
     auto point = FindPoint3(m_startPlane1, m_startPlane2, bezier);
+    delete bezier;
     *start = *point;
+    delete point;
     return true;
 }

@@ -66,6 +66,13 @@ void luSolve(float ** a,  float * b, float * x, int n)
         }
         x[i] = (y[i] - sum)/u[i][i];
     }
+    for (int i = 0; i < n; i++) {
+        delete [] u[i];
+        delete [] l[i];
+    }
+    delete [] u;
+    delete [] l;
+    delete [] y;
 }
 
 void mnewt(std::function<void(float *, int, float *, float **)> func, float * x, int ntrial, int n)
@@ -89,5 +96,12 @@ void mnewt(std::function<void(float *, int, float *, float **)> func, float * x,
         {
             x[j] += deltas[j];
         }
+        delete [] fvec;
+        for (int j = 0; j < n; j++)
+        {
+            delete [] fjac[j];
+        }
+        delete [] fjac;
+        delete [] deltas;
     }
 }

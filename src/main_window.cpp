@@ -282,5 +282,4 @@ void MainWindow::setBox()
             }
         }
     }*/
-
 }
