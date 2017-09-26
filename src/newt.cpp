@@ -1,5 +1,5 @@
-
 #include "newt.h"
+#include <iostream>
 
 void luDecomp(float ** a,  float ** u, float ** l, int n)
 {
@@ -92,8 +92,10 @@ void mnewt(std::function<void(float *, int, float *, float **)> func, float * x,
             fvec[j] *= -1;
         }
         luSolve(fjac, fvec, deltas, n);
+        bool stopIt = true;
         for (int j = 0; j < n; j++)
         {
+            stopIt = stopIt && (deltas[j] < 0.0001) && (deltas[j] > -0.0001);
             x[j] += deltas[j];
         }
         delete [] fvec;
@@ -103,5 +105,8 @@ void mnewt(std::function<void(float *, int, float *, float **)> func, float * x,
         }
         delete [] fjac;
         delete [] deltas;
+        if (stopIt) {
+            break;
+        }
     }
 }

@@ -185,11 +185,15 @@ void MainWindow::setBox()
         }
     }
     box.grow( { 200, 200, 200 }, { 50, 50, 50 } );
+    m_phantom->setBox(box);
 
-    /*Plane s1 = { { 76 * 1.875, 76 * 1.875, 50 * 2.5 }, { 124 * 1.875, 76 * 1.875, 50 * 2.5 }, { 76 * 1.875, 124 * 1.875, 50 * 2.5 } };
+    /* //3D shoulder rotation
+    Plane s1 = { { 76 * 1.875, 76 * 1.875, 50 * 2.5 }, { 124 * 1.875, 76 * 1.875, 50 * 2.5 }, { 76 * 1.875, 124 * 1.875, 50 * 2.5 } };
     Plane e1 = { { 76 * 1.875, -(124-76)*0.5*0.866 - 45 * 2.5 * 0.5 + 76 * 1.875, 50 * 2.5 + 45 * 2.5 * 0.1339 + (124-76)/4 }, { 124 * 1.875, -(124-76)*0.5*0.866 - 45 * 2.5 * 0.5 + 76 * 1.875, 50 * 2.5 + 45 * 2.5 * 0.1339 + (124-76)/4 }, { 76 * 1.875, (124-76)*0.5*0.866 - 45 * 2.5 * 0.5 + 76 * 1.875, 50 * 2.5 + 45 * 2.5 * 0.1339 - (124-76)/4 } };
     Plane s2 = { { 76 * 1.875, 76 * 1.875, 50 * 2.5 }, { 76 * 1.875, 124 * 1.875, 50 * 2.5 }, { 76 * 1.875, 76 * 1.875, 140 * 2.5 } };
-    Plane e2 = { { 76 * 1.875, 76 * 1.875, 50 * 2.5 }, { 76 * 1.875, 124 * 1.875, 50 * 2.5 }, { 76 * 1.875, 76 * 1.875, 140 * 2.5 } };*/
+    Plane e2 = { { 76 * 1.875, 76 * 1.875, 50 * 2.5 }, { 76 * 1.875, 124 * 1.875, 50 * 2.5 }, { 76 * 1.875, 76 * 1.875, 140 * 2.5 } };
+    */
+    /* //2D shoulder rotation
     Plane s1 = {
         {
             76 * 1.875,
@@ -258,6 +262,51 @@ void MainWindow::setBox()
             140 * 2.5
         }
     };
+    */
+    Plane s1 = {
+        {
+            50, 50, 50
+        },
+        {
+            150, 50, 50
+        },
+        {
+            50, 150, 50
+        }
+    };
+    Plane s2 = {
+        {
+            50, 50, 50
+        },
+        {
+            50, 150, 50
+        },
+        {
+            50, 50, 150
+        }
+    };
+    Plane e1 = {
+        {
+            50, 50, 50
+        },
+        {
+            150, 50, 50
+        },
+        {
+            50, 150, 50
+        }
+    };
+    Plane e2 = {
+        {
+            50, 50, 50
+        },
+        {
+            50, 150, 50
+        },
+        {
+            50, 50, 150
+        }
+    };
     Plane * ep1 = &e1;
     Plane * ep2 = &e2;
     Plane * sp1 = &s1;
@@ -269,17 +318,40 @@ void MainWindow::setBox()
     Point3D <float> * pend = &end;
     Point3D <float> * pstart = &start;
 
-    m_phantom->setBox(box);
     bool hasDef = joint.getStartPoint( pend, pstart );
     std::cout << hasDef << std::endl;
     std::cout << start << std::endl;
 
-    /*for (int iz = 0; iz < 200; iz++) {
-        for (int iy = 0; iy < 200; iy++) {
-            for (int ix = 0; ix < 200; ix++) {
-                //bool hasDef = joint.getStartPoint( pend, pstart );
-                //std::cout << start;
+    for (int iz = 0; iz < 10; iz++)
+    {
+        //std::cout << iz << std::endl;
+        for (int iy = 0; iy < 200; iy++)
+        {
+            for (int ix = 0; ix < 200; ix++)
+            {
+                Point3D <float> end = { ix+0.5, iy+0.5, iz+0.5 };
+                Point3D <float> start;
+                Point3D <float> * pend = &end;
+                Point3D <float> * pstart = &start;
+                bool hasDef = joint.getStartPoint( pend, pstart );
+                if (hasDef)
+                {
+                    float x = pstart->x();
+                    float y = pstart->y();
+                    float z = pstart->z();
+                    std::cout << ix << " " << iy << " " << iz << " "<<x<<" "<<y<<" "<<z<< std::endl;
+                    if ((x-100)*(x-100) + (y-100)*(y-100) < 400)
+                        box.setByXyz(ix, iy, iz, 141);
+                    else if ((x-100)*(x-100) + (y-100)*(y-100) < 625)
+                        box.setByXyz(ix, iy, iz, 0);
+                    else
+                        box.setByXyz(ix, iy, iz, 50);
+                }
+                else {
+                    box.setByXyz(ix, iy, iz, 0);
+                }
             }
         }
-    }*/
+    }
+    m_phantom->setBox(box);
 }

@@ -33,10 +33,10 @@ void f2yb(float * x, float * fvec, float ** fjac, Plane * plane1, Plane * plane2
     fjac[0][1] = 3*t*t*(4*x0 + 4*ex*a + 3*nx*dl - 4*x0_1 - 4*ex_1*a -3*nx_1*dl_1) + 2*t*(-3*x0 - 3*ex*a - 6*nx*dl + 3*x0_1 + 3*ex_1*a + 3*nx_1*dl_1) + (3*dl*nx);
     fjac[1][0] = t*t*t*(4*ez + 3*nz*dl_da - 4*ez_1 -3*nz_1*dl_1_da) + t*t*(-3*ez - 6*nz*dl_da + 3*ez_1 + 3*nz_1*dl_1_da) + t*(3*dl_da*nz) + ez;
     fjac[1][1] = 3*t*t*(4*z0 + 4*ez*a + 3*nz*dl - 4*z0_1 - 4*ez_1*a -3*nz_1*dl_1) + 2*t*(-3*z0 - 3*ez*a - 6*nz*dl + 3*z0_1 + 3*ez_1*a + 3*nz_1*dl_1) + (3*dl*nz);
-    std::cout << "[["<< fjac[0][0] << "," << fjac[0][1]  << "]";
-    std::cout << "["<< fjac[1][0] << "," << fjac[1][1]  << "]]";
-    std::cout << "  ["<< fvec[0] << "," << fvec[1] << "]";
-    std::cout << "   x:[" << a << " " << t <<  "]\n";
+    //std::cout << "[["<< fjac[0][0] << "," << fjac[0][1]  << "]";
+    //std::cout << "["<< fjac[1][0] << "," << fjac[1][1]  << "]]";
+    //std::cout << "  ["<< fvec[0] << "," << fvec[1] << "]";
+    //std::cout << "   x:[" << a << " " << t <<  "]\n";
 }
 
 void f2zb(float * x, float * fvec, float ** fjac, Plane * plane1, Plane * plane2, Point3D<float> * point)
@@ -68,10 +68,10 @@ void f2zb(float * x, float * fvec, float ** fjac, Plane * plane1, Plane * plane2
     fjac[0][1] = 3*t*t*(4*x0 + 4*ex*a + 3*nx*dl - 4*x0_1 - 4*ex_1*a -3*nx_1*dl_1) + 2*t*(-3*x0 - 3*ex*a - 6*nx*dl + 3*x0_1 + 3*ex_1*a + 3*nx_1*dl_1) + (3*dl*nx);
     fjac[1][0] = t*t*t*(4*ez + 3*nz*dl_da - 4*ez_1 -3*nz_1*dl_1_da) + t*t*(-3*ez - 6*nz*dl_da + 3*ez_1 + 3*nz_1*dl_1_da) + t*(3*dl_da*nz) + ez;
     fjac[1][1] = 3*t*t*(4*z0 + 4*ez*a + 3*nz*dl - 4*z0_1 - 4*ez_1*a -3*nz_1*dl_1) + 2*t*(-3*z0 - 3*ez*a - 6*nz*dl + 3*z0_1 + 3*ez_1*a + 3*nz_1*dl_1) + (3*dl*nz);
-    std::cout << "[["<< fjac[0][0] << "," << fjac[0][1]  << "]";
-    std::cout << "["<< fjac[1][0] << "," << fjac[1][1]  << "]]";
-    std::cout << "  ["<< fvec[0] << "," << fvec[1] << "]";
-    std::cout << "   x:[" << a << " " << t <<  "]\n";
+    //std::cout << "[["<< fjac[0][0] << "," << fjac[0][1]  << "]";
+    //std::cout << "["<< fjac[1][0] << "," << fjac[1][1]  << "]]";
+    //std::cout << "  ["<< fvec[0] << "," << fvec[1] << "]";
+    //std::cout << "   x:[" << a << " " << t <<  "]\n";
 }
 
 void f3(float * x, float * fvec, float ** fjac, Plane * plane1, Plane * plane2, Point3D<float> * point)
@@ -340,7 +340,7 @@ bool Joint::getStartPoint(Point3D <float> * end, Point3D <float> * start)
             || bezier->beta() < 0 || bezier->beta() > 1
             || bezier->t() < 0 || bezier->t() > 1)
     {
-        std::cout << bezier->alpha() << ' ' << bezier->t() << ' ' << bezier->beta() <<std::endl;
+        //std::cout << bezier->alpha() << ' ' << bezier->t() << ' ' << bezier->beta() <<std::endl;
         delete bezier;
         return false;
     }
