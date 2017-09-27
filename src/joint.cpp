@@ -80,6 +80,7 @@ void f3(float * x, float * fvec, float ** fjac, Plane * plane1, Plane * plane2, 
     float b = x[1];
     float t = x[2];
     auto n = plane1->getN(); auto n1 = plane2->getN();
+    //std::cout << n << " " << n1 << std::endl;
     float nx = n.getDirection().x();
     float ny = n.getDirection().y();
     float nz = n.getDirection().z();
@@ -179,10 +180,10 @@ void f3(float * x, float * fvec, float ** fjac, Plane * plane1, Plane * plane2, 
     fjac[2][2] = 3*t*t*(4*z0+4*a*e1z+4*b*e2z+3*nz*dl-4*z0_1-4*a*e1z_1-4*b*e2z_1-3*nz_1*dl_1) +
             2*t*(-3*z0-3*a*e1z-3*b*e2z-6*nz*dl+3*z0_1+3*a*e1z_1+3*b*e2z_1+3*nz_1*dl_1) +
             3*nz*dl;
-    /*std::cout << "[["<< fjac[0][0] << "," << fjac[0][1] << "," << fjac[0][2] << "]";
-    std::cout << "["<< fjac[1][0] << "," << fjac[1][1] << "," << fjac[1][2] << "]";
-    std::cout << "["<< fjac[2][0] << "," << fjac[2][1] << "," << fjac[2][2] << "]]";
-    std::cout << "[["<< fvec[0] << "," << fvec[1] << "," << fvec[2] << "]\n";*/
+    //std::cout << "[["<< fjac[0][0] << "," << fjac[0][1] << "," << fjac[0][2] << "]";
+    //std::cout << "["<< fjac[1][0] << "," << fjac[1][1] << "," << fjac[1][2] << "]";
+    //std::cout << "["<< fjac[2][0] << "," << fjac[2][1] << "," << fjac[2][2] << "]]";
+    //std::cout << "[["<< fvec[0] << "," << fvec[1] << "," << fvec[2] << "]\n";
 }
 
 class BezierCoords3D

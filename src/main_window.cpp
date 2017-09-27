@@ -263,17 +263,6 @@ void MainWindow::setBox()
         }
     };
     */
-    Plane s1 = {
-        {
-            50, 50, 50
-        },
-        {
-            150, 50, 50
-        },
-        {
-            50, 150, 50
-        }
-    };
     Plane s2 = {
         {
             50, 50, 50
@@ -282,29 +271,40 @@ void MainWindow::setBox()
             50, 150, 50
         },
         {
-            50, 50, 150
+            150, 50, 50
         }
     };
-    Plane e1 = {
+    Plane s1 = {
         {
-            50, 50, 50
+            50, 50, 150
         },
         {
-            150, 50, 50
+            150, 50, 150
         },
         {
-            50, 150, 50
+            50, 150, 150
         }
     };
     Plane e2 = {
         {
-            50, 50, 50
+            81.7, 50, 31.7
         },
         {
-            50, 150, 50
+            81.7, 150, 31.7
         },
+        {
+            168.3, 50, 81.7
+        }
+    };
+    Plane e1 = {
         {
             50, 50, 150
+        },
+        {
+            150, 50, 150
+        },
+        {
+            50, 150, 150
         }
     };
     Plane * ep1 = &e1;
@@ -313,7 +313,7 @@ void MainWindow::setBox()
     Plane * sp2 = &s2;
     Joint joint = { sp1, sp2, ep1, ep2 };
 
-    Point3D <float> end = { 210, 200, 140 };
+    Point3D <float> end = { 100, 100, 145 };
     Point3D <float> start;
     Point3D <float> * pend = &end;
     Point3D <float> * pstart = &start;
@@ -322,9 +322,9 @@ void MainWindow::setBox()
     std::cout << hasDef << std::endl;
     std::cout << start << std::endl;
 
-    for (int iz = 0; iz < 10; iz++)
+    for (int iz = 0; iz < 200; iz++)
     {
-        //std::cout << iz << std::endl;
+        std::cout << iz << std::endl;
         for (int iy = 0; iy < 200; iy++)
         {
             for (int ix = 0; ix < 200; ix++)
@@ -339,13 +339,13 @@ void MainWindow::setBox()
                     float x = pstart->x();
                     float y = pstart->y();
                     float z = pstart->z();
-                    std::cout << ix << " " << iy << " " << iz << " "<<x<<" "<<y<<" "<<z<< std::endl;
-                    if ((x-100)*(x-100) + (y-100)*(y-100) < 400)
+                    //std::cout << ix << " " << iy << " " << iz << " "<<x<<" "<<y<<" "<<z<< std::endl;
+                    if ((x-100)*(x-100) + (y-100)*(y-100) < 400 && z >= 50 && z <= 150)
                         box.setByXyz(ix, iy, iz, 141);
-                    else if ((x-100)*(x-100) + (y-100)*(y-100) < 625)
-                        box.setByXyz(ix, iy, iz, 0);
-                    else
+                    else if ((x-100)*(x-100) + (y-100)*(y-100) < 625 && z >= 50 && z <= 150)
                         box.setByXyz(ix, iy, iz, 50);
+                    else
+                        box.setByXyz(ix, iy, iz, 0);
                 }
                 else {
                     box.setByXyz(ix, iy, iz, 0);
