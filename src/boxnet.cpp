@@ -297,6 +297,21 @@ void BoxNet::writeBinFile(char const * filename)
     file.close();
 }
 
+void BoxNet::writeBinCMO(char const * filename)
+{
+    int shift = m_xSize / 2;
+        std::ofstream file(filename, std::ios::binary);
+        for (int iz = 0; iz < m_zSize; iz++) {
+            for (int iy = 0; iy < m_ySize; iy++) {
+                for (int ix = 0; ix < m_xSize; ix++) {
+                    int x = (ix + shift) % m_xSize;
+                    file.write(reinterpret_cast<char const*>(&m_list[x][iy][iz]), sizeof(m_list[x][iy][iz]));
+                }
+            }
+        }
+        file.close();
+}
+
 /*!
  * \brief Метод заполнения сетки из двоичного файла
  * \param filename имя файла, относительный путь
@@ -429,6 +444,24 @@ void  BoxNet::setNymphSize( Point3D <int> const & obj )
 void  BoxNet::setNymphPos( Point3D <int> const & obj )
 {
     m_nymphPos = obj;
+}
+
+BoxNet BoxNet::cut(Point3D <int> begin, Point3D <int> end)
+{
+    // TODO валидация входных данных
+    int xSize = end.x() - begin.x();
+    int ySize = end.y() - begin.y();
+    int zSize = end.z() - begin.z();
+    BoxNet box = { xSize, ySize, zSize };
+    for (int iz = 0; iz < zSize; iz++) {
+        for (int iy = 0; iy < ySize; iy++) {
+            for (int ix = 0; ix < xSize; ix++) {
+                unsigned char value = m_list[begin.x() + ix][ begin.y() + iy][ begin.z() + iz];
+                box.setByXyz(ix, iy, iz, value);
+            }
+        }
+    }
+    return box;
 }
 
 void BoxNet::grow( Point3D <int> const & sizes, Point3D <int> const & position )

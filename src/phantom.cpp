@@ -12,6 +12,11 @@ Phantom::Phantom()
     m_boxNet = { 299, 137, 348 };
     m_boxNet.fillFromBin( "data/AF_bin.dat" );
     m_boxNet.segmentation();
+//    m_boxNet = { 100, 117, 96 };
+//    m_boxNet.fillFromBin( "../Head.bin" );
+
+    BoxNet b = m_boxNet.cut( {100, 0, 598}, {200, 117, 694} );
+    b.writeBinFile("Head.bin");
 
     BodyPart * leftLeg1 = new BodyPart("data/bodyparts/leftLeg-1.bin");
     Point3D <float> rotP = { 351, 162, 521 }; // левое колено

@@ -46,6 +46,7 @@ public:
 
     void fillFromFile(char const * filename);
     void writeBinFile(char const * filename);
+    void writeBinCMO(char const * filename);
     void fillFromBin(char const * filename);
 
     void segmentation();
@@ -53,6 +54,7 @@ public:
 
     Point3D <int> const & position() const;
     void setPosition( Point3D <int> const & obj );
+    BoxNet cut(Point3D <int> begin, Point3D <int> end);
 
     void setNymphSize( Point3D <int> const & obj );
     void setNymphPos( Point3D <int> const & obj );
