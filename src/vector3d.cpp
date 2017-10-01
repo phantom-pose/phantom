@@ -43,6 +43,20 @@ Vector3D::Vector3D(Point3D <float> position, Point3D <float> direction, float co
 }
 
 /*!
+ * \brief Vector3D::Vector3D конструктор вектора c заданным началом и концом
+ */
+Vector3D::Vector3D(Point3D <float> position, Point3D <float> endpoint)
+    : m_x0( position.x() ), m_y0( position.y() ), m_z0( position.z() ),
+      m_x1( endpoint.x() ), m_y1( endpoint.y() ), m_z1( endpoint.z() )
+{
+    m_x = m_x1 - m_x0;
+    m_y = m_y1 - m_y0;
+    m_z = m_z1 - m_z0;
+    m_len = sqrt( m_x * m_x + m_y * m_y + m_z * m_z );
+    normalization();
+}
+
+/*!
  * \brief Vector3D::setPosition устанавливает начало вектора. направление не меняется, меняется конец
  */
 void Vector3D::setPosition(float const & x, float const & y, float const & z)
