@@ -17,7 +17,7 @@ public:
     Vector3D(float const & dirX, float const & dirY, float const & dirZ);
     Vector3D(Point3D <float> position, Point3D <float> direction);
     Vector3D(Point3D <float> position, Point3D <float> direction, float const & len);
-    Vector3D(Point3D <float> position, Point3D <float> endpoint);
+    Vector3D(bool flag, Point3D <float> position, Point3D <float> endpoint);
 
     void setPosition(Point3D <float> const & position);
     void setPosition(float const & x, float const & y, float const & z);

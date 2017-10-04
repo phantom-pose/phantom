@@ -45,7 +45,7 @@ Vector3D::Vector3D(Point3D <float> position, Point3D <float> direction, float co
 /*!
  * \brief Vector3D::Vector3D конструктор вектора c заданным началом и концом
  */
-Vector3D::Vector3D(Point3D <float> position, Point3D <float> endpoint)
+Vector3D::Vector3D(bool flag, Point3D <float> position, Point3D <float> endpoint)
     : m_x0( position.x() ), m_y0( position.y() ), m_z0( position.z() ),
       m_x1( endpoint.x() ), m_y1( endpoint.y() ), m_z1( endpoint.z() )
 {
