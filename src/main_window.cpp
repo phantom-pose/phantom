@@ -193,7 +193,7 @@ void MainWindow::setBox()
     Plane s2 = { { 76 * 1.875, 76 * 1.875, 50 * 2.5 }, { 76 * 1.875, 124 * 1.875, 50 * 2.5 }, { 76 * 1.875, 76 * 1.875, 140 * 2.5 } };
     Plane e2 = { { 76 * 1.875, 76 * 1.875, 50 * 2.5 }, { 76 * 1.875, 124 * 1.875, 50 * 2.5 }, { 76 * 1.875, 76 * 1.875, 140 * 2.5 } };
     */
-    /* //2D shoulder rotation
+     //2D shoulder rotation
     Plane s1 = {
         {
             76 * 1.875,
@@ -262,8 +262,8 @@ void MainWindow::setBox()
             140 * 2.5
         }
     };
-    */
-    Plane s2 = {
+
+   /* Plane s2 = {
         {
             50, 50, 50
         },
@@ -306,14 +306,59 @@ void MainWindow::setBox()
         {
             50, 150, 150
         }
+    };*/
+
+    /*Plane s1 = {
+            {
+                50, 50, 50
+            },
+            {
+                150, 50, 50
+            },
+            {
+                50, 150, 50
+            }
+        };
+    Plane s2 = {
+        {
+            50,50,50
+        },
+        {
+            50, 150, 50
+        },
+        {
+            50, 50, 150
+        }
     };
+    Plane e1 = {
+            {
+                50, 50, 50
+            },
+            {
+                150, 50, 50
+            },
+            {
+                50, 150, 50
+            }
+        };
+    Plane e2 = {
+        {
+            50,50,50
+        },
+        {
+            50, 150, 50
+        },
+        {
+            50, 50, 150
+        }
+    };*/
     Plane * ep1 = &e1;
     Plane * ep2 = &e2;
     Plane * sp1 = &s1;
     Plane * sp2 = &s2;
     Joint joint = { sp1, sp2, ep1, ep2 };
 
-    Point3D <float> end = { 100, 100, 145 };
+    Point3D <float> end = { 200, 200, 200 };
     Point3D <float> start;
     Point3D <float> * pend = &end;
     Point3D <float> * pstart = &start;
@@ -322,7 +367,7 @@ void MainWindow::setBox()
     std::cout << hasDef << std::endl;
     std::cout << start << std::endl;
 
-    for (int iz = 0; iz < 200; iz++)
+    /*for (int iz = 100; iz < 101; iz++)
     {
         std::cout << iz << std::endl;
         for (int iy = 0; iy < 200; iy++)
@@ -353,5 +398,5 @@ void MainWindow::setBox()
             }
         }
     }
-    m_phantom->setBox(box);
+    m_phantom->setBox(box);*/
 }
