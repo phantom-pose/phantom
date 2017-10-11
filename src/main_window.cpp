@@ -193,7 +193,7 @@ void MainWindow::setBox()
     Plane s2 = { { 76 * 1.875, 76 * 1.875, 50 * 2.5 }, { 76 * 1.875, 124 * 1.875, 50 * 2.5 }, { 76 * 1.875, 76 * 1.875, 140 * 2.5 } };
     Plane e2 = { { 76 * 1.875, 76 * 1.875, 50 * 2.5 }, { 76 * 1.875, 124 * 1.875, 50 * 2.5 }, { 76 * 1.875, 76 * 1.875, 140 * 2.5 } };
     */
-     //2D shoulder rotation
+    /* //2D shoulder rotation
     Plane s1 = {
         {
             76 * 1.875,
@@ -261,7 +261,7 @@ void MainWindow::setBox()
             76 * 1.875,
             140 * 2.5
         }
-    };
+    };*/
 
    /* Plane s2 = {
         {
@@ -308,7 +308,7 @@ void MainWindow::setBox()
         }
     };*/
 
-    /*Plane s1 = {
+    Plane s1 = {
             {
                 50, 50, 50
             },
@@ -351,14 +351,14 @@ void MainWindow::setBox()
         {
             50, 50, 150
         }
-    };*/
+    };
     Plane * ep1 = &e1;
     Plane * ep2 = &e2;
     Plane * sp1 = &s1;
     Plane * sp2 = &s2;
     Joint joint = { sp1, sp2, ep1, ep2 };
 
-    Point3D <float> end = { 200, 200, 200 };
+    Point3D <float> end = { 110, 110, 71.6 };
     Point3D <float> start;
     Point3D <float> * pend = &end;
     Point3D <float> * pstart = &start;

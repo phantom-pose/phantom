@@ -237,7 +237,7 @@ BezierCoords3D * FindAlpha3(Plane * plane1, Plane * plane2, Point3D<float> * poi
         float x2[2];
         x2[0] = a;
         x2[1] = t;
-        mnewt(func2, x2, 100, 2);
+        mnewt(func2, x2, 10000, 2);
         x[0] = x2[0];
         auto e = plane1->getE2();
         x[1] = (point->y() - e.getPosition().y())/(e.getDirection().y()*e.getLength());
@@ -253,7 +253,7 @@ BezierCoords3D * FindAlpha3(Plane * plane1, Plane * plane2, Point3D<float> * poi
         float x2[2];
         x2[0] = a;
         x2[1] = t;
-        mnewt(func2, x2, 100, 2);
+        mnewt(func2, x2, 10000, 2);
         x[0] = x2[0];
         auto e = plane1->getE2();
         x[1] = (point->z() - e.getPosition().z())/(e.getDirection().z()*e.getLength());
@@ -261,7 +261,7 @@ BezierCoords3D * FindAlpha3(Plane * plane1, Plane * plane2, Point3D<float> * poi
     }
     else
     {
-        mnewt(func, x, 100, 3);
+        mnewt(func, x, 10000, 3);
     }
     BezierCoords3D * result = new BezierCoords3D(x[0], x[1], x[2]);
     delete [] fvec;
@@ -332,11 +332,11 @@ Point3D<float> * FindPoint3(Plane * plane1, Plane * plane2, BezierCoords3D * bc)
 bool Joint::getStartPoint(Point3D <float> * end, Point3D <float> * start)
 {
     //test
-    //auto p = FindPoint3(m_endPlane1, m_endPlane2, new BezierCoords3D(0.6, 0.6, 0.6));
-    //auto b = FindAlpha3(m_endPlane1, m_endPlane2, p);
-    //std::cout << "TEST " << b->alpha() << " " << b->beta() << " " << b->t()<< std::endl;
+    auto p = FindPoint3(m_endPlane1, m_endPlane2, new BezierCoords3D(0.6, 0.3, 0.1));
+    auto b = FindAlpha3(m_endPlane1, m_endPlane2, p);
+    std::cout << "TEST " << b->alpha() << " " << b->beta() << " " << b->t()<< *p << std::endl;
     //end test
-    auto bezier = FindAlpha3(m_endPlane1, m_endPlane2, end);
+    /*auto bezier = FindAlpha3(m_endPlane1, m_endPlane2, end);
     if (bezier->alpha() < 0 || bezier->alpha() > 1
             || bezier->beta() < 0 || bezier->beta() > 1
             || bezier->t() < 0 || bezier->t() > 1)
@@ -348,6 +348,6 @@ bool Joint::getStartPoint(Point3D <float> * end, Point3D <float> * start)
     auto point = FindPoint3(m_startPlane1, m_startPlane2, bezier);
     delete bezier;
     *start = *point;
-    delete point;
+    delete point;*/
     return true;
 }
