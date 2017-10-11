@@ -71,8 +71,12 @@ void triangle(float ** a, float * b, int m, int n)
     float ** sm = subMatrix(a,p,m,n);
     triangle(sm, subb, m-1, n-p.col-1);
     for (int i = p.row+1; i < m; i++)
+    {
         for (int j = p.col+1; j < n; j++)
             a[i][j] = sm[i-p.row-1][j-p.col-1];
+        delete [] sm[i-p.row-1];
+    }
+    delete [] sm;
 }
 
 void zerofy(float ** a, float * b, int m, int n)
@@ -116,10 +120,10 @@ void mnewt(std::function<void(float *, int, float *, float **)> func, float * x,
             dsum1 += deltas[j]*deltas[j];
             dsum2 += deltasCache[j]*deltasCache[j];
         }
-        if (dsum1 > dsum2 && i > 1 || dsum1 < 0.0001) {
-            //delete [] fjac;
-            //delete [] deltas;
-            //break;
+        if (dsum1 < 0.0001) {
+            delete [] fjac;
+            delete [] deltas;
+            break;
             //coef = (dsum2/dsum1)/100;
             //std::cout << dsum1 << " " << dsum2 << "[]" << std::endl;
         }

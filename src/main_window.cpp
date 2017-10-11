@@ -177,9 +177,9 @@ void MainWindow::setBox()
                 float hyp = sqrt(x*x + y*y);
 
                 if (hyp < 20) {
-                    box.setByXyz(ix, iy, iz, 141);
+                    //box.setByXyz(ix, iy, iz, 141);
                 } else if (hyp < 25 && hyp >= 20) {
-                    box.setByXyz(ix, iy, iz, 50);
+                    //box.setByXyz(ix, iy, iz, 50);
                 }
             }
         }
@@ -263,7 +263,19 @@ void MainWindow::setBox()
         }
     };*/
 
-   /* Plane s2 = {
+
+    Plane s1 = {
+        {
+            50, 50, 150
+        },
+        {
+            150, 50, 150
+        },
+        {
+            50, 150, 150
+        }
+    };
+    Plane s2 = {
         {
             50, 50, 50
         },
@@ -274,7 +286,7 @@ void MainWindow::setBox()
             150, 50, 50
         }
     };
-    Plane s1 = {
+    Plane e1 = {
         {
             50, 50, 150
         },
@@ -296,19 +308,8 @@ void MainWindow::setBox()
             168.3, 50, 81.7
         }
     };
-    Plane e1 = {
-        {
-            50, 50, 150
-        },
-        {
-            150, 50, 150
-        },
-        {
-            50, 150, 150
-        }
-    };*/
 
-    Plane s1 = {
+    /*Plane s1 = {
             {
                 50, 50, 50
             },
@@ -351,7 +352,7 @@ void MainWindow::setBox()
         {
             50, 50, 150
         }
-    };
+    };*/
     Plane * ep1 = &e1;
     Plane * ep2 = &e2;
     Plane * sp1 = &s1;
@@ -360,20 +361,22 @@ void MainWindow::setBox()
 
     Point3D <float> end = { 110, 110, 71.6 };
     Point3D <float> start;
-    Point3D <float> * pend = &end;
-    Point3D <float> * pstart = &start;
+    //Point3D <float> * pend = &end;
+    //Point3D <float> * pstart = &start;
 
-    bool hasDef = joint.getStartPoint( pend, pstart );
-    std::cout << hasDef << std::endl;
-    std::cout << start << std::endl;
+    bool hasDef;//joint.getStartPoint( pend, pstart );
+    //std::cout << hasDef << std::endl;
+    //std::cout << start << std::endl;
 
-    /*for (int iz = 100; iz < 101; iz++)
+    for (int iz = 10; iz < 11; iz++)
     {
-        std::cout << iz << std::endl;
-        for (int iy = 0; iy < 200; iy++)
+        //std::cout << iz << std::endl;
+        for (int iy = 99; iy < 101; iy++)
         {
-            for (int ix = 0; ix < 200; ix++)
+            std::cout << iz << " " << iy<< std::endl;
+            for (int ix = 99; ix < 101; ix++)
             {
+                //std::cout << iy << " " << ix<< std::endl;
                 Point3D <float> end = { ix+0.5, iy+0.5, iz+0.5 };
                 Point3D <float> start;
                 Point3D <float> * pend = &end;
@@ -398,5 +401,5 @@ void MainWindow::setBox()
             }
         }
     }
-    m_phantom->setBox(box);*/
+    m_phantom->setBox(box);
 }
