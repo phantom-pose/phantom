@@ -8,13 +8,11 @@ class Joint {
 public:
     /*!
      * \brief Конструктор, передаём две начальные плоскости и две конечные,
-     * плоскость 1 - альфа вдоль E2, бета вдоль E1, плоскость 2 - наоборот
+     * плоскость 1 - альфа вдоль E1, бета вдоль E2, плоскость 1 - наоборот
      */
     Joint( Plane * start1, Plane * start2, Plane * end1, Plane * end2 )
         :  m_startPlane1(start1), m_startPlane2(start2), m_endPlane1(end1), m_endPlane2(end2)
-    {
-        //std::cout << m_startPlane1->getN().getDirection().z() << "lol";
-    }
+    {}
     ~Joint()
     {}
 
@@ -31,19 +29,19 @@ public:
 
 private:
     /*!
-     * \brief m_startPlane1 - плоскость 1 в недеформированном суставе, альфа вдоль E2, бета вдоль E1
+     * \brief m_startPlane1 - плоскость 1 в недеформированном суставе, альфа вдоль E1, бета вдоль E2
      */
     Plane * m_startPlane1;
     /*!
-     * \brief m_startPlane2 - плоскость 2 в недеформированном суставе, альфа вдоль E1, бета вдоль E2
+     * \brief m_startPlane2 - плоскость 2 в недеформированном суставе, альфа вдоль E2, бета вдоль E1
      */
     Plane * m_startPlane2;
     /*!
-     * \brief m_endPlane1 - плоскость 1 в деформированном суставе, альфа вдоль E2, бета вдоль E1
+     * \brief m_endPlane1 - плоскость 1 в деформированном суставе, альфа вдоль E1, бета вдоль E2
      */
     Plane * m_endPlane1;
     /*!
-     * \brief m_endPlane2 - плоскость 2 в деформированном суставе, альфа вдоль E1, бета вдоль E2
+     * \brief m_endPlane2 - плоскость 2 в деформированном суставе, альфа вдоль E2, бета вдоль E1
      */
     Plane * m_endPlane2;
 };

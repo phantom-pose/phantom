@@ -9,6 +9,8 @@ set(SOURCE_ROOT src)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+set(CMAKE_CXX_FLAGS "-O3 -Wall -Wextra")
+
 aux_source_directory(${SOURCE_ROOT} SRC_LIST)
 aux_source_directory(3party/jsoncpp/src/lib_json JSONCPP_SRC)
 

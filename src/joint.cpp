@@ -2,6 +2,9 @@
 #include "newt.h"
 #include <cmath>
 
+/*!
+ * \brief COEF - коэффициент при нахождении длин нормалей для плавного перехода кривых в срезы
+ */
 float constexpr COEF = 0.5;
 
 void f3(float * x, float * fvec, float ** fjac, Plane * plane1, Plane * plane2, Point3D<float> * point)
@@ -9,23 +12,14 @@ void f3(float * x, float * fvec, float ** fjac, Plane * plane1, Plane * plane2, 
     float a = x[0];
     float b = x[1];
     float t = x[2];
-    auto n = plane1->getN(); auto n1 = plane2->getN();
-    float nx = n.getDirection().x();
-    float ny = n.getDirection().y();
-    float nz = n.getDirection().z();
-    float nx_1 = n1.getDirection().x();
-    float ny_1 = n1.getDirection().y();
-    float nz_1 = n1.getDirection().z();
-    auto e1 = plane1->getE1(); auto e2 = plane1->getE2();
-    float e1x = e1.getDirection().x() * e1.getLength();
-    float e1y = e1.getDirection().y() * e1.getLength();
-    float e1z = e1.getDirection().z() * e1.getLength();
-    float e2x = e2.getDirection().x() * e2.getLength();
-    float e2y = e2.getDirection().y() * e2.getLength();
-    float e2z = e2.getDirection().z() * e2.getLength();
-    auto p0 = e1.getPosition();
-    float x0 = p0.x(); float y0 = p0.y(); float z0 = p0.z();
-    auto e2_1 = plane2->getE1(); auto e1_1 = plane2->getE2();
+    auto n_1 = plane1->getN(); auto n_2 = plane2->getN();
+    float nx_1 = n_1.getDirection().x();
+    float ny_1 = n_1.getDirection().y();
+    float nz_1 = n_1.getDirection().z();
+    float nx_2 = n_2.getDirection().x();
+    float ny_2 = n_2.getDirection().y();
+    float nz_2 = n_2.getDirection().z();
+    auto e1_1 = plane1->getE1(); auto e2_1 = plane1->getE2();
     float e1x_1 = e1_1.getDirection().x() * e1_1.getLength();
     float e1y_1 = e1_1.getDirection().y() * e1_1.getLength();
     float e1z_1 = e1_1.getDirection().z() * e1_1.getLength();
@@ -34,83 +28,95 @@ void f3(float * x, float * fvec, float ** fjac, Plane * plane1, Plane * plane2, 
     float e2z_1 = e2_1.getDirection().z() * e2_1.getLength();
     auto p0_1 = e1_1.getPosition();
     float x0_1 = p0_1.x(); float y0_1 = p0_1.y(); float z0_1 = p0_1.z();
-    double dl = COEF*(
-                nx*((e1x_1-e1x)*a + (e2x_1-e2x)*b + (x0_1-x0)) +
-                ny*((e1y_1-e1y)*a + (e2y_1-e2y)*b + (y0_1-y0)) +
-                nz*((e1z_1-e1z)*a + (e2z_1-e2z)*b + (z0_1-z0))
-                );
+    auto e2_2 = plane2->getE1(); auto e1_2 = plane2->getE2();
+    float e1x_2 = e1_2.getDirection().x() * e1_2.getLength();
+    float e1y_2 = e1_2.getDirection().y() * e1_2.getLength();
+    float e1z_2 = e1_2.getDirection().z() * e1_2.getLength();
+    float e2x_2 = e2_2.getDirection().x() * e2_2.getLength();
+    float e2y_2 = e2_2.getDirection().y() * e2_2.getLength();
+    float e2z_2 = e2_2.getDirection().z() * e2_2.getLength();
+    auto p0_2 = e1_2.getPosition();
+    float x0_2 = p0_2.x(); float y0_2 = p0_2.y(); float z0_2 = p0_2.z();
     double dl_1 = COEF*(
-                -nx_1*((e1x_1-e1x)*a + (e2x_1-e2x)*b + (x0_1-x0)) +
-                -ny_1*((e1y_1-e1y)*a + (e2y_1-e2y)*b + (y0_1-y0)) +
-                -nz_1*((e1z_1-e1z)*a + (e2z_1-e2z)*b + (z0_1-z0))
+                nx_1*((e1x_2-e1x_1)*a + (e2x_2-e2x_1)*b + (x0_2-x0_1)) +
+                ny_1*((e1y_2-e1y_1)*a + (e2y_2-e2y_1)*b + (y0_2-y0_1)) +
+                nz_1*((e1z_2-e1z_1)*a + (e2z_2-e2z_1)*b + (z0_2-z0_1))
                 );
-    double dl_da = COEF*(
-                nx*(e1x_1-e1x) +
-                ny*(e1y_1-e1y) +
-                nz*(e1z_1-e1z)
+    double dl_2 = COEF*(
+                -nx_2*((e1x_2-e1x_1)*a + (e2x_2-e2x_1)*b + (x0_2-x0_1)) +
+                -ny_2*((e1y_2-e1y_1)*a + (e2y_2-e2y_1)*b + (y0_2-y0_1)) +
+                -nz_2*((e1z_2-e1z_1)*a + (e2z_2-e2z_1)*b + (z0_2-z0_1))
                 );
-    double dl_1_da = COEF*(
-                -nx_1*(e1x_1-e1x) +
-                -ny_1*(e1y_1-e1y) +
-                -nz_1*(e1z_1-e1z)
+    double dl_da_1 = COEF*(
+                nx_1*(e1x_2-e1x_1) +
+                ny_1*(e1y_2-e1y_1) +
+                nz_1*(e1z_2-e1z_1)
                 );
-    double dl_db = COEF*(
-                nx*(e2x_1-e2x) +
-                ny*(e2y_1-e2y) +
-                nz*(e2z_1-e2z)
+    double dl_da_2 = COEF*(
+                -nx_2*(e1x_2-e1x_1) +
+                -ny_2*(e1y_2-e1y_1) +
+                -nz_2*(e1z_2-e1z_1)
                 );
-    double dl_1_db = COEF*(
-                -nx_1*(e2x_1-e2x) +
-                -ny_1*(e2y_1-e2y) +
-                -nz_1*(e2z_1-e2z)
+    double dl_db_1 = COEF*(
+                nx_1*(e2x_2-e2x_1) +
+                ny_1*(e2y_2-e2y_1) +
+                nz_1*(e2z_2-e2z_1)
                 );
-    fvec[0] = t*t*t*(2*x0+2*a*e1x+2*b*e2x+3*nx*dl-2*x0_1-2*a*e1x_1-2*b*e2x_1-3*nx_1*dl_1) +
-            t*t*(-3*x0-3*a*e1x-3*b*e2x-6*nx*dl+3*x0_1+3*a*e1x_1+3*b*e2x_1+3*nx_1*dl_1) +
-            t*3*nx*dl +
-            (x0+a*e1x+b*e2x - point->x());
-    fvec[1] = t*t*t*(2*y0+2*a*e1y+2*b*e2y+3*ny*dl-2*y0_1-2*a*e1y_1-2*b*e2y_1-3*ny_1*dl_1) +
-            t*t*(-3*y0-3*a*e1y-3*b*e2y-6*ny*dl+3*y0_1+3*a*e1y_1+3*b*e2y_1+3*ny_1*dl_1) +
-            t*3*ny*dl +
-            (y0+a*e1y+b*e2y - point->y());
-    fvec[2] = t*t*t*(2*z0+2*a*e1z+2*b*e2z+3*nz*dl-2*z0_1-2*a*e1z_1-2*b*e2z_1-3*nz_1*dl_1) +
-            t*t*(-3*z0-3*a*e1z-3*b*e2z-6*nz*dl+3*z0_1+3*a*e1z_1+3*b*e2z_1+3*nz_1*dl_1) +
-            t*3*nz*dl +
-            (z0+a*e1z+b*e2z - point->z());
-    fjac[0][0] = t*t*t*(2*e1x+3*nx*dl_da-2*e1x_1-3*nx_1*dl_1_da) +
-            t*t*(-3*e1x-6*nx*dl_da+3*e1x_1+3*nx_1*dl_1_da) +
-            t*3*nx*dl_da +
-            e1x;
-    fjac[0][1] = t*t*t*(2*e2x+3*nx*dl_db-2*e2x_1-3*nx_1*dl_1_db) +
-            t*t*(-3*e2x-6*nx*dl_db+3*e2x_1+3*nx_1*dl_1_db) +
-            t*3*nx*dl_db +
-            e2x;
-    fjac[0][2] = 3*t*t*(2*x0+2*a*e1x+2*b*e2x+3*nx*dl-2*x0_1-2*a*e1x_1-2*b*e2x_1-3*nx_1*dl_1) +
-            2*t*(-3*x0-3*a*e1x-3*b*e2x-6*nx*dl+3*x0_1+3*a*e1x_1+3*b*e2x_1+3*nx_1*dl_1) +
-            3*nx*dl;
-    fjac[1][0] = t*t*t*(2*e1y+3*ny*dl_da-2*e1y_1-3*ny_1*dl_1_da) +
-            t*t*(-3*e1y-6*ny*dl_da+3*e1y_1+3*ny_1*dl_1_da) +
-            t*3*ny*dl_da +
-            e1y;
-    fjac[1][1] = t*t*t*(2*e2y+3*ny*dl_db-2*e2y_1-3*ny_1*dl_1_db) +
-            t*t*(-3*e2y-6*ny*dl_db+3*e2y_1+3*ny_1*dl_1_db) +
-            t*3*ny*dl_db +
-            e2y;
-    fjac[1][2] = 3*t*t*(2*y0+2*a*e1y+2*b*e2y+3*ny*dl-2*y0_1-2*a*e1y_1-2*b*e2y_1-3*ny_1*dl_1) +
-            2*t*(-3*y0-3*a*e1y-3*b*e2y-6*ny*dl+3*y0_1+3*a*e1y_1+3*b*e2y_1+3*ny_1*dl_1) +
-            3*ny*dl;
-    fjac[2][0] = t*t*t*(2*e1z+3*nz*dl_da-2*e1z_1-3*nz_1*dl_1_da) +
-            t*t*(-3*e1z-6*nz*dl_da+3*e1z_1+3*nz_1*dl_1_da) +
-            t*3*nz*dl_da +
-            e1z;
-    fjac[2][1] = t*t*t*(2*e2z+3*nz*dl_db-2*e2z_1-3*nz_1*dl_1_db) +
-            t*t*(-3*e2z-6*nz*dl_db+3*e2z_1+3*nz_1*dl_1_db) +
-            t*3*nz*dl_db +
-            e2z;
-    fjac[2][2] = 3*t*t*(2*z0+2*a*e1z+2*b*e2z+3*nz*dl-2*z0_1-2*a*e1z_1-2*b*e2z_1-3*nz_1*dl_1) +
-            2*t*(-3*z0-3*a*e1z-3*b*e2z-6*nz*dl+3*z0_1+3*a*e1z_1+3*b*e2z_1+3*nz_1*dl_1) +
-            3*nz*dl;
+    double dl_db_2 = COEF*(
+                -nx_2*(e2x_2-e2x_1) +
+                -ny_2*(e2y_2-e2y_1) +
+                -nz_2*(e2z_2-e2z_1)
+                );
+    fvec[0] = t*t*t*(2*x0_1+2*a*e1x_1+2*b*e2x_1+3*nx_1*dl_1-2*x0_2-2*a*e1x_2-2*b*e2x_2-3*nx_2*dl_2) +
+            t*t*(-3*x0_1-3*a*e1x_1-3*b*e2x_1-6*nx_1*dl_1+3*x0_2+3*a*e1x_2+3*b*e2x_2+3*nx_2*dl_2) +
+            t*3*nx_1*dl_1 +
+            (x0_1+a*e1x_1+b*e2x_1 - point->x());
+    fvec[1] = t*t*t*(2*y0_1+2*a*e1y_1+2*b*e2y_1+3*ny_1*dl_1-2*y0_2-2*a*e1y_2-2*b*e2y_2-3*ny_2*dl_2) +
+            t*t*(-3*y0_1-3*a*e1y_1-3*b*e2y_1-6*ny_1*dl_1+3*y0_2+3*a*e1y_2+3*b*e2y_2+3*ny_2*dl_2) +
+            t*3*ny_1*dl_1 +
+            (y0_1+a*e1y_1+b*e2y_1 - point->y());
+    fvec[2] = t*t*t*(2*z0_1+2*a*e1z_1+2*b*e2z_1+3*nz_1*dl_1-2*z0_2-2*a*e1z_2-2*b*e2z_2-3*nz_2*dl_2) +
+            t*t*(-3*z0_1-3*a*e1z_1-3*b*e2z_1-6*nz_1*dl_1+3*z0_2+3*a*e1z_2+3*b*e2z_2+3*nz_2*dl_2) +
+            t*3*nz_1*dl_1 +
+            (z0_1+a*e1z_1+b*e2z_1 - point->z());
+    fjac[0][0] = t*t*t*(2*e1x_1+3*nx_1*dl_da_1-2*e1x_2-3*nx_2*dl_da_2) +
+            t*t*(-3*e1x_1-6*nx_1*dl_da_1+3*e1x_2+3*nx_2*dl_da_2) +
+            t*3*nx_1*dl_da_1 +
+            e1x_1;
+    fjac[0][1] = t*t*t*(2*e2x_1+3*nx_1*dl_db_1-2*e2x_2-3*nx_2*dl_db_2) +
+            t*t*(-3*e2x_1-6*nx_1*dl_db_1+3*e2x_2+3*nx_2*dl_db_2) +
+            t*3*nx_1*dl_db_1 +
+            e2x_1;
+    fjac[0][2] = 3*t*t*(2*x0_1+2*a*e1x_1+2*b*e2x_1+3*nx_1*dl_1-2*x0_2-2*a*e1x_2-2*b*e2x_2-3*nx_2*dl_2) +
+            2*t*(-3*x0_1-3*a*e1x_1-3*b*e2x_1-6*nx_1*dl_1+3*x0_2+3*a*e1x_2+3*b*e2x_2+3*nx_2*dl_2) +
+            3*nx_1*dl_1;
+    fjac[1][0] = t*t*t*(2*e1y_1+3*ny_1*dl_da_1-2*e1y_2-3*ny_2*dl_da_2) +
+            t*t*(-3*e1y_1-6*ny_1*dl_da_1+3*e1y_2+3*ny_1*dl_da_2) +
+            t*3*ny_1*dl_da_1 +
+            e1y_1;
+    fjac[1][1] = t*t*t*(2*e2y_1+3*ny_1*dl_db_1-2*e2y_2-3*ny_2*dl_db_2) +
+            t*t*(-3*e2y_1-6*ny_1*dl_db_1+3*e2y_2+3*ny_2*dl_db_2) +
+            t*3*ny_1*dl_db_1 +
+            e2y_1;
+    fjac[1][2] = 3*t*t*(2*y0_1+2*a*e1y_1+2*b*e2y_1+3*ny_1*dl_1-2*y0_2-2*a*e1y_2-2*b*e2y_2-3*ny_2*dl_2) +
+            2*t*(-3*y0_1-3*a*e1y_1-3*b*e2y_1-6*ny_1*dl_1+3*y0_2+3*a*e1y_2+3*b*e2y_2+3*ny_2*dl_2) +
+            3*ny_1*dl_1;
+    fjac[2][0] = t*t*t*(2*e1z_1+3*nz_1*dl_da_1-2*e1z_2-3*nz_2*dl_da_2) +
+            t*t*(-3*e1z_1-6*nz_1*dl_da_1+3*e1z_2+3*nz_2*dl_da_2) +
+            t*3*nz_1*dl_da_1 +
+            e1z_1;
+    fjac[2][1] = t*t*t*(2*e2z_1+3*nz_1*dl_db_1-2*e2z_2-3*nz_2*dl_db_2) +
+            t*t*(-3*e2z_1-6*nz_1*dl_db_1+3*e2z_2+3*nz_2*dl_db_2) +
+            t*3*nz_1*dl_db_1 +
+            e2z_1;
+    fjac[2][2] = 3*t*t*(2*z0_1+2*a*e1z_1+2*b*e2z_1+3*nz_1*dl_1-2*z0_2-2*a*e1z_2-2*b*e2z_2-3*nz_2*dl_2) +
+            2*t*(-3*z0_1-3*a*e1z_1-3*b*e2z_1-6*nz_1*dl_1+3*z0_2+3*a*e1z_2+3*b*e2z_2+3*nz_2*dl_2) +
+            3*nz_1*dl_1;
 }
 
+/*!
+ * \brief The BezierCoords3D class - координаты Безье (альфа, бета, t)
+ */
 class BezierCoords3D
 {
 public:
@@ -131,12 +137,25 @@ public:
     double m_t;
 };
 
+/*!
+ * \brief StartCoefs - ищет начальное приближение для (альфа, бета, t)
+ * Для оценки альфа использует оценку снизу - опускает перпендикуляры из точки на плоскости
+ * на каждой плоскости находит альфы для проекций точки
+ * выбирает наибольшее из двух.
+ * Аналогично ищет бета.
+ * t  ищет из отношения перпендикуляров, с учётом их знака:
+ * t = (дл.перп. к пл. 1)/(длина перпендикуляра к плоск.1 + длина п. к пл.2)
+ * \param plane1
+ * \param plane2
+ * \param point
+ * \return - начальные (альфа, бета, t)
+ */
 BezierCoords3D * StartCoefs(Plane * plane1, Plane * plane2, Point3D<float> * point)
 {
     auto n1 = plane1->getN();
     auto dir1 = n1.getDirection();
     float A1 = dir1.x(); float B1 = dir1.y(); float C1 = dir1.z();
-    auto e1_1 = plane1->getE1(); auto e1_2 = plane1->getE2();
+    auto e1_1 = plane1->getE1(); auto e2_1 = plane1->getE2();
     auto ver1 = e1_1.getPosition();
     float D1 = -ver1.x()*A1 - ver1.y()*B1 - ver1.z()*C1;
     float lenn1 = fabs((A1*point->x() + B1*point->y() + C1*point->z() + D1)) / sqrt(A1*A1+B1*B1+C1*C1);
@@ -145,22 +164,22 @@ BezierCoords3D * StartCoefs(Plane * plane1, Plane * plane2, Point3D<float> * poi
     float a1 = (v1.getDirection().x()*e1_1.getDirection().x() +
             v1.getDirection().y()*e1_1.getDirection().y() +
             v1.getDirection().z()*e1_1.getDirection().z()) * v1.getLength()/e1_1.getLength();
-    float b1 = (v1.getDirection().x()*e1_2.getDirection().x() +
-            v1.getDirection().y()*e1_2.getDirection().y() +
-            v1.getDirection().z()*e1_2.getDirection().z()) * v1.getLength()/e1_2.getLength();
+    float b1 = (v1.getDirection().x()*e2_1.getDirection().x() +
+            v1.getDirection().y()*e2_1.getDirection().y() +
+            v1.getDirection().z()*e2_1.getDirection().z()) * v1.getLength()/e2_1.getLength();
 
     auto n2 = plane2->getN();
     auto dir2 = n2.getDirection();
     float A2 = dir2.x(); float B2 = dir2.y(); float C2 = dir2.z();
-    auto e2_1 = plane2->getE2(); auto e2_2 = plane2->getE1();
-    auto ver2 = e2_1.getPosition();
+    auto e1_2 = plane2->getE2(); auto e2_2 = plane2->getE1();
+    auto ver2 = e1_2.getPosition();
     float D2 = -ver2.x()*A2 - ver2.y()*B2 - ver2.z()*C2;
     float lenn2 = fabs((A2*point->x() + B2*point->y() + C2*point->z() + D2)) / sqrt(A2*A2+B2*B2+C2*C2);
     Point3D <float> pn2 = {point->x() - A2*lenn2, point->y() - B2*lenn2, point->z() - C2*lenn2};
     Vector3D v2 = {true, ver2, pn2};
-    float a2 = (v2.getDirection().x()*e2_1.getDirection().x() +
-            v2.getDirection().y()*e2_1.getDirection().y() +
-            v2.getDirection().z()*e2_1.getDirection().z()) * v2.getLength()/e2_1.getLength();
+    float a2 = (v2.getDirection().x()*e1_2.getDirection().x() +
+            v2.getDirection().y()*e1_2.getDirection().y() +
+            v2.getDirection().z()*e1_2.getDirection().z()) * v2.getLength()/e1_2.getLength();
     float b2 = (v2.getDirection().x()*e2_2.getDirection().x() +
             v2.getDirection().y()*e2_2.getDirection().y() +
             v2.getDirection().z()*e2_2.getDirection().z()) * v2.getLength()/e2_2.getLength();
@@ -171,8 +190,8 @@ BezierCoords3D * StartCoefs(Plane * plane1, Plane * plane2, Point3D<float> * poi
 
 /*!
  * \brief FindAlpha - для точки с известными дек. координатами ищет координаты Безье
- * \param plane1 - первая плоскость, альфа вдоль E2, бета вдоль E1
- * \param plane2 - вторая плоскость, альфа вдоль E1, бета вдоль E2
+ * \param plane1 - первая плоскость, альфа вдоль E1, бета вдоль E2
+ * \param plane2 - вторая плоскость, альфа вдоль E2, бета вдоль E1
  * \param point - точка (координаты Безье)
  * \param der - допустимое отклонение дек.координат (сумма квадратов)
  * \return - (альфа, бета, t)
@@ -200,8 +219,8 @@ BezierCoords3D * FindAlpha(Plane * plane1, Plane * plane2, Point3D<float> * poin
 
 /*!
  * \brief FindPoint3 - считает координаты точки из координат Безте
- * \param plane1 - первая плоскость, альфа вдоль E2, бета вдоль E1
- * \param plane2 - вторая плоскость, альфа вдоль E1, бета вдоль E2
+ * \param plane1 - первая плоскость, альфа вдоль E1, бета вдоль E2
+ * \param plane2 - вторая плоскость, альфа вдоль E2, бета вдоль E1
  * \param bc - (альфа, бета, t)
  * \return - точка в декартовых координатах
  */
@@ -210,23 +229,14 @@ Point3D<float> * FindPoint(Plane * plane1, Plane * plane2, BezierCoords3D * bc)
     float a = bc->alpha();
     float b = bc->beta();
     float t = bc->t();
-    auto n = plane1->getN(); auto n1 = plane2->getN();
-    float nx = n.getDirection().x();
-    float ny = n.getDirection().y();
-    float nz = n.getDirection().z();
-    float nx_1 = n1.getDirection().x();
-    float ny_1 = n1.getDirection().y();
-    float nz_1 = n1.getDirection().z();
-    auto e1 = plane1->getE1(); auto e2 = plane1->getE2();
-    float e1x = e1.getDirection().x() * e1.getLength();
-    float e1y = e1.getDirection().y() * e1.getLength();
-    float e1z = e1.getDirection().z() * e1.getLength();
-    float e2x = e2.getDirection().x() * e2.getLength();
-    float e2y = e2.getDirection().y() * e2.getLength();
-    float e2z = e2.getDirection().z() * e2.getLength();
-    auto p0 = e1.getPosition();
-    float x0 = p0.x(); float y0 = p0.y(); float z0 = p0.z();
-    auto e2_1 = plane2->getE1(); auto e1_1 = plane2->getE2();
+    auto n_1 = plane1->getN(); auto n_2 = plane2->getN();
+    float nx_1 = n_1.getDirection().x();
+    float ny_1 = n_1.getDirection().y();
+    float nz_1 = n_1.getDirection().z();
+    float nx_2 = n_2.getDirection().x();
+    float ny_2 = n_2.getDirection().y();
+    float nz_2 = n_2.getDirection().z();
+    auto e1_1 = plane1->getE1(); auto e2_1 = plane1->getE2();
     float e1x_1 = e1_1.getDirection().x() * e1_1.getLength();
     float e1y_1 = e1_1.getDirection().y() * e1_1.getLength();
     float e1z_1 = e1_1.getDirection().z() * e1_1.getLength();
@@ -235,28 +245,37 @@ Point3D<float> * FindPoint(Plane * plane1, Plane * plane2, BezierCoords3D * bc)
     float e2z_1 = e2_1.getDirection().z() * e2_1.getLength();
     auto p0_1 = e1_1.getPosition();
     float x0_1 = p0_1.x(); float y0_1 = p0_1.y(); float z0_1 = p0_1.z();
-    double dl = COEF*(
-                nx*((e1x_1-e1x)*a + (e2x_1-e2x)*b + (x0_1-x0)) +
-                ny*((e1y_1-e1y)*a + (e2y_1-e2y)*b + (y0_1-y0)) +
-                nz*((e1z_1-e1z)*a + (e2z_1-e2z)*b + (z0_1-z0))
-                );
+    auto e2_2 = plane2->getE1(); auto e1_2 = plane2->getE2();
+    float e1x_2 = e1_2.getDirection().x() * e1_2.getLength();
+    float e1y_2 = e1_2.getDirection().y() * e1_2.getLength();
+    float e1z_2 = e1_2.getDirection().z() * e1_2.getLength();
+    float e2x_2 = e2_2.getDirection().x() * e2_2.getLength();
+    float e2y_2 = e2_2.getDirection().y() * e2_2.getLength();
+    float e2z_2 = e2_2.getDirection().z() * e2_2.getLength();
+    auto p0_2 = e1_2.getPosition();
+    float x0_2 = p0_2.x(); float y0_2 = p0_2.y(); float z0_2 = p0_2.z();
     double dl_1 = COEF*(
-                -nx_1*((e1x_1-e1x)*a + (e2x_1-e2x)*b + (x0_1-x0)) +
-                -ny_1*((e1y_1-e1y)*a + (e2y_1-e2y)*b + (y0_1-y0)) +
-                -nz_1*((e1z_1-e1z)*a + (e2z_1-e2z)*b + (z0_1-z0))
+                nx_1*((e1x_2-e1x_1)*a + (e2x_2-e2x_1)*b + (x0_2-x0_1)) +
+                ny_1*((e1y_2-e1y_1)*a + (e2y_2-e2y_1)*b + (y0_2-y0_1)) +
+                nz_1*((e1z_2-e1z_1)*a + (e2z_2-e2z_1)*b + (z0_2-z0_1))
                 );
-    float x = t*t*t*(2*x0+2*a*e1x+2*b*e2x+3*nx*dl-2*x0_1-2*a*e1x_1-2*b*e2x_1-3*nx_1*dl_1) +
-            t*t*(-3*x0-3*a*e1x-3*b*e2x-6*nx*dl+3*x0_1+3*a*e1x_1+3*b*e2x_1+3*nx_1*dl_1) +
-            t*3*nx*dl +
-            x0+a*e1x+b*e2x;
-    float y = t*t*t*(2*y0+2*a*e1y+2*b*e2y+3*ny*dl-2*y0_1-2*a*e1y_1-2*b*e2y_1-3*ny_1*dl_1) +
-            t*t*(-3*y0-3*a*e1y-3*b*e2y-6*ny*dl+3*y0_1+3*a*e1y_1+3*b*e2y_1+3*ny_1*dl_1) +
-            t*3*ny*dl +
-            y0+a*e1y+b*e2y;
-    float z = t*t*t*(2*z0+2*a*e1z+2*b*e2z+3*nz*dl-2*z0_1-2*a*e1z_1-2*b*e2z_1-3*nz_1*dl_1) +
-            t*t*(-3*z0-3*a*e1z-3*b*e2z-6*nz*dl+3*z0_1+3*a*e1z_1+3*b*e2z_1+3*nz_1*dl_1) +
-            t*3*nz*dl +
-            z0+a*e1z+b*e2z;
+    double dl_2 = COEF*(
+                -nx_2*((e1x_2-e1x_1)*a + (e2x_2-e2x_1)*b + (x0_2-x0_1)) +
+                -ny_2*((e1y_2-e1y_1)*a + (e2y_2-e2y_1)*b + (y0_2-y0_1)) +
+                -nz_2*((e1z_2-e1z_1)*a + (e2z_2-e2z_1)*b + (z0_2-z0_1))
+                );
+    float x = t*t*t*(2*x0_1+2*a*e1x_1+2*b*e2x_1+3*nx_1*dl_1-2*x0_2-2*a*e1x_2-2*b*e2x_2-3*nx_2*dl_2) +
+            t*t*(-3*x0_1-3*a*e1x_1-3*b*e2x_1-6*nx_1*dl_1+3*x0_2+3*a*e1x_2+3*b*e2x_2+3*nx_2*dl_2) +
+            t*3*nx_1*dl_1 +
+            x0_1+a*e1x_1+b*e2x_1;
+    float y = t*t*t*(2*y0_1+2*a*e1y_1+2*b*e2y_1+3*ny_1*dl_1-2*y0_2-2*a*e1y_2-2*b*e2y_2-3*ny_2*dl_2) +
+            t*t*(-3*y0_1-3*a*e1y_1-3*b*e2y_1-6*ny_1*dl_1+3*y0_2+3*a*e1y_2+3*b*e2y_2+3*ny_2*dl_2) +
+            t*3*ny_1*dl_1 +
+            y0_1+a*e1y_1+b*e2y_1;
+    float z = t*t*t*(2*z0_1+2*a*e1z_1+2*b*e2z_1+3*nz_1*dl_1-2*z0_2-2*a*e1z_2-2*b*e2z_2-3*nz_2*dl_2) +
+            t*t*(-3*z0_1-3*a*e1z_1-3*b*e2z_1-6*nz_1*dl_1+3*z0_2+3*a*e1z_2+3*b*e2z_2+3*nz_2*dl_2) +
+            t*3*nz_1*dl_1 +
+            z0_1+a*e1z_1+b*e2z_1;
     Point3D<float> * result = new Point3D<float>(x, y, z);
     return result;
 }

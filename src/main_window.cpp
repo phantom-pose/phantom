@@ -223,7 +223,7 @@ void MainWindow::setBox()
 
     for (int iz = 0; iz < 200; iz++)
     {
-        std::cout << iz << std::endl;
+        //std::cout << iz << std::endl;
         for (int iy = 0; iy < 200; iy++)
         {
             //std::cout << iz << " " << iy<< std::endl;
