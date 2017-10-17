@@ -168,119 +168,91 @@ void MainWindow::showScenario()
 
 void MainWindow::setBox()
 {
-    BoxNet box = { 100, 100, 100 };
-    for (int iz = 0; iz < 100; iz++) {
-        for (int iy = 0; iy < 100; iy++) {
-            for (int ix = 0; ix < 100; ix++) {
-                int x = ix - 50;
-                int y = iy - 50;
-                float hyp = sqrt(x*x + y*y);
+    BoxNet box = {200, 200, 200 };
 
-                if (hyp < 20) {
-                    box.setByXyz(ix, iy, iz, 141);
-                } else if (hyp < 25 && hyp >= 20) {
-                    box.setByXyz(ix, iy, iz, 50);
-                }
-            }
-        }
-    }
-    box.grow( { 200, 200, 200 }, { 50, 50, 50 } );
-
-    /*Plane s1 = { { 76 * 1.875, 76 * 1.875, 50 * 2.5 }, { 124 * 1.875, 76 * 1.875, 50 * 2.5 }, { 76 * 1.875, 124 * 1.875, 50 * 2.5 } };
-    Plane e1 = { { 76 * 1.875, -(124-76)*0.5*0.866 - 45 * 2.5 * 0.5 + 76 * 1.875, 50 * 2.5 + 45 * 2.5 * 0.1339 + (124-76)/4 }, { 124 * 1.875, -(124-76)*0.5*0.866 - 45 * 2.5 * 0.5 + 76 * 1.875, 50 * 2.5 + 45 * 2.5 * 0.1339 + (124-76)/4 }, { 76 * 1.875, (124-76)*0.5*0.866 - 45 * 2.5 * 0.5 + 76 * 1.875, 50 * 2.5 + 45 * 2.5 * 0.1339 - (124-76)/4 } };
-    Plane s2 = { { 76 * 1.875, 76 * 1.875, 50 * 2.5 }, { 76 * 1.875, 124 * 1.875, 50 * 2.5 }, { 76 * 1.875, 76 * 1.875, 140 * 2.5 } };
-    Plane e2 = { { 76 * 1.875, 76 * 1.875, 50 * 2.5 }, { 76 * 1.875, 124 * 1.875, 50 * 2.5 }, { 76 * 1.875, 76 * 1.875, 140 * 2.5 } };*/
     Plane s1 = {
         {
-            76 * 1.875,
-            76 * 1.875,
-            50 * 2.5
+            50, 50, 150
         },
         {
-            124 * 1.875,
-            76 * 1.875,
-            50 * 2.5
+            150, 50, 150
         },
         {
-            76 * 1.875,
-            124 * 1.875,
-            50 * 2.5
-        }
-    };
-    Plane e1 = {
-        {
-            76 * 1.875 + 2.5*45/2 + 1.875*(124-76)*(1-0.866)/2,
-            76 * 1.875,
-            50 * 2.5 + 2.5*45*(1-0.866) - 1.875*(124-76)/4
-        },
-        {
-            76 * 1.875 + 2.5*45/2 + 1.875*(124-76)*(1+0.866)/2,
-            76 * 1.875,
-            50 * 2.5 + 2.5*45*(1-0.866) + 1.875*(124-76)/4
-        },
-        {
-            76 * 1.875 + 2.5*45/2 + 1.875*(124-76)*(1-0.866)/2,
-            124 * 1.875,
-            50 * 2.5 + 2.5*45*(1-0.866) - 1.875*(124-76)/4
+            50, 150, 150
         }
     };
     Plane s2 = {
         {
-            76 * 1.875,
-            76 * 1.875,
-            50 * 2.5
+            50, 50, 50
         },
         {
-            76 * 1.875,
-            124 * 1.875,
-            50 * 2.5
+            50, 150, 50
         },
         {
-            76 * 1.875,
-            76 * 1.875,
-            140 * 2.5
+            150, 50, 50
+        }
+    };
+    Plane e1 = {
+        {
+            50, 50, 150
+        },
+        {
+            150, 50, 150
+        },
+        {
+            50, 150, 150
         }
     };
     Plane e2 = {
         {
-            76 * 1.875,
-            76 * 1.875,
-            50 * 2.5
+            81.7, 50, 31.7
         },
         {
-            76 * 1.875,
-            124 * 1.875,
-            50 * 2.5
+            81.7, 150, 31.7
         },
         {
-            76 * 1.875,
-            76 * 1.875,
-            140 * 2.5
+            168.3, 50, 81.7
         }
     };
+
     Plane * ep1 = &e1;
     Plane * ep2 = &e2;
     Plane * sp1 = &s1;
     Plane * sp2 = &s2;
     Joint joint = { sp1, sp2, ep1, ep2 };
 
-    Point3D <float> end = { 210, 200, 140 };
-    Point3D <float> start;
-    Point3D <float> * pend = &end;
-    Point3D <float> * pstart = &start;
-
-    m_phantom->setBox(box);
-    bool hasDef = joint.getStartPoint( pend, pstart );
-    std::cout << hasDef << std::endl;
-    std::cout << start << std::endl;
-
-    /*for (int iz = 0; iz < 200; iz++) {
-        for (int iy = 0; iy < 200; iy++) {
-            for (int ix = 0; ix < 200; ix++) {
-                //bool hasDef = joint.getStartPoint( pend, pstart );
-                //std::cout << start;
+    for (int iz = 0; iz < 200; iz++)
+    {
+        std::cout << iz << std::endl;
+        for (int iy = 0; iy < 200; iy++)
+        {
+            //std::cout << iz << " " << iy<< std::endl;
+            for (int ix = 0; ix < 200; ix++)
+            {
+                //std::cout << iy << " " << ix<< std::endl;
+                Point3D <float> end = { ix+0.5, iy+0.5, iz+0.5 };
+                Point3D <float> start;
+                Point3D <float> * pend = &end;
+                Point3D <float> * pstart = &start;
+                bool hasDef = joint.getStartPoint( pend, pstart, 3 );
+                if (hasDef)
+                {
+                    float x = pstart->x();
+                    float y = pstart->y();
+                    float z = pstart->z();
+                    //std::cout << ix << " " << iy << " " << iz << " "<<x<<" "<<y<<" "<< z << std::endl;
+                    if ((x-100)*(x-100) + (y-100)*(y-100) < 400 && z >= 50 && z <= 150)
+                        box.setByXyz(ix, iy, iz, 141);
+                    else if ((x-100)*(x-100) + (y-100)*(y-100) < 625 && z >= 50 && z <= 150)
+                        box.setByXyz(ix, iy, iz, 50);
+                    else
+                        box.setByXyz(ix, iy, iz, 0);
+                }
+                else {
+                    box.setByXyz(ix, iy, iz, 0);
+                }
             }
         }
-    }*/
-
+    }
+    m_phantom->setBox(box);
 }
