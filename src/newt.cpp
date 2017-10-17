@@ -1,5 +1,4 @@
 #include "newt.h"
-#include <iostream>
 
 struct Pair {
     int row;
@@ -9,6 +8,13 @@ struct Pair {
     {}
 };
 
+/*!
+ * \brief findNonZeroCol - ищет первый столбец с ненулевым элементом и первый такой элемент в нём
+ * \param a - матрица m x n
+ * \param m - строк
+ * \param n - столбцов
+ * \return
+ */
 Pair findNonZeroCol(float ** a, int m, int n)
 {
     for (int j = 0; j < n; j++)
@@ -17,6 +23,14 @@ Pair findNonZeroCol(float ** a, int m, int n)
     return Pair(-1,-1);
 }
 
+/*!
+ * \brief swap - переносит строку, где стоит нужный элемент, на 1 строчку (обмен) и приводит этот элемент к 1 делением
+ * \param a
+ * \param b
+ * \param n
+ * \param row - строка данного элемента
+ * \param col - столбец данного элемента
+ */
 void swap(float ** a, float * b, int n, int row, int col)
 {
     float d = a[row][col];
@@ -35,6 +49,14 @@ void swap(float ** a, float * b, int n, int row, int col)
     }
 }
 
+/*!
+ * \brief simplifyRows - вычитает из остальных строк домноженную первую, чтобы столбец под ней превратился в 0
+ * \param a
+ * \param b
+ * \param m
+ * \param n
+ * \param col
+ */
 void simplifyRows(float ** a, float * b, int m, int n, int col)
 {
     if (m == 1) return;
@@ -46,6 +68,14 @@ void simplifyRows(float ** a, float * b, int m, int n, int col)
     }
 }
 
+/*!
+ * \brief subMatrix - вырезает из матрицы подматрицу ниже и правее данного элемента
+ * \param a
+ * \param p - индексы данного элемента
+ * \param m
+ * \param n
+ * \return
+ */
 float ** subMatrix(float ** a, Pair p, int m, int n)
 {
     float ** sm = new float*[m-p.row-1];
@@ -58,6 +88,13 @@ float ** subMatrix(float ** a, Pair p, int m, int n)
     return sm;
 }
 
+/*!
+ * \brief triangle - приводит матрицу к треугольному виду
+ * \param a
+ * \param b
+ * \param m
+ * \param n
+ */
 void triangle(float ** a, float * b, int m, int n)
 {
     Pair p = findNonZeroCol(a,m,n);
@@ -79,6 +116,13 @@ void triangle(float ** a, float * b, int m, int n)
     delete [] sm;
 }
 
+/*!
+ * \brief zerofy - приводит треугольную матрицу к единичной
+ * \param a
+ * \param b
+ * \param m
+ * \param n
+ */
 void zerofy(float ** a, float * b, int m, int n)
 {
     if (m == 1 || m > n) return;
@@ -90,46 +134,43 @@ void zerofy(float ** a, float * b, int m, int n)
     zerofy(a,b,m-1,m-1);
 }
 
+/*!
+ * \brief solve - методом Гаусса-Йордана решает линейное/матричное уравнение
+ * \param a - матрица коэффициентов
+ * \param b - столбец значений
+ * \param m - строк
+ * \param n - столбцов
+ */
 void solve(float ** a, float * b, int m, int n) {
     triangle(a,b,m,n);
     zerofy(a,b,m,n);
 }
 
-void mnewt(std::function<void(float *, int, float *, float **)> func, float * x, int ntrial, int n)
+void mnewt(std::function<void(float *, int, float *, float **)> func, float * x, int ntrial, float derivate, int n)
 {
-    float * deltasCache = new float[n];
+    float coef = 1;
     for (int i = 0; i < ntrial; i++)
     {
-        float coef = 0.01;
-        std::cout << x[0] <<' '<< x[1] << std::endl;
+        float * fvec = new float[n];
         float * deltas = new float[n];
         float ** fjac = new float*[n];
         for (int j = 0; j < n; j++)
         {
             fjac[j] = new float[n];
         }
-        func(x, n, deltas, fjac);
+        func(x, n, fvec, fjac);
         for (int j = 0; j < n; j++)
         {
-            deltas[j] *= -1;
+            deltas[j] = -fvec[j];
         }
         solve(fjac, deltas, n, n);
-        float dsum1 = 0, dsum2 = 0;
+        float dersum1 = 0;
         for (int j = 0; j < n; j++)
         {
-            dsum1 += deltas[j]*deltas[j];
-            dsum2 += deltasCache[j]*deltasCache[j];
+            dersum1 += fvec[j]*fvec[j];
         }
-        if (dsum1 < 0.0001) {
-            delete [] fjac;
-            delete [] deltas;
+        if (dersum1 < derivate) {
             break;
-            //coef = (dsum2/dsum1)/100;
-            //std::cout << dsum1 << " " << dsum2 << "[]" << std::endl;
-        }
-        for (int j = 0; j < n; j++)
-        {
-            deltasCache[j] = deltas[j];
         }
         for (int j = 0; j < n; j++)
         {
@@ -140,7 +181,7 @@ void mnewt(std::function<void(float *, int, float *, float **)> func, float * x,
             delete [] fjac[j];
         }
         delete [] fjac;
+        delete [] fvec;
         delete [] deltas;
     }
-    delete [] deltasCache;
 }

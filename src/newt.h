@@ -1,6 +1,13 @@
 #pragma once
 #include <functional>
 
-void luDecomp(float ** a,  float ** u, float ** l, int n);
-void luSolve(float ** a,  float * b, float * x, int n);
-void mnewt(std::function<void(float *, int, float *, float **)>, float * x, int ntrial, int n);
+/*!
+ * \brief mnewt - метод Ньютона-Раффсона, находит решение уравнения/ноль функции
+ * \param f - функция, которая принимает очередное приближение/столбец координат, размерность функции
+ * и в данный одномерный массив записывает столбец отклонений, в данную матрицу - якобиан
+ * \param x - начальное приближение
+ * \param ntrial - максимальное количество итераций
+ * \param derivate - приемлимое отклонение ( сумма квадратов )
+ * \param n - размерность функции
+ */
+void mnewt(std::function<void(float *, int, float *, float **)> f, float * x, int ntrial, float derivate, int n);
