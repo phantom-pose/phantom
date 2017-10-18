@@ -12,29 +12,34 @@ Phantom::Phantom()
     m_boxNet = { 299, 137, 348 };
     m_boxNet.fillFromBin( "data/AF_bin.dat" );
     m_boxNet.segmentation();
+//    m_boxNet = { 100, 117, 96 };
+//    m_boxNet.fillFromBin( "../Head.bin" );
 
-    BodyPart * leftLeg1 = new BodyPart("data/bodyparts/leftLeg-1.bin");
-    Point3D <float> rotP = { 351, 162, 521 }; // левое колено
-    RotationMatrix matrix = { rotP, 0, M_PI / 2, M_PI / 2 };
-    leftLeg1->setMatrix(matrix);
-    RotationMatrix matrix3 = { { 406, 134, 884 }, 0, M_PI / 2, -M_PI / 1.5 };
-    leftLeg1->setMatrix(matrix3);
+//    BoxNet b = m_boxNet.cut( {100, 0, 598}, {200, 117, 694} );
+//    b.writeBinFile("Head.bin");
 
-    BodyPart * leftHand1 = new BodyPart("data/bodyparts/leftHand-1.bin");
-    RotationMatrix matrix2 = { { 443, 134, 1471 }, 0, M_PI / 2, -M_PI / 2 };
-    leftHand1->setMatrix(matrix2);
-
-    //m_bodyparts.push_back(leftLeg1);
-    //m_bodyparts.push_back(leftHand1);
-
-//    checkBin("rightHand.bin");
-
+    // Заполняем массив точек поворота из Json файла
+    // **********************************************************************
+    Json::Value root;
+    std::ifstream file("data/rotPoints.json", std::ifstream::binary);
+    file >> root;
+    file.close();
+    Json::Value const & points = root;
+    for (int i = 0; i < points.size(); i++) {
+        Point3D <float> p = { points[i]["point"][0].asFloat(), points[i]["point"][1].asFloat(), points[i]["point"][2].asFloat() };
+        m_rotpoints[i] = p;
+    }
+    // **********************************************************************
+//    Line line(-2, 30, 60, 1, 0, 0);
+//    RotationMatrix matrix( { 0, 0, 50 }, 0, M_PI / 2, M_PI / 2);
+//    for (int i = 0; i < 10000; i++) {
+//        BoundingBox bb = { 0, 0, 0, 10, 20, 30 };
+//        bb.rotate(matrix);
+//        float tmin = 10000, tmax = -10000;
+//        int err = bb.intersect(line, tmin, tmax);
+//    }
     makeNet();
     rotate();
-
-//    for (auto bp = m_bodyparts.begin(); bp != m_bodyparts.end(); bp++) {
-//        check(**bp);
-//    }
 }
 
 /*!
@@ -457,9 +462,9 @@ void Phantom::makeNet()
     m_boxNet.setNymphPos(position);
     m_boxNet.setNymphSize(size);
 
-
     for (auto bp = m_bodyparts.begin(); bp != m_bodyparts.end(); bp++) {
         for (auto pm = (*bp)->matrices.begin(); pm != (*bp)->matrices.end(); pm++) {
+            // Смещение точек поворота в соответствии с расширением сетки
             Point3D <float> rotPoint = (*pm).getRotPoint();
             (*pm).setRotPoint(rotPoint + _position);
         }
@@ -467,7 +472,6 @@ void Phantom::makeNet()
             (*bp)->data[i] = m_boxNet.translitNum((*bp)->data[i]);
         }
     }
-
     m_boxNet.grow(size, position);
 }
 
@@ -476,6 +480,7 @@ void Phantom::rotate()
     unsigned char color, color1, color2;
 
     for (auto bp = m_bodyparts.begin(); bp != m_bodyparts.end(); bp++) {
+        (*bp)->rotatePrimitive();
         for (auto it = (*bp)->data.begin(); it != (*bp)->data.end(); it++) {
             color = m_boxNet.getByNum(*it);
             // Точки внутри вокселя, которые при любом повороте покроют требуемую область - 'четвертаки'
@@ -507,7 +512,12 @@ void Phantom::rotate()
             setValue(_fq, color1);
 //            std::cout << fq;
             setValue(_sq, color2);
-////            setValue(*it, 0);
+//            setValue(*it, 0);
+        }
+    }
+    for (auto bp = m_bodyparts.begin(); bp != m_bodyparts.end(); bp++) {
+        for (auto it = (*bp)->data.begin(); it != (*bp)->data.end(); it++) {
+            setValue(*it, 0);
         }
     }
 }
@@ -526,4 +536,44 @@ std::ostream & operator << (std::ostream & os, Phantom const & obj)
         address = " << &obj << "\n\
         boxAddress = " << &obj.boxNet() << "\n";
     return os;
+}
+
+void Phantom::loadScenario()
+{
+    Json::Value root;
+    std::ifstream file("data/scenario.json", std::ifstream::binary);
+    file >> root;
+    file.close();
+    Json::Value const & bodyparts = root;
+    // Итерируемся по частям тела
+    for (int i = 0; i < bodyparts.size(); i++) {
+        // Извлекаем имя файла для того, чтобы создать объект бадипарт
+        char const * filename = bodyparts[i]["filename"].asCString();
+        // Создаём указатель на бадипарт, впоследствии будет находиться в m_bodyparts. Загружаем данные из файла
+        BodyPart * bodypart = new BodyPart(filename);
+        Json::Value const & matrices = bodyparts[i]["matrices"];
+        // Итерируемся по матрицам внутри стека матриц
+        for (int j = 0; j < matrices.size(); j++) {
+            // Номер индекса необходимой точки поворота из m_rotpoints
+            int pNum = matrices[j]["point"].asInt();
+            // Углы для ориентации вектора поворота, вокруг которого будет происходить вращение (в градусах)
+            float phi = matrices[j]["phi"].asFloat();
+            float theta = matrices[j]["theta"].asFloat();
+            // Переводим градусы в радианы
+            phi *= M_PI / 180;
+            theta *= M_PI / 180;
+            // Угол поворота конечности
+            float alpha = matrices[j]["alpha"].asFloat();
+            // Переведём в радианы
+            alpha *= M_PI / 180;
+            // Создаём нужную матрицу
+            RotationMatrix matrix = { m_rotpoints[pNum], phi, theta, alpha };
+            // Добавляем матрицу в стек текущего бадипарт объекта
+            bodypart->setMatrix(matrix);
+        }
+        // Добавляем бадипарт в вектор частей тела
+        m_bodyparts.push_back(bodypart);
+    }
+    makeNet();
+    rotate();
 }

@@ -124,7 +124,7 @@ public:
         m_rotZ = rotP.z();
     }
 
-    Point3D <float> getRotPoint()
+    Point3D <float> getRotPoint() const
     {
         return { m_rotX, m_rotY, m_rotZ };
     }
@@ -164,6 +164,10 @@ public:
         crd.setValue(x, y, z);
     }
 
+    float getPhi() const { return m_phi; }
+    float getTheta() const { return m_theta; }
+    float getAngle() const { return m_angle; }
+
 private:
     float m_x, m_y, m_z;
     float m_bx, m_by, m_bz;
@@ -173,3 +177,19 @@ private:
     float m_phi, m_theta;
     float m_angle;
 };
+
+//m_phi = phi;
+//m_theta = theta;
+//m_angle = angle;
+//m_rotX = rotPoint.x();
+//m_rotY = rotPoint.y();
+//m_rotZ = rotPoint.z();
+
+inline std::ostream & operator << (std::ostream & os, RotationMatrix const & obj)
+{
+    os << "|RotationMatrix|\n\
+        phi, theta = [" << obj.getPhi() << " " << obj.getTheta() << "]\n\
+        rotPoint = " << obj.getRotPoint() << "\n\
+        angle = " << obj.getAngle() << "\n";
+    return os;
+}

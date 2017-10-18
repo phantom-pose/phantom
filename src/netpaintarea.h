@@ -32,6 +32,7 @@ private slots:
     void paintX(int sliceNum);
     void paintY(int sliceNum);
     void paintZ(int sliceNum);
+//    void paintLines(std::vector <Line> const & lines);
 
 protected:
     void mousePressEvent(QMouseEvent *e);

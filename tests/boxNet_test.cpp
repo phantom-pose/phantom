@@ -112,5 +112,4 @@ TEST(boxNet_test, getXYZ)
     EXPECT_EQ(xyz17, _xyz17);
     EXPECT_EQ(xyz45, _xyz45);
     EXPECT_EQ(xyz59, _xyz59);
-
 }

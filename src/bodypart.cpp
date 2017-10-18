@@ -3,6 +3,11 @@
 BodyPart::BodyPart()
 {}
 
+BodyPart::~BodyPart()
+{
+    delete m_primitive;
+}
+
 BodyPart::BodyPart(char const * filename)
 {
     fillData(filename);
@@ -37,6 +42,21 @@ void BodyPart::setMatrix( RotationMatrix const & matrix )
     matrices.push_back(matrix);
 }
 
+void BodyPart::setPrimitive( float x0, float y0, float z0, float a, float b, float h )
+{
+    m_primitive = new Cylinder(x0, y0, z0, a, b, h);
+}
+
+void BodyPart::rotatePrimitive()
+{
+    if (m_primitive != nullptr) {
+        for (auto pm = matrices.begin(); pm != matrices.end(); pm++) {
+            RotationMatrix matrix = *pm;
+            m_primitive->rotate(matrix);
+        }
+    }
+}
+
 //RotationMatrix BodyPart::getMatrix() const
 //{
 //    return m_matrix;
@@ -45,4 +65,12 @@ void BodyPart::setMatrix( RotationMatrix const & matrix )
 //std::vector <RotationMatrix> const & BodyPart::getMatrices()
 //{
 //    return m_matrices;
+//}
+
+//std::ostream & operator << (std::ostream & os, BodyPart const & obj)
+//{
+//    for (auto matrix = obj.matrices.begin(); matrix != obj.matrices.end(); matrix++) {
+////        os << *matrix;
+//    }
+//    return os;
 //}

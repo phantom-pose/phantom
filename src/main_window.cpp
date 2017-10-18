@@ -49,6 +49,50 @@ MainWindow::MainWindow()
     m_paintAreaZ->setProps( 3, 3 );
     m_paintAreaZ->setAlignment(Qt::AlignTop);
 
+    /////////////////////////////////////////////////////////////////////////
+    BoxNet box = { 100, 100, 100 };
+    for (int iz = 0; iz < 100; iz++) {
+        for (int iy = 0; iy < 100; iy++) {
+            for (int ix = 0; ix < 100; ix++) {
+                int x = ix - 50;
+                int y = iy - 50;
+                float hyp = sqrt(x*x + y*y);
+
+                if (hyp < 20) {
+                    box.setByXyz(ix, iy, iz, 141);
+                } else if (hyp < 25 && hyp >= 20) {
+                    box.setByXyz(ix, iy, iz, 50);
+                }
+            }
+        }
+    }
+
+    CalculationArea area = { m_phantom->boxNet() };
+
+    std::vector <Line> lines;
+//    for (int i = 0; i < 185; i++) {
+//        Line ray = { { float(i), -10, 50 }, { 0, 3, 0 } };
+//        int err = area.prepLineOut(ray);
+//        if (!err) {
+//            area.startIterations(ray);
+//            lines.push_back(ray);
+//        }
+//    }
+
+    double * tk = new double [1500];
+    unsigned char * ck = new unsigned char [1500];
+    int k = 0;
+
+    for (int i = 0; i < 10000; i++) {
+        Line ray = { { 0, 0, -1 }, { 561, 257, 1740 } };
+        int err = area.prepLineOut(ray);
+        area.startIterations(ray, tk, ck, k);
+    }
+//    lines.push_back(ray);
+    Logger::Instance() << "k = " << k;
+
+    m_lineArea = new LinePaintArea(0, lines);
+
     createMainArea();
 }
 
@@ -73,8 +117,8 @@ void MainWindow::createMainArea()
     QSpinBox * upDownSBY = new QSpinBox();
     upDownSBY->setMaximum( m_phantom->boxSizeY() - 1 );
 
-    QPushButton * scenario = new QPushButton("Scenario");
-    connect(scenario, SIGNAL(clicked()), this, SLOT(showScenario()));
+    QPushButton * scenario = new QPushButton("Scen");
+    connect(scenario, SIGNAL(clicked()), this, SLOT(loadScenario()));
     QPushButton * setBoxBtn = new QPushButton("setBox");
     connect(setBoxBtn, SIGNAL(clicked()), this, SLOT(setBox()));
 
@@ -104,19 +148,25 @@ void MainWindow::createMainArea()
     scrollAreaY->setBackgroundRole(QPalette::Dark);
     scrollAreaY->setWidgetResizable( true );
 
+    QScrollArea * scrollLinesArea = new QScrollArea();
+    scrollLinesArea->setWidget(m_lineArea);
+    scrollLinesArea->setBackgroundRole(QPalette::Dark);
+    scrollLinesArea->setWidgetResizable( true );
+
     m_tab->addTab(scrollAreaZ, "Horizontal");
     m_tab->addTab(scrollAreaY, "Frontal");
     m_tab->addTab(scrollAreaX, "Profile");
+    m_tab->addTab(scrollLinesArea, "Lines");
 
     upDownLayout->addWidget(upDownSBZ);
     upDownLayout->addWidget(upDownSBY);
     upDownLayout->addWidget(upDownSBX);
     upDownLayout->addWidget(mouseLabel);
+    upDownLayout->addWidget(scenario);
+    upDownLayout->addWidget(setBoxBtn);
 
     mainLayout->addLayout(upDownLayout, 0, 0, Qt::AlignTop);
     mainLayout->addWidget(m_tab, 0, 1);
-    mainLayout->addWidget(scenario, 0, 0);
-    mainLayout->addWidget(setBoxBtn, 0, 0);
     mainLayout->setColumnStretch(1, 10);
 }
 
@@ -133,6 +183,9 @@ void MainWindow::keyPressEvent( QKeyEvent * event )
         else if ( m_tab->currentIndex() == 2 ) {
             m_paintAreaX->incScale();
         }
+        else if ( m_tab->currentIndex() == 3 ) {
+            m_lineArea->incScale();
+        }
     }
     if (event->key() == Qt::Key_Minus)
     {
@@ -144,6 +197,9 @@ void MainWindow::keyPressEvent( QKeyEvent * event )
         }
         else if ( m_tab->currentIndex() == 2 ) {
             m_paintAreaX->decScale();
+        }
+        else if ( m_tab->currentIndex() == 3 ) {
+            m_lineArea->decScale();
         }
     }
 }
@@ -254,5 +310,11 @@ void MainWindow::setBox()
             }
         }
     }
+    //box.grow({ 200, 200, 200 }, { 50, 50, 50 });
     m_phantom->setBox(box);
+}
+
+void MainWindow::loadScenario()
+{
+    m_phantom->loadScenario();
 }

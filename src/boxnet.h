@@ -34,6 +34,7 @@ public:
     int const & getSizeX() const;
     int const & getSizeY() const;
     int const & getSizeZ() const;
+    int getSize(int const & index) const;
 
     Point3D <int> getXYZ(int num) const;
 
@@ -45,6 +46,7 @@ public:
 
     void fillFromFile(char const * filename);
     void writeBinFile(char const * filename);
+    void writeBinCMO(char const * filename);
     void fillFromBin(char const * filename);
 
     void segmentation();
@@ -52,6 +54,7 @@ public:
 
     Point3D <int> const & position() const;
     void setPosition( Point3D <int> const & obj );
+    BoxNet cut(Point3D <int> begin, Point3D <int> end);
 
     void setNymphSize( Point3D <int> const & obj );
     void setNymphPos( Point3D <int> const & obj );
@@ -64,7 +67,7 @@ private:
     int m_xSize = 0, m_ySize = 0, m_zSize = 0, m_length = 0;
     Point3D <int> m_nymphSize, m_nymphPos;
     double m_propX = 3.0, m_propY = 3.0, m_propZ = 8.0;
-    unsigned char* m_list;
+    unsigned char*** m_list;
     Point3D <int> m_position;
 };
 

@@ -22,11 +22,23 @@ BoxNet::BoxNet(int sizeX, int sizeY, int sizeZ)
     : m_xSize(sizeX), m_ySize(sizeY), m_zSize(sizeZ)
 {
     m_length = sizeX * sizeY * sizeZ;
-    m_list = new unsigned char[m_length];
-    //fill array with zeroes
-    for (int i = 0; i < m_length; i++) {
-        m_list[i] = 0;
+//    m_list = new unsigned char[m_length];
+//    //fill array with zeroes
+//    for (int i = 0; i < m_length; i++) {
+//        m_list[i] = 0;
+//    }
+
+    m_list = new unsigned char**[sizeX];
+    for (int ix = 0; ix < sizeX; ix++) {
+        m_list[ix] = new unsigned char*[sizeY];
+        for (int iy = 0; iy < sizeY; iy++) {
+            m_list[ix][iy] = new unsigned char[sizeZ];
+            for (int iz = 0; iz < sizeZ; iz++) {
+                m_list[ix][iy][iz] = 0;
+            }
+        }
     }
+
 //    Logger::Instance() << "BoxNet simple constructor" << "\n";
 }
 
@@ -38,9 +50,19 @@ BoxNet::BoxNet(int sizeX, int sizeY, int sizeZ)
 BoxNet::BoxNet( BoxNet const & obj )
     : m_xSize(obj.m_xSize), m_ySize(obj.m_ySize), m_zSize(obj.m_zSize)
 {
+//    m_length = obj.m_length;
+//    m_list = new unsigned char[m_length];
+//    std::copy( obj.m_list, obj.m_list + obj.m_length, m_list );
+
     m_length = obj.m_length;
-    m_list = new unsigned char[m_length];
-    std::copy( obj.m_list, obj.m_list + obj.m_length, m_list );
+    m_list = new unsigned char**[m_xSize];
+    for (int ix = 0; ix < m_xSize; ix++) {
+        m_list[ix] = new unsigned char*[m_ySize];
+        for (int iy = 0; iy < m_ySize; iy++) {
+            m_list[ix][iy] = new unsigned char[m_zSize];
+            std::copy( obj.m_list[ix][iy], obj.m_list[ix][iy] + obj.m_zSize, m_list[ix][iy]);
+        }
+    }
 //    Logger::Instance() << "BoxNet copy constructor" << "\n";
 }
 
@@ -50,6 +72,13 @@ BoxNet::BoxNet( BoxNet const & obj )
 
 BoxNet::~BoxNet()
 {
+//    delete[] m_list;
+    for (int ix = 0; ix < m_xSize; ix++) {
+        for (int iy = 0; iy < m_ySize; iy++) {
+            delete[] m_list[ix][iy];
+        }
+        delete[] m_list[ix];
+    }
     delete[] m_list;
 }
 
@@ -61,7 +90,11 @@ BoxNet::~BoxNet()
 
 unsigned char const & BoxNet::getByNum(int num) const
 {
-    return m_list[num];
+//    return m_list[num];
+    int z = num / ( m_xSize * m_ySize );
+    int y = (num - z * ( m_xSize * m_ySize )) / m_xSize;
+    int x = (num - z * ( m_xSize * m_ySize )) % m_xSize;
+    return m_list[x][y][z];
 }
 
 /*!
@@ -74,8 +107,9 @@ unsigned char const & BoxNet::getByNum(int num) const
 
 unsigned char const & BoxNet::getByXyz(int x, int y, int z) const
 {
-    int num = z * m_xSize * m_ySize + y * m_xSize + x;
-    return m_list[num];
+//    int num = z * m_xSize * m_ySize + y * m_xSize + x;
+//    return m_list[num];
+    return m_list[x][y][z];
 }
 
 /*!
@@ -86,7 +120,11 @@ unsigned char const & BoxNet::getByXyz(int x, int y, int z) const
 
 void BoxNet::setByNum(int num, unsigned char value)
 {
-    m_list[num] = value;
+//    m_list[num] = value;
+    int z = num / ( m_xSize * m_ySize );
+    int y = (num - z * ( m_xSize * m_ySize )) / m_xSize;
+    int x = (num - z * ( m_xSize * m_ySize )) % m_xSize;
+    m_list[x][y][z] = value;
 }
 
 /*!
@@ -99,8 +137,9 @@ void BoxNet::setByNum(int num, unsigned char value)
 
 void BoxNet::setByXyz(int x, int y, int z, unsigned char value)
 {
-    int num = z * m_xSize * m_ySize + y * m_xSize + x;
-    m_list[num] = value;
+//    int num = z * m_xSize * m_ySize + y * m_xSize + x;
+//    m_list[num] = value;
+    m_list[x][y][z] = value;
 }
 
 /*!
@@ -142,8 +181,9 @@ Slice BoxNet::getSliceX(int num) const
     {
         for (int iy = 0; iy < m_ySize; iy++)
         {
-            int n = iz * m_xSize * m_ySize + iy * m_xSize + num;
-            slice.setValue(iy, iz, m_list[n]);
+//            int n = iz * m_xSize * m_ySize + iy * m_xSize + num;
+//            slice.setValue(iy, iz, m_list[n]);
+            slice.setValue(iy, iz, m_list[num][iy][iz]);
         }
     }
     return slice;
@@ -167,8 +207,9 @@ Slice BoxNet::getSliceY(int num) const
     {
         for (int ix = 0; ix < m_xSize; ix++)
         {
-            int n = iz * m_xSize * m_ySize + num * m_xSize + ix;
-            slice.setValue(ix, iz, m_list[n]);
+//            int n = iz * m_xSize * m_ySize + num * m_xSize + ix;
+//            slice.setValue(ix, iz, m_list[n]);
+            slice.setValue(ix, iz, m_list[ix][num][iz]);
         }
     }
     return slice;
@@ -192,8 +233,9 @@ Slice BoxNet::getSliceZ(int num) const
     {
         for (int ix = 0; ix < m_xSize; ix++)
         {
-            int n = num * m_xSize * m_ySize + iy * m_xSize + ix;
-            slice.setValue(ix, iy, m_list[n]);
+//            int n = num * m_xSize * m_ySize + iy * m_xSize + ix;
+//            slice.setValue(ix, iy, m_list[n]);
+            slice.setValue(ix, iy, m_list[ix][iy][num]);
         }
     }
     return slice;
@@ -218,7 +260,11 @@ void BoxNet::fillFromFile(char const * filename)
             while (sscanf(data, "%d%n", &ival, &n) == 1)
             {
                 data += n;
-                m_list[i++] = (unsigned char)ival;
+//                m_list[i++] = (unsigned char)ival;
+                int z = i / ( m_xSize * m_ySize );
+                int y = (i - z * ( m_xSize * m_ySize )) / m_xSize;
+                int x = (i - z * ( m_xSize * m_ySize )) % m_xSize;
+                m_list[x][y][z] = (unsigned char)ival;
             }
         }
         f.close();
@@ -234,14 +280,36 @@ void BoxNet::fillFromFile(char const * filename)
 
 void BoxNet::writeBinFile(char const * filename)
 {
-    int i = 0;
+//    int i = 0;
     std::ofstream file(filename, std::ios::binary);
-    while (i < m_xSize * m_ySize * m_zSize)
-    {
-        file.write(reinterpret_cast<char const*>(&m_list[i]), sizeof(m_list[i]));
-        i++;
+//    while (i < m_xSize * m_ySize * m_zSize)
+//    {
+//        file.write(reinterpret_cast<char const*>(&m_list[i]), sizeof(m_list[i]));
+//        i++;
+//    }
+    for (int iz = 0; iz < m_zSize; iz++) {
+        for (int iy = 0; iy < m_ySize; iy++) {
+            for (int ix = 0; ix < m_xSize; ix++) {
+                file.write(reinterpret_cast<char const*>(&m_list[ix][iy][iz]), sizeof(m_list[ix][iy][iz]));
+            }
+        }
     }
     file.close();
+}
+
+void BoxNet::writeBinCMO(char const * filename)
+{
+    int shift = m_xSize / 2;
+        std::ofstream file(filename, std::ios::binary);
+        for (int iz = 0; iz < m_zSize; iz++) {
+            for (int iy = 0; iy < m_ySize; iy++) {
+                for (int ix = 0; ix < m_xSize; ix++) {
+                    int x = (ix + shift) % m_xSize;
+                    file.write(reinterpret_cast<char const*>(&m_list[x][iy][iz]), sizeof(m_list[x][iy][iz]));
+                }
+            }
+        }
+        file.close();
 }
 
 /*!
@@ -251,12 +319,19 @@ void BoxNet::writeBinFile(char const * filename)
 
 void BoxNet::fillFromBin(char const * filename)
 {
-    int i = 0;
+//    int i = 0;
     std::ifstream file(filename, std::ios::binary);
-    while (!file.eof())
-    {
-        file.read(reinterpret_cast<char*>(&m_list[i]), sizeof(m_list[i]));
-        i++;
+//    while (!file.eof())
+//    {
+//        file.read(reinterpret_cast<char*>(&m_list[i]), sizeof(m_list[i]));
+//        i++;
+//    }
+    for (int iz = 0; iz < m_zSize; iz++) {
+        for (int iy = 0; iy < m_ySize; iy++) {
+            for (int ix = 0; ix < m_xSize; ix++) {
+                file.read(reinterpret_cast<char*>(&m_list[ix][iy][iz]), sizeof(m_list[ix][iy][iz]));
+            }
+        }
     }
     file.close();
 }
@@ -267,15 +342,36 @@ void BoxNet::fillFromBin(char const * filename)
 
 void BoxNet::segmentation()
 {
-    unsigned char* list = new unsigned char[m_length * 2];
-    int step = m_xSize * m_ySize;
-    for (int i = 0; i < m_zSize; i++) {
-        int leftEdge = 2 * i * step;
-        int rightEdge = (2 * i + 1) * step;
-        std::copy( m_list + step * i, m_list + step * (i + 1), list + leftEdge );
-        std::copy( m_list + step * i, m_list + step * (i + 1), list + rightEdge );
+//    unsigned char* list = new unsigned char[m_length * 2];
+//    int step = m_xSize * m_ySize;
+//    for (int i = 0; i < m_zSize; i++) {
+//        int leftEdge = 2 * i * step;
+//        int rightEdge = (2 * i + 1) * step;
+//        std::copy( m_list + step * i, m_list + step * (i + 1), list + leftEdge );
+//        std::copy( m_list + step * i, m_list + step * (i + 1), list + rightEdge );
+//    }
+//    delete[] m_list;
+    unsigned char *** list = new unsigned char**[m_xSize];
+    for (int ix = 0; ix < m_xSize; ix++) {
+        list[ix] = new unsigned char*[m_ySize];
+        for (int iy = 0; iy < m_ySize; iy++) {
+            list[ix][iy] = new unsigned char[m_zSize * 2];
+            for (int iz = 0; iz < m_zSize; iz++) {
+                int i1 = iz * 2;
+                int i2 = iz * 2 + 1;
+                list[ix][iy][i1] = m_list[ix][iy][iz];
+                list[ix][iy][i2] = m_list[ix][iy][iz];
+            }
+        }
+    }
+    for (int ix = 0; ix < m_xSize; ix++) {
+        for (int iy = 0; iy < m_ySize; iy++) {
+            delete[] m_list[ix][iy];
+        }
+        delete[] m_list[ix];
     }
     delete[] m_list;
+
     m_list = list;
     m_zSize = m_zSize * 2;
     m_length = m_length * 2;
@@ -293,8 +389,16 @@ BoxNet &  BoxNet::operator = ( BoxNet const & obj )
     m_ySize = obj.m_ySize;
     m_zSize = obj.m_zSize;
     m_length = obj.m_length;
-    m_list = new unsigned char[m_length];
-    std::copy( obj.m_list, obj.m_list + obj.m_length, m_list );
+//    m_list = new unsigned char[m_length];
+//    std::copy( obj.m_list, obj.m_list + obj.m_length, m_list );
+    m_list = new unsigned char**[m_xSize];
+    for (int ix = 0; ix < m_xSize; ix++) {
+        m_list[ix] = new unsigned char*[m_ySize];
+        for (int iy = 0; iy < m_ySize; iy++) {
+            m_list[ix][iy] = new unsigned char[m_zSize];
+            std::copy( obj.m_list[ix][iy], obj.m_list[ix][iy] + obj.m_zSize, m_list[ix][iy]);
+        }
+    }
 //    Logger::Instance() << "BoxNet = operator" << "\n";
     return *this;
 }
@@ -309,8 +413,15 @@ bool BoxNet::operator == (BoxNet const & obj) const
     bool equal = 1;
     if ( m_xSize != obj.m_xSize || m_ySize != obj.m_ySize || m_zSize != obj.m_zSize
         || m_length != obj.m_length ) return 0;
-    for (int i = 0; i < m_length; i++) {
-        equal = ( m_list[i] == obj.m_list[i] );
+//    for (int i = 0; i < m_length; i++) {
+//        equal = ( m_list[i] == obj.m_list[i] );
+//    }
+    for (int ix = 0; ix < m_xSize; ix++) {
+        for (int iy = 0; iy < m_ySize; iy++) {
+            for (int iz = 0; iz < m_zSize; iz++) {
+                equal = ( m_list[ix][iy][iz] == obj.m_list[ix][iy][iz] );
+            }
+        }
     }
     return equal;
 }
@@ -335,6 +446,24 @@ void  BoxNet::setNymphPos( Point3D <int> const & obj )
     m_nymphPos = obj;
 }
 
+BoxNet BoxNet::cut(Point3D <int> begin, Point3D <int> end)
+{
+    // TODO валидация входных данных
+    int xSize = end.x() - begin.x();
+    int ySize = end.y() - begin.y();
+    int zSize = end.z() - begin.z();
+    BoxNet box = { xSize, ySize, zSize };
+    for (int iz = 0; iz < zSize; iz++) {
+        for (int iy = 0; iy < ySize; iy++) {
+            for (int ix = 0; ix < xSize; ix++) {
+                unsigned char value = m_list[begin.x() + ix][ begin.y() + iy][ begin.z() + iz];
+                box.setByXyz(ix, iy, iz, value);
+            }
+        }
+    }
+    return box;
+}
+
 void BoxNet::grow( Point3D <int> const & sizes, Point3D <int> const & position )
 {
     int dataSizeX = sizes.x();
@@ -343,11 +472,22 @@ void BoxNet::grow( Point3D <int> const & sizes, Point3D <int> const & position )
     int dataLength = dataSizeX * dataSizeY * dataSizeZ;
 
     // Выделяем память под новый массив
-    unsigned char * data = new unsigned char [ dataLength ];
+//    unsigned char * data = new unsigned char [ dataLength ];
+    unsigned char *** data = new unsigned char ** [ dataSizeX ];
+
 
     // Заполняем его нулями
-    for (int i = 0; i < dataLength; i++) {
-        data[i] = 0;
+//    for (int i = 0; i < dataLength; i++) {
+//        data[i] = 0;
+//    }
+    for (int ix = 0; ix < dataSizeX; ix++) {
+        data[ix] = new unsigned char*[dataSizeY];
+        for (int iy = 0; iy < dataSizeY; iy++) {
+            data[ix][iy] = new unsigned char[dataSizeZ];
+            for (int iz = 0; iz < dataSizeZ; iz++) {
+                data[ix][iy][iz] = 0;
+            }
+        }
     }
 
     int posX = position.x();
@@ -358,9 +498,9 @@ void BoxNet::grow( Point3D <int> const & sizes, Point3D <int> const & position )
     int curPosY = 0;
     int curPosZ = 0;
 
-    int n = 0;
+//    int n = 0;
     unsigned char value = 0;
-    int nData = 0;
+//    int nData = 0;
 
     for (int iz = 0; iz < m_zSize; iz++) {
         for (int iy = 0; iy < m_ySize; iy++) {
@@ -368,15 +508,25 @@ void BoxNet::grow( Point3D <int> const & sizes, Point3D <int> const & position )
                 curPosX = ix + posX;
                 curPosY = iy + posY;
                 curPosZ = iz + posZ;
-                value = m_list[n];
-                nData = curPosZ * dataSizeX * dataSizeY + curPosY * dataSizeX + curPosX;
-                data[nData] = value;
-                n++;
+//                value = m_list[n];
+                value = m_list[ix][iy][iz];
+//                nData = curPosZ * dataSizeX * dataSizeY + curPosY * dataSizeX + curPosX;
+//                data[nData] = value;
+                data[curPosX][curPosY][curPosZ] = value;
+//                n++;
             }
         }
     }
 
+//    delete[] m_list;
+    for (int ix = 0; ix < m_xSize; ix++) {
+        for (int iy = 0; iy < m_ySize; iy++) {
+            delete[] m_list[ix][iy];
+        }
+        delete[] m_list[ix];
+    }
     delete[] m_list;
+
     m_list = data;
     m_xSize = dataSizeX;
     m_ySize = dataSizeY;
@@ -410,17 +560,28 @@ int BoxNet::translitNum(int num)
     return _z * m_nymphSize.x() * m_nymphSize.y() + _y * m_nymphSize.x() + _x;
 }
 
+int BoxNet::getSize(int const & index) const
+{
+    if (index == 0)
+        return m_xSize;
+    if (index == 1)
+        return m_ySize;
+    if (index == 2)
+        return m_zSize;
+    return 0;
+}
+
 std::ostream & operator << (std::ostream & os, BoxNet const & obj)
 {
     os << "|BoxNet|\n\
         address = " << &obj << "\n\
         sizes   = { " << obj.getSizeX() << " " << obj.getSizeY() << " " << obj.getSizeZ() << " }\n\
         length  = " << obj.getLength() << "\n";
-    if (obj.getLength() >= 3) {
-        os << "\
-            first 3 = { " << (int)obj.getByNum(0) << " " << (int)obj.getByNum(1) << " " << (int)obj.getByNum(2) << " }\n\
-            last  3 = { " << (int)obj.getByNum(obj.getLength()-3) << " " << (int)obj.getByNum(obj.getLength()-2) << " "
-                            << (int)obj.getByNum(obj.getLength()-1) << " }\n";
-    }
+//    if (obj.getLength() >= 3) {
+//        os << "\
+//            first 3 = { " << (int)obj.getByNum(0) << " " << (int)obj.getByNum(1) << " " << (int)obj.getByNum(2) << " }\n\
+//            last  3 = { " << (int)obj.getByNum(obj.getLength()-3) << " " << (int)obj.getByNum(obj.getLength()-2) << " "
+//                            << (int)obj.getByNum(obj.getLength()-1) << " }\n";
+//    }
     return os;
 }

@@ -27,9 +27,6 @@ NetPaintArea::NetPaintArea(QWidget *parent, BoxNet const & boxNet)
 void NetPaintArea::paintEvent(QPaintEvent * event)
 {
     unsigned char value;
-//    float hScale = m_scale * m_hProp;
-//    float wScale = m_scale * m_wProp;
-
     int width = m_wProp * m_slice.getSizeX();
     int height = m_hProp * m_slice.getSizeY();
 
