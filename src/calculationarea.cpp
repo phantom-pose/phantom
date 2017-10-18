@@ -430,11 +430,13 @@ void CalculationArea::startParallelIterations(Line & line, int const & index, do
     unsigned char _color;
     float lastLen = 0;
     int size;
-    if (Oct) {
-        size = m_boxNet.getSize(index) - In[index];
-    } else {
-        size = In[index];
-    }
+    size = line.getMaxLen() / Size[index];
+//    if (Oct) {
+//        size = m_boxNet.getSize(index) - In[index];
+//    } else {
+////        size = In[index];
+//        size = line.getMaxLen() / Size[index];
+//    }
     for (int i = 0; i < size; i++) {
         _color = m_boxNet.getByXyz(In[0], In[1], In[2]);
         if (color != _color) {

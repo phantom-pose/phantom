@@ -5,6 +5,7 @@
 #include "phantom.h"
 #include "UnitVector.h"
 #include "utils.h"
+#include "cylinder.h"
 
 TEST(calculationArea_test, test_sumple_constructor)
 {
@@ -41,13 +42,13 @@ TEST(calculationArea_test, test_findBeginPoint)
     Line ray = { { -1, -1, -2 }, { 1, 1.3, 1 } };
 //    Line ray = { { 0, 0, -1 }, { 561, 257, 1740 } };
     int err = area.prepLineOut(ray);
-    Logger::Instance() << ray;
+//    Logger::Instance() << ray;
 //    area.startIterations(ray);
     area.startIterations(ray, tk, ck, k);
 //    Logger::Instance() << "error = " << err;
-    Logger::Instance() << ray;
+//    Logger::Instance() << ray;
     for (int i = 0; i < k; i++) {
-        std::cout << i << ") len = " << tk[i] << " col = " << int(ck[i]) << "\n";
+//        std::cout << i << ") len = " << tk[i] << " col = " << int(ck[i]) << "\n";
     }
 }
 
@@ -71,24 +72,34 @@ TEST(calculationArea_test, test_searchIntersect)
     }
     CalculationArea area = { box };
 
-    Line ray1 = { { 90, -1, 20 }, { 0, 1, 0 } }; // Out
-    Line ray2 = { { 90, 100, 20 }, { 0, -1, 1 } }; // In
+//    Line ray1 = { { -1, 93.75, 20 }, { 1, 0, 0 } }; // Out
+    Line ray1 = { { 53 * 1.875, 50 * 1.875, -2.5 }, { 1, 0, 1 } }; // Out
+//    Line ray2 = { { 90, 100, 20 }, { 0, -1, 1 } }; // In
     double * tk = new double [10];
     unsigned char * ck = new unsigned char [10];
     int k = 0;
-//    area.searchIntersect(ray1, tk, ck, k);
-//    area.searchIntersect(ray1, tk, ck, k);
-//    Logger::Instance() << ray1;
-    utils::VoxelObjInit("data/AF_bin.dat");
-    utils::VoxelObjRay( 0, 0, -1, 561, 257, 1740, tk, ck, k );
-//    Logger::Instance() << ray1;
-    for (int i = 0; i < k; i++) {
-        std::cout << i << ") len = " << tk[i] << " col = " << int(ck[i]) << "\n";
-    }
-//    int k1 = 5;
-//    std::cout << " 1 = " << bool(k1 & 1) << "\n";
-//    std::cout << " 2 = " << bool(k1 & 2) << "\n";
-//    std::cout << " 3 = " << bool(k1 & 4) << "\n";
-//    std::cout << " 4 = " << bool(k1 & ) << "\n";
-//    TUnitVec vec(90, 100, 20, 0, -1, 1 );
+
+//    utils::VoxelObjInit("data/AF_bin.dat");
+//    utils::VoxelObjRay( 0, 0, -1, 561, 257, 1740, tk, ck, k );
+
+//    Cylinder cyl = { 50 * 1.875, 50 * 1.875, 0 , 10 * 1.875, 40 * 1.875, 200 };
+
+//    float t1, t2;
+
+//    int err = cyl.intersect(ray1, t1, t2);
+//    std::cout << "ERR = " << err << " t1 = " << t1 << " t2 = " << t2 << "\n";
+//    if (!err) {
+//        if (t2 < t1) {
+//            float t = t1;
+//            t1 = t2;
+//            t2 = t;
+//        }
+//        ray1.shiftPosition(t1);
+//        ray1.setMaxLen(t2 - t1);
+//        area.startParallelIterations(ray1, 0, tk, ck, k);
+//    }
+
+//    for (int i = 0; i < k; i++) {
+//        std::cout << i << ") len = " << tk[i] << " col = " << int(ck[i]) << "\n";
+//    }
 }

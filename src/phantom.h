@@ -12,6 +12,8 @@
 #include "json/json.h"
 #include <fstream>
 #include <string>
+#include "cylinder.h"
+#include "boundingbox.h"
 
 /*!
  * \brief Основной класс для работы с воксельной моделью - Phantom
@@ -78,6 +80,7 @@ private:
 //    std::vector<int> m_leftLeg1, m_leftLeg2, m_leftLeg, m_rightLeg, m_leftHand, m_rightHand;
     BodyPart * m_leftLeg1;
     std::vector <BodyPart*> m_bodyparts;
+    std::vector <Cylinder*> m_costume;
     Point3D <float> m_rotpoints[8];
 };
 

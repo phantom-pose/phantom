@@ -15,28 +15,8 @@ Phantom::Phantom()
 //    m_boxNet = { 100, 117, 96 };
 //    m_boxNet.fillFromBin( "../Head.bin" );
 
-    BoxNet b = m_boxNet.cut( {100, 0, 598}, {200, 117, 694} );
-    b.writeBinFile("Head.bin");
-
-    BodyPart * leftLeg1 = new BodyPart("data/bodyparts/leftLeg-1.bin");
-    Point3D <float> rotP = { 351, 162, 521 }; // левое колено
-    RotationMatrix matrix = { rotP, 0, M_PI / 2, M_PI / 2 };
-    leftLeg1->setMatrix(matrix);
-    RotationMatrix matrix3 = { { 406, 134, 884 }, 0, M_PI / 2, -M_PI / 1.5 };
-    leftLeg1->setMatrix(matrix3);
-
-    BodyPart * leftHand1 = new BodyPart("data/bodyparts/leftHand-1.bin");
-    RotationMatrix matrix2 = { { 443, 134, 1471 }, 0, M_PI / 2, -M_PI / 2 };
-    leftHand1->setMatrix(matrix2);
-
-    //m_bodyparts.push_back(leftLeg1);
-    //m_bodyparts.push_back(leftHand1);
-
-//    checkBin("rightHand.bin");
-
-//    for (auto bp = m_bodyparts.begin(); bp != m_bodyparts.end(); bp++) {
-//        check(**bp);
-//    }
+//    BoxNet b = m_boxNet.cut( {100, 0, 598}, {200, 117, 694} );
+//    b.writeBinFile("Head.bin");
 
     // Заполняем массив точек поворота из Json файла
     // **********************************************************************
@@ -50,6 +30,14 @@ Phantom::Phantom()
         m_rotpoints[i] = p;
     }
     // **********************************************************************
+//    Line line(-2, 30, 60, 1, 0, 0);
+//    RotationMatrix matrix( { 0, 0, 50 }, 0, M_PI / 2, M_PI / 2);
+//    for (int i = 0; i < 10000; i++) {
+//        BoundingBox bb = { 0, 0, 0, 10, 20, 30 };
+//        bb.rotate(matrix);
+//        float tmin = 10000, tmax = -10000;
+//        int err = bb.intersect(line, tmin, tmax);
+//    }
     makeNet();
     rotate();
 }
@@ -492,6 +480,7 @@ void Phantom::rotate()
     unsigned char color, color1, color2;
 
     for (auto bp = m_bodyparts.begin(); bp != m_bodyparts.end(); bp++) {
+        (*bp)->rotatePrimitive();
         for (auto it = (*bp)->data.begin(); it != (*bp)->data.end(); it++) {
             color = m_boxNet.getByNum(*it);
             // Точки внутри вокселя, которые при любом повороте покроют требуемую область - 'четвертаки'
