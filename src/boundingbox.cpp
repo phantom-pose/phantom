@@ -14,7 +14,7 @@ void BoundingBox::setPosition(Point3D<float> const & pos)
     m_pos = pos;
 }
 
-Point3D<float> const & BoundingBox::getPosition()
+Point3D<float> const & BoundingBox::getPosition() const
 {
     return m_pos;
 }
@@ -186,6 +186,31 @@ int BoundingBox::validate(float const & t, int pFactor)
     }
 }
 
-Point3D<float> const & BoundingBox::getEx() { return m_ex; }
-Point3D<float> const & BoundingBox::getEy() { return m_ey; }
-Point3D<float> const & BoundingBox::getEz() { return m_ez; }
+Point3D<float> const & BoundingBox::getEx() const { return m_ex; }
+Point3D<float> const & BoundingBox::getEy() const { return m_ey; }
+Point3D<float> const & BoundingBox::getEz() const { return m_ez; }
+
+Point3D<float> const & BoundingBox::getPos(float h) const
+{
+    return m_pos + m_ez * h;
+}
+
+Point3D<float> const & BoundingBox::getEx(float h) const
+{
+    return m_pos + m_ez * h + m_ex * m_a;
+}
+
+Point3D<float> const & BoundingBox::getEy(float h) const
+{
+    return m_pos + m_ez * h + m_ey * m_b;
+}
+
+std::ostream & operator << (std::ostream & os, BoundingBox const & obj)
+{
+    os << "|BoundingBox|\n\
+        position  = {" << obj.getPosition() << "}\n\
+        ex = {" << obj.getEx() << "}\n\
+        ey = {" << obj.getEy() << "}\n\
+        ez = {" << obj.getEz() << "}\n";
+    return os;
+}

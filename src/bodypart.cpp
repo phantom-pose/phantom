@@ -5,7 +5,9 @@ BodyPart::BodyPart()
 
 BodyPart::~BodyPart()
 {
-    delete m_primitive;
+    for (auto pb = m_bboxes.begin(); pb != m_bboxes.end(); pb++) {
+        delete *pb;
+    }
 }
 
 BodyPart::BodyPart(char const * filename)
@@ -25,52 +27,36 @@ void BodyPart::fillData(char const * filename)
     file.close();
 }
 
-//Point3D <float> BodyPart::getRotPoint() const { return m_rotPoint; }
-
-//void BodyPart::setRotPoint( Point3D <float> const & rotPoint )
-//{
-//    m_matrix.setRotPoint(rotPoint);
-//}
-
-//Point3D<float> BodyPart::getRotPoint()
-//{
-//    return m_matrix.getRotPoint();
-//}
-
 void BodyPart::setMatrix( RotationMatrix const & matrix )
 {
     matrices.push_back(matrix);
 }
 
-void BodyPart::setPrimitive( float x0, float y0, float z0, float a, float b, float h )
+void BodyPart::setPrimitive( float x0, float y0, float z0, float a, float b, float c )
 {
-    m_primitive = new Cylinder(x0, y0, z0, a, b, h);
+    m_bboxes.push_back(new BoundingBox(x0, y0, z0, a, b, c));
 }
 
 void BodyPart::rotatePrimitive()
 {
-    if (m_primitive != nullptr) {
-        for (auto pm = matrices.begin(); pm != matrices.end(); pm++) {
-            RotationMatrix matrix = *pm;
-            m_primitive->rotate(matrix);
+    for (auto pm = matrices.begin(); pm != matrices.end(); pm++) {
+        RotationMatrix matrix = *pm;
+        for (auto pb = m_bboxes.begin(); pb != m_bboxes.end(); pb++) {
+            (*pb)->rotate(matrix);
         }
     }
 }
 
-//RotationMatrix BodyPart::getMatrix() const
-//{
-//    return m_matrix;
-//}
+void BodyPart::shiftPrimitivePosition( Point3D <float> const & shift )
+{
+    for (auto pb = m_bboxes.begin(); pb != m_bboxes.end(); pb++) {
+        Point3D <float> pos = (*pb)->getPosition();
+        pos = pos + shift;
+        (*pb)->setPosition(pos);
+    }
+}
 
-//std::vector <RotationMatrix> const & BodyPart::getMatrices()
-//{
-//    return m_matrices;
-//}
-
-//std::ostream & operator << (std::ostream & os, BodyPart const & obj)
-//{
-//    for (auto matrix = obj.matrices.begin(); matrix != obj.matrices.end(); matrix++) {
-////        os << *matrix;
-//    }
-//    return os;
-//}
+void BodyPart::appendToVector( std::vector <BoundingBox *> & obj )
+{
+    obj.insert(obj.end(), m_bboxes.begin(), m_bboxes.end());
+}
