@@ -1,6 +1,7 @@
 #include "joint.h"
 #include "newt.h"
 #include <cmath>
+#include <iostream>
 
 /*!
  * \brief COEF - коэффициент при нахождении длин нормалей для плавного перехода кривых в срезы
@@ -12,6 +13,7 @@ void f3(float * x, float * fvec, float ** fjac, Plane * plane1, Plane * plane2, 
     float a = x[0];
     float b = x[1];
     float t = x[2];
+    //std::cout << *plane1 << *plane2 << std::endl;
     auto n_1 = plane1->getN(); auto n_2 = plane2->getN();
     float nx_1 = n_1.getDirection().x();
     float ny_1 = n_1.getDirection().y();
@@ -158,7 +160,11 @@ BezierCoords3D * StartCoefs(Plane * plane1, Plane * plane2, Point3D<float> * poi
     auto e1_1 = plane1->getE1(); auto e2_1 = plane1->getE2();
     auto ver1 = e1_1.getPosition();
     float D1 = -ver1.x()*A1 - ver1.y()*B1 - ver1.z()*C1;
-    float lenn1 = fabs((A1*point->x() + B1*point->y() + C1*point->z() + D1)) / sqrt(A1*A1+B1*B1+C1*C1);
+    float lenn1_s = (A1*point->x() + B1*point->y() + C1*point->z() + D1) / sqrt(A1*A1+B1*B1+C1*C1);
+    if (lenn1_s < 0) {
+        return new BezierCoords3D(1,1,-1);
+    }
+    float lenn1 = fabs(lenn1_s);
     Point3D <float> pn1 = {point->x() - A1*lenn1, point->y() - B1*lenn1, point->z() - C1*lenn1};
     Vector3D v1 = {true, ver1, pn1};
     float a1 = (v1.getDirection().x()*e1_1.getDirection().x() +
@@ -174,7 +180,11 @@ BezierCoords3D * StartCoefs(Plane * plane1, Plane * plane2, Point3D<float> * poi
     auto e1_2 = plane2->getE2(); auto e2_2 = plane2->getE1();
     auto ver2 = e1_2.getPosition();
     float D2 = -ver2.x()*A2 - ver2.y()*B2 - ver2.z()*C2;
-    float lenn2 = fabs((A2*point->x() + B2*point->y() + C2*point->z() + D2)) / sqrt(A2*A2+B2*B2+C2*C2);
+    float lenn2_s = (A2*point->x() + B2*point->y() + C2*point->z() + D2) / sqrt(A2*A2+B2*B2+C2*C2);
+    if (lenn2_s < 0) {
+        return new BezierCoords3D(1,1,-1);
+    }
+    float lenn2 = fabs(lenn2_s);
     Point3D <float> pn2 = {point->x() - A2*lenn2, point->y() - B2*lenn2, point->z() - C2*lenn2};
     Vector3D v2 = {true, ver2, pn2};
     float a2 = (v2.getDirection().x()*e1_2.getDirection().x() +
@@ -183,9 +193,9 @@ BezierCoords3D * StartCoefs(Plane * plane1, Plane * plane2, Point3D<float> * poi
     float b2 = (v2.getDirection().x()*e2_2.getDirection().x() +
             v2.getDirection().y()*e2_2.getDirection().y() +
             v2.getDirection().z()*e2_2.getDirection().z()) * v2.getLength()/e2_2.getLength();
-    float lenn1_s = (A1*point->x() + B1*point->y() + C1*point->z() + D1) / sqrt(A1*A1+B1*B1+C1*C1);
-    float lenn2_s = (A2*point->x() + B2*point->y() + C2*point->z() + D2) / sqrt(A2*A2+B2*B2+C2*C2);
-    return new BezierCoords3D(a1 > a2 ? a1 : a2, b1 > b2 ? b1 : b2, lenn1_s/(lenn1_s+lenn2_s));
+    //std::cout <<"\n"<< a1 << " " << a2 << " " << b1 << " " << b2 << " " << lenn1_s << " " << lenn2_s << std::endl;
+    //std::cout <<*plane1 << *plane2 <<v1<<v2<< std::endl;
+    return new BezierCoords3D(a1 > a2 ? a2 : a1, b1 > b2 ? b1 : b2, lenn1_s/(lenn1_s+lenn2_s));
 }
 
 /*!
@@ -202,6 +212,8 @@ BezierCoords3D * FindAlpha(Plane * plane1, Plane * plane2, Point3D<float> * poin
     float a = startb->alpha();
     float b = startb->beta();
     float t = startb->t();
+    if (t < 0)
+        return startb;
     std::function<void(float * , int , float * , float ** )> func = [plane1, plane2, point]
             (float * x, int n, float * fvec, float ** fjac)
     {
@@ -283,16 +295,20 @@ Point3D<float> * FindPoint(Plane * plane1, Plane * plane2, BezierCoords3D * bc)
 bool Joint::getStartPoint(Point3D <float> * end, Point3D <float> * start, float der)
 {
     auto bezier = FindAlpha(m_endPlane1, m_endPlane2, end, der);
-    if (bezier->alpha() < 0 || bezier->alpha() > 1
-            || bezier->beta() < 0 || bezier->beta() > 1
-            || bezier->t() < 0 || bezier->t() > 1)
+    auto point = FindPoint(m_startPlane1, m_startPlane2, bezier);
+    //std::cout << "\n";
+    *start = *point;
+    //std::cout << *m_endPlane2 << *m_startPlane2 << bezier->alpha() << " " << bezier->beta() << " " << bezier->t() << *start << *end << "!!!\n";
+    if (bezier->t() < 0 || bezier->t() > 1 || bezier->alpha() < 0 || bezier->alpha() > 1 || bezier->beta() < 0 || bezier->beta() > 1)
     {
         delete bezier;
+        delete point;
         return false;
     }
-    auto point = FindPoint(m_startPlane1, m_startPlane2, bezier);
+    auto test = FindPoint(m_endPlane1, m_endPlane2, bezier);
+    //std::cout << *test;
+    //std::cout << bezier->alpha() << " " << bezier->beta() << " " << bezier->t() << *start << *end << "!!!\n";
     delete bezier;
-    *start = *point;
     delete point;
     return true;
 }

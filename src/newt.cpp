@@ -1,4 +1,5 @@
 #include "newt.h"
+#include <iostream>
 
 struct Pair {
     int row;
@@ -149,8 +150,9 @@ void solve(float ** a, float * b, int m, int n) {
 void mnewt(std::function<void(float *, int, float *, float **)> func, float * x, int ntrial, float derivate, int n)
 {
     float coef = 1;
-    for (int i = 0; i < ntrial; i++)
+    for (int i = 0; i < 99; i++)
     {
+        //std::cout << x[0]<<" "<<x[1]<<" "<<x[2]<<" "<<std::endl;
         float * fvec = new float[n];
         float * deltas = new float[n];
         float ** fjac = new float*[n];
@@ -170,6 +172,7 @@ void mnewt(std::function<void(float *, int, float *, float **)> func, float * x,
             dersum1 += fvec[j]*fvec[j];
         }
         if (dersum1 < derivate) {
+            //std::cout << dersum1 << " " << fvec[2] << "DER\n";
             break;
         }
         for (int j = 0; j < n; j++)

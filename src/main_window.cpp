@@ -1,4 +1,8 @@
 #include "main_window.hpp"
+#include "bodypart.h"
+#include <iostream>
+
+using namespace std;
 
 /*!
  * \brief Конструктор MainWindow
@@ -111,11 +115,11 @@ void MainWindow::createMainArea()
     QVBoxLayout * upDownLayout = new QVBoxLayout();
 
     QSpinBox * upDownSBZ = new QSpinBox();
-    upDownSBZ->setMaximum( m_phantom->boxSizeZ() - 1 );
+    upDownSBZ->setMaximum( 500 );
     QSpinBox * upDownSBX = new QSpinBox();
-    upDownSBX->setMaximum( m_phantom->boxSizeX() - 1 );
+    upDownSBX->setMaximum( 500 );
     QSpinBox * upDownSBY = new QSpinBox();
-    upDownSBY->setMaximum( m_phantom->boxSizeY() - 1 );
+    upDownSBY->setMaximum( 500 );
 
     QPushButton * scenario = new QPushButton("Scen");
     connect(scenario, SIGNAL(clicked()), this, SLOT(loadScenario()));
@@ -224,52 +228,58 @@ void MainWindow::showScenario()
 
 void MainWindow::setBox()
 {
-    BoxNet box = {200, 200, 200 };
+    BoxNet b1 = m_phantom->boxNet();
+    BoxNet b = b1.cut( {66, 43, 175}, {144, 131, 260} );
+    b.grow({89,170,130},{0,0,30});
+    BoxNet b2 = {89,170,130};
+
+    const float PHI = M_PI/3;
 
     Plane s1 = {
         {
-            50, 50, 150
+            0, 0, 116*2.5
         },
         {
-            150, 50, 150
+            0, 90*1.875, 116*2.5
         },
         {
-            50, 150, 150
+            79*1.875, 0, 116*2.5
         }
     };
     Plane s2 = {
         {
-            50, 50, 50
+            0*1.875, 0*1.875, 30*2.5
         },
         {
-            50, 150, 50
+            79*1.875, 0*1.875, 30*2.5
         },
         {
-            150, 50, 50
+            0*1.875, 90*1.875, 30*2.5
         }
     };
     Plane e1 = {
         {
-            50, 50, 150
+            0, 0, 116*2.5
         },
         {
-            150, 50, 150
+            0, 90*1.875, 116*2.5
         },
         {
-            50, 150, 150
+            79*1.875, 0, 116*2.5
         }
     };
     Plane e2 = {
-        {
-            81.7, 50, 31.7
-        },
-        {
-            81.7, 150, 31.7
-        },
-        {
-            168.3, 50, 81.7
-        }
-    };
+            {
+                0*1.875, 40*1.875+33*sin(PHI)*2.5-40*cos(PHI)*1.875, (63-33*cos(PHI))*2.5-40*sin(PHI)*1.875
+            },
+            {
+                79*1.875, 40*1.875+33*sin(PHI)*2.5-40*cos(PHI)*1.875, (63-33*cos(PHI))*2.5-40*sin(PHI)*1.875
+            },
+            {
+                0*1.875, 40*1.875+33*sin(PHI)*2.5+50*cos(PHI)*1.875, (63-33*cos(PHI))*2.5+50*sin(PHI)*1.875
+            }
+        };
+    //cout << e2;
 
     Plane * ep1 = &e1;
     Plane * ep2 = &e2;
@@ -277,41 +287,42 @@ void MainWindow::setBox()
     Plane * sp2 = &s2;
     Joint joint = { sp1, sp2, ep1, ep2 };
 
-    for (int iz = 0; iz < 200; iz++)
+    int ymin = 0;
+    int ymax = int(std::max(90.0, 40+33*sin(PHI)*2.5/1.875+50*cos(PHI))+1);
+    int zmin = int(std::min(116.0, 71-33*cos(PHI)-40*sin(PHI)*1.875/2.5)-1);
+    int zmax = int(std::max(116.0, 71-33*cos(PHI)+50*sin(PHI)*1.875/2.5)+1);
+    int xmin = 0;
+    int xmax = 79;
+
+    for (int iz = zmin; iz < zmax+1; iz++)
     {
-        //std::cout << iz << std::endl;
-        for (int iy = 0; iy < 200; iy++)
+        std::cout << iz << std::endl;
+        for (int iy = ymin; iy < ymax+1; iy++)
         {
             //std::cout << iz << " " << iy<< std::endl;
-            for (int ix = 0; ix < 200; ix++)
+            //xmin = 42; xmax=42;
+            for (int ix = xmin; ix < xmax+1; ix++)
             {
                 //std::cout << iy << " " << ix<< std::endl;
-                Point3D <float> end = { ix+0.5, iy+0.5, iz+0.5 };
+                Point3D <float> end = { (ix+0.5)*1.875, (iy+0.5)*1.875, (iz+0.5)*2.5 };
                 Point3D <float> start;
                 Point3D <float> * pend = &end;
                 Point3D <float> * pstart = &start;
                 bool hasDef = joint.getStartPoint( pend, pstart, 3 );
-                if (hasDef)
+                float x = pstart->x();
+                float y = pstart->y();
+                float z = pstart->z();
+                if (hasDef && x > 0 && x < 89*1.875 && y > 0 && y < 170*1.875 && z > 0 && z < 130*2.5)
                 {
-                    float x = pstart->x();
-                    float y = pstart->y();
-                    float z = pstart->z();
-                    //std::cout << ix << " " << iy << " " << iz << " "<<x<<" "<<y<<" "<< z << std::endl;
-                    if ((x-100)*(x-100) + (y-100)*(y-100) < 400 && z >= 50 && z <= 150)
-                        box.setByXyz(ix, iy, iz, 141);
-                    else if ((x-100)*(x-100) + (y-100)*(y-100) < 625 && z >= 50 && z <= 150)
-                        box.setByXyz(ix, iy, iz, 50);
-                    else
-                        box.setByXyz(ix, iy, iz, 0);
+                    b2.setByXyz(ix,iy,iz,b.getByXyz(int(x/1.875),int(y/1.875),int(z/2.5)));
                 }
                 else {
-                    box.setByXyz(ix, iy, iz, 0);
+                    b2.setByXyz(ix, iy, iz, 0);
                 }
             }
         }
     }
-    //box.grow({ 200, 200, 200 }, { 50, 50, 50 });
-    m_phantom->setBox(box);
+    m_phantom->setBox(b2);
 }
 
 void MainWindow::loadScenario()
