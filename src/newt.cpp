@@ -150,7 +150,7 @@ void solve(float ** a, float * b, int m, int n) {
 void mnewt(std::function<void(float *, int, float *, float **)> func, float * x, int ntrial, float derivate, int n)
 {
     float coef = 1;
-    for (int i = 0; i < 99; i++)
+    for (int i = 0; i < ntrial; i++)
     {
         //std::cout << x[0]<<" "<<x[1]<<" "<<x[2]<<" "<<std::endl;
         float * fvec = new float[n];

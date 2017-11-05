@@ -40,7 +40,8 @@ private slots:
     void createMainArea();
     void showScenario();
     void loadScenario();
-    void setBox();
+    void setBoxLeftKnee();
+    void setBoxRightKnee();
 private:
     NetPaintArea *m_paintAreaX, *m_paintAreaY, *m_paintAreaZ;
     LinePaintArea *m_lineArea;

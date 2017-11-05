@@ -299,7 +299,7 @@ bool Joint::getStartPoint(Point3D <float> * end, Point3D <float> * start, float 
     //std::cout << "\n";
     *start = *point;
     //std::cout << *m_endPlane2 << *m_startPlane2 << bezier->alpha() << " " << bezier->beta() << " " << bezier->t() << *start << *end << "!!!\n";
-    if (bezier->t() < 0 || bezier->t() > 1 || bezier->alpha() < 0 || bezier->alpha() > 1 || bezier->beta() < 0 || bezier->beta() > 1)
+    if (bezier->t() < 0 || bezier->t() > 1)
     {
         delete bezier;
         delete point;
