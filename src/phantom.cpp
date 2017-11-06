@@ -25,21 +25,13 @@ Phantom::Phantom()
     file >> root;
     file.close();
     Json::Value const & points = root;
-    for (int i = 0; i < points.size(); i++) {
+    for (unsigned int i = 0; i < points.size(); i++) {
         Point3D <float> p = { points[i]["point"][0].asFloat(), points[i]["point"][1].asFloat(), points[i]["point"][2].asFloat() };
         m_rotpoints[i] = p;
     }
     // **********************************************************************
-//    Line line(-2, 30, 60, 1, 0, 0);
-//    RotationMatrix matrix( { 0, 0, 50 }, 0, M_PI / 2, M_PI / 2);
-//    for (int i = 0; i < 10000; i++) {
-//        BoundingBox bb = { 0, 0, 0, 10, 20, 30 };
-//        bb.rotate(matrix);
-//        float tmin = 10000, tmax = -10000;
-//        int err = bb.intersect(line, tmin, tmax);
-//    }
-    makeNet();
-    rotate();
+//    makeNet();
+//    rotate();
 }
 
 /*!
@@ -82,7 +74,7 @@ unsigned char Phantom::getValue( Point3D <float> point )
 
 unsigned char Phantom::getValue(int x, int y, int z)
 {
-    m_boxNet.getByXyz(x, y, z);
+    return m_boxNet.getByXyz(x, y, z);
 }
 
 /*!
@@ -232,17 +224,17 @@ void Phantom::pickRightLeg()
                     unsigned char nextVal = slice.getValue(i + 1, j);
                     unsigned char next2Val = slice.getValue(i + 2, j);
                     if (val == 125 && nextVal == 0 && i > 140) {
-                        int num = m_boxNet.getNum(i, j, k);
+//                        int num = m_boxNet.getNum(i, j, k);
 //                        m_rightLeg.push_back(num);
                         break;
                     }
                     if (val == 125 && nextVal == 125 && next2Val == 119 && i > 140) {
-                        int num = m_boxNet.getNum(i, j, k);
+//                        int num = m_boxNet.getNum(i, j, k);
 //                        m_rightLeg.push_back(num);
                         break;
                     }
                     if (i < slice.getSizeX()/2 && skin > 0) {
-                        int num = m_boxNet.getNum(i, j, k);
+//                        int num = m_boxNet.getNum(i, j, k);
 //                        m_rightLeg.push_back(num);
                     }
                 }
@@ -486,7 +478,6 @@ void Phantom::makeNet()
 void Phantom::rotate()
 {
     unsigned char color, color1, color2;
-
     for (auto bp = m_bodyparts.begin(); bp != m_bodyparts.end(); bp++) {
         (*bp)->rotatePrimitive();
         for (auto it = (*bp)->data.begin(); it != (*bp)->data.end(); it++) {
@@ -612,6 +603,8 @@ void Phantom::loadScenario()
     makeNet();
     rotate();
     fillCostume();
+    serializeCostume();
+//    dumpCostume();
 }
 
 void Phantom::fillCostume()
@@ -637,4 +630,31 @@ void Phantom::printLegPlanes()
     std::cout << m_costume[2]->getEx(442) << "\n";
     std::cout << "Ey2" << "\n";
     std::cout << m_costume[2]->getEy(442) << "\n";
+}
+
+void Phantom::dumpCostume() {
+    for (auto bp = m_costume.begin(); bp != m_costume.end(); bp++) {
+        BoundingBox bb = **bp;
+        std::cout << bb << std::endl;
+    }
+}
+
+void Phantom::serializeCostume()
+{
+    Json::Value root;
+    std::ofstream file("costume.json");
+    int num = 0;
+    for (auto bp = m_costume.begin(); bp != m_costume.end(); bp++) {
+        BoundingBox bb = **bp;
+        root[num]["xPos"] = bb.getPosition().x();
+        root[num]["yPos"] = bb.getPosition().y();
+        root[num]["zPos"] = bb.getPosition().z();
+        root[num]["xEx"]  = bb.getEx().x();
+        root[num]["yEx"]  = bb.getEx().y();
+        root[num]["zEx"]  = bb.getEx().z();
+        num++;
+    }
+    Json::StyledStreamWriter writer;
+    writer.write(file, root);
+    file.close();
 }

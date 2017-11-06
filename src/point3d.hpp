@@ -53,6 +53,7 @@ public:
         std::swap(m_x, obj.m_x);
         std::swap(m_y, obj.m_y);
         std::swap(m_z, obj.m_z);
+        return *this;
     }
 
     /*!
@@ -64,6 +65,7 @@ public:
         m_x = obj.m_x;
         m_y = obj.m_y;
         m_z = obj.m_z;
+        return *this;
     }
 
     /*!
@@ -125,6 +127,22 @@ public:
     Point3D operator * (float scale) const
     {
         return { m_x * scale, m_y * scale, m_z * scale };
+    }
+
+    /*!
+     * \brief Деление на число
+     */
+    Point3D operator / (float scale) const
+    {
+        return { m_x / scale, m_y / scale, m_z / scale };
+    }
+
+    /*!
+     * \brief Деление
+     */
+    Point3D getShrink(float xscale, float yscale, float zscale) const
+    {
+        return { m_x / xscale, m_y / yscale, m_z / zscale };
     }
 
     /*!

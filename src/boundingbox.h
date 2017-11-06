@@ -9,7 +9,9 @@ class BoundingBox
 public:
     BoundingBox();
     BoundingBox(float xPos, float yPos, float zPos, float a, float b, float c);
+    BoundingBox(Point3D <float> const & pos, Point3D <float> const & ex, Point3D <float> const & ey, Point3D <float> const & ez, float a, float b, float c);
     void setPosition(Point3D<float> const & pos);
+//    BoundingBox &  operator = ( BoundingBox const & obj );
     Point3D<float> const & getPosition() const;
     Point3D<float> const & getEx() const;
     Point3D<float> const & getEy() const;
@@ -19,7 +21,9 @@ public:
     Point3D<float> const & getEy(float h) const;
     void rotate(RotationMatrix matrix);
     int intersect(Line const & line, float & tmin, float & tmax);
+    int intersect(Line const & line, Segment & s);
     int validate(float const &t, int pFactor);
+    Point3D<float> getEndpoint() const;
 
 
 private:

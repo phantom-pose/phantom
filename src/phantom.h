@@ -72,6 +72,8 @@ public:
     void loadScenario();
     void fillCostume();
     void printLegPlanes();
+    void dumpCostume();
+    void serializeCostume();
 
 private:
     BoxNet m_boxNet;

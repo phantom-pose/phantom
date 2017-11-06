@@ -9,6 +9,28 @@ BoundingBox::BoundingBox(float xPos, float yPos, float zPos, float a, float b, f
     : m_pos(xPos, yPos, zPos), m_a(a), m_b(b), m_c(c)
 {}
 
+BoundingBox::BoundingBox(Point3D <float> const & pos, Point3D <float> const & ex, Point3D <float> const & ey, Point3D <float> const & ez, float a, float b, float c)
+    : m_pos(pos), m_ex(ex), m_ey(ey), m_ez(ez), m_a(a), m_b(b), m_c(c)
+{}
+
+//BoundingBox &  BoundingBox::operator = ( BoundingBox const & obj )
+//{
+//    m_a    = obj.m_a;
+//    m_b    = obj.m_b;
+//    m_c    = obj.m_c;
+//    m_pos  = obj.m_pos;
+//    m_ex   = obj.m_ex;
+//    m_ey   = obj.m_ey;
+//    m_ez   = obj.m_ez;
+//    m_xDir = obj.m_xDir;
+//    m_yDir = obj.m_yDir;
+//    m_zDir = obj.m_zDir;
+//    m_x0   = obj.m_x0;
+//    m_y0   = obj.m_y0;
+//    m_z0   = obj.m_z0;
+//    return *this;
+//}
+
 void BoundingBox::setPosition(Point3D<float> const & pos)
 {
     m_pos = pos;
@@ -148,6 +170,12 @@ int BoundingBox::intersect(Line const & line, float & tmin, float & tmax)
     return 1;
 }
 
+int BoundingBox::intersect(Line const & line, Segment & s)
+{
+    int res = intersect(line, s.pos, s.end);
+    return res;
+}
+
 /*!
  * \brief validate Валидация параметра t, пересекающего плоскость
  * \param t
@@ -205,12 +233,22 @@ Point3D<float> const & BoundingBox::getEy(float h) const
     return m_pos + m_ez * h + m_ey * m_b;
 }
 
+Point3D<float> BoundingBox::getEndpoint() const
+{
+    Point3D <float> a = m_ex * m_a;
+    Point3D <float> b = m_ey * m_b;
+    Point3D <float> c = m_ez * m_c;
+    return m_pos + a + b + c;
+//    return m_pos;
+}
+
 std::ostream & operator << (std::ostream & os, BoundingBox const & obj)
 {
     os << "|BoundingBox|\n\
-        position  = {" << obj.getPosition() << "}\n\
-        ex = {" << obj.getEx() << "}\n\
-        ey = {" << obj.getEy() << "}\n\
-        ez = {" << obj.getEz() << "}\n";
+        position  = {" << obj.getPosition().getShrink(1.875, 1.875, 2.5) << "}\n\
+        end = {" << obj.getEndpoint().getShrink(1.875, 1.875, 2.5) << "}\n";
+//        ex = {" << obj.getEx() << "}\n\
+//        ey = {" << obj.getEy() << "}\n\
+//        ez = {" << obj.getEz() << "}\n
     return os;
 }
