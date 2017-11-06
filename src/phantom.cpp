@@ -25,21 +25,13 @@ Phantom::Phantom()
     file >> root;
     file.close();
     Json::Value const & points = root;
-    for (int i = 0; i < points.size(); i++) {
+    for (unsigned int i = 0; i < points.size(); i++) {
         Point3D <float> p = { points[i]["point"][0].asFloat(), points[i]["point"][1].asFloat(), points[i]["point"][2].asFloat() };
         m_rotpoints[i] = p;
     }
     // **********************************************************************
-//    Line line(-2, 30, 60, 1, 0, 0);
-//    RotationMatrix matrix( { 0, 0, 50 }, 0, M_PI / 2, M_PI / 2);
-//    for (int i = 0; i < 10000; i++) {
-//        BoundingBox bb = { 0, 0, 0, 10, 20, 30 };
-//        bb.rotate(matrix);
-//        float tmin = 10000, tmax = -10000;
-//        int err = bb.intersect(line, tmin, tmax);
-//    }
-    makeNet();
-    rotate();
+//    makeNet();
+//    rotate();
 }
 
 /*!
@@ -82,7 +74,7 @@ unsigned char Phantom::getValue( Point3D <float> point )
 
 unsigned char Phantom::getValue(int x, int y, int z)
 {
-    m_boxNet.getByXyz(x, y, z);
+    return m_boxNet.getByXyz(x, y, z);
 }
 
 /*!
@@ -232,17 +224,17 @@ void Phantom::pickRightLeg()
                     unsigned char nextVal = slice.getValue(i + 1, j);
                     unsigned char next2Val = slice.getValue(i + 2, j);
                     if (val == 125 && nextVal == 0 && i > 140) {
-                        int num = m_boxNet.getNum(i, j, k);
+//                        int num = m_boxNet.getNum(i, j, k);
 //                        m_rightLeg.push_back(num);
                         break;
                     }
                     if (val == 125 && nextVal == 125 && next2Val == 119 && i > 140) {
-                        int num = m_boxNet.getNum(i, j, k);
+//                        int num = m_boxNet.getNum(i, j, k);
 //                        m_rightLeg.push_back(num);
                         break;
                     }
                     if (i < slice.getSizeX()/2 && skin > 0) {
-                        int num = m_boxNet.getNum(i, j, k);
+//                        int num = m_boxNet.getNum(i, j, k);
 //                        m_rightLeg.push_back(num);
                     }
                 }
@@ -420,7 +412,7 @@ void Phantom::cutBin(char const * filename, int firstEdge, int secondEdge)
 
 void Phantom::makeNet()
 {
-    int minX = 1000, maxX = 0, minY = 1000, maxY = 0, minZ = 1000, maxZ = 0;
+    int minX = 10000, maxX = 0, minY = 10000, maxY = 0, minZ = 10000, maxZ = 0;
 
     for (auto bp = m_bodyparts.begin(); bp != m_bodyparts.end(); bp++) {
         for (auto it = (*bp)->data.begin(); it != (*bp)->data.end(); it++) {
@@ -463,14 +455,22 @@ void Phantom::makeNet()
     m_boxNet.setNymphSize(size);
 
     for (auto bp = m_bodyparts.begin(); bp != m_bodyparts.end(); bp++) {
+        // Пересчёт точки поворота матрицы
         for (auto pm = (*bp)->matrices.begin(); pm != (*bp)->matrices.end(); pm++) {
-            // Смещение точек поворота в соответствии с расширением сетки
             Point3D <float> rotPoint = (*pm).getRotPoint();
             (*pm).setRotPoint(rotPoint + _position);
         }
+        // Пересчёт номеров контента конечностей
         for (std::vector<int>::size_type i = 0; i != (*bp)->data.size(); i++) {
             (*bp)->data[i] = m_boxNet.translitNum((*bp)->data[i]);
         }
+        // Пересчёт точек начала примитивов
+        (*bp)->shiftPrimitivePosition(_position);
+    }
+    for (auto pbb = m_costume.begin(); pbb != m_costume.end(); pbb++) {
+        Point3D <float> pos = (*pbb)->getPosition();
+        pos = pos + _position;
+        (*pbb)->setPosition(pos);
     }
     m_boxNet.grow(size, position);
 }
@@ -478,7 +478,6 @@ void Phantom::makeNet()
 void Phantom::rotate()
 {
     unsigned char color, color1, color2;
-
     for (auto bp = m_bodyparts.begin(); bp != m_bodyparts.end(); bp++) {
         (*bp)->rotatePrimitive();
         for (auto it = (*bp)->data.begin(); it != (*bp)->data.end(); it++) {
@@ -515,6 +514,7 @@ void Phantom::rotate()
 //            setValue(*it, 0);
         }
     }
+    // Затираем (обнуляем) старые воксели
     for (auto bp = m_bodyparts.begin(); bp != m_bodyparts.end(); bp++) {
         for (auto it = (*bp)->data.begin(); it != (*bp)->data.end(); it++) {
             setValue(*it, 0);
@@ -546,14 +546,14 @@ void Phantom::loadScenario()
     file.close();
     Json::Value const & bodyparts = root;
     // Итерируемся по частям тела
-    for (int i = 0; i < bodyparts.size(); i++) {
+    for (unsigned int i = 0; i < bodyparts.size(); i++) {
         // Извлекаем имя файла для того, чтобы создать объект бадипарт
         char const * filename = bodyparts[i]["filename"].asCString();
         // Создаём указатель на бадипарт, впоследствии будет находиться в m_bodyparts. Загружаем данные из файла
         BodyPart * bodypart = new BodyPart(filename);
         Json::Value const & matrices = bodyparts[i]["matrices"];
         // Итерируемся по матрицам внутри стека матриц
-        for (int j = 0; j < matrices.size(); j++) {
+        for (unsigned int j = 0; j < matrices.size(); j++) {
             // Номер индекса необходимой точки поворота из m_rotpoints
             int pNum = matrices[j]["point"].asInt();
             // Углы для ориентации вектора поворота, вокруг которого будет происходить вращение (в градусах)
@@ -571,9 +571,90 @@ void Phantom::loadScenario()
             // Добавляем матрицу в стек текущего бадипарт объекта
             bodypart->setMatrix(matrix);
         }
+        Json::Value const & primitives = bodyparts[i]["primitives"];
+        for (unsigned int k = 0; k < primitives.size(); k++) {
+            float x0 = primitives[k]["x0"].asFloat();
+            float y0 = primitives[k]["y0"].asFloat();
+            float z0 = primitives[k]["z0"].asFloat();
+            float a = primitives[k]["a"].asFloat();
+            float b = primitives[k]["b"].asFloat();
+            float c = primitives[k]["c"].asFloat();
+            bodypart->setPrimitive(x0, y0, z0, a, b, c);
+        }
         // Добавляем бадипарт в вектор частей тела
         m_bodyparts.push_back(bodypart);
     }
+
+    Json::Value costume;
+    std::ifstream cosfile("data/costume.json", std::ifstream::binary);
+    cosfile >> costume;
+    cosfile.close();
+    Json::Value const & parts = costume;
+    // Итерируемся по неподвижным частям
+    for (unsigned int i = 0; i < parts.size(); i++) {
+        float x0 = parts[i]["x0"].asFloat();
+        float y0 = parts[i]["y0"].asFloat();
+        float z0 = parts[i]["z0"].asFloat();
+        float a = parts[i]["a"].asFloat();
+        float b = parts[i]["b"].asFloat();
+        float c = parts[i]["c"].asFloat();
+        m_costume.push_back(new BoundingBox(x0, y0, z0, a, b, c));
+    }
     makeNet();
     rotate();
+    fillCostume();
+    serializeCostume();
+//    dumpCostume();
+}
+
+void Phantom::fillCostume()
+{
+    for (auto bp = m_bodyparts.begin(); bp != m_bodyparts.end(); bp++) {
+        (*bp)->appendToVector( m_costume );
+    }
+}
+
+void Phantom::printLegPlanes()
+{
+    std::cout << "plane 1" << "\n";
+    std::cout << "pos1" << "\n";
+    std::cout << m_costume[3]->getPos(210) << "\n";
+    std::cout << "Ex1" << "\n";
+    std::cout << m_costume[3]->getEx(210) << "\n";
+    std::cout << "Ey1" << "\n";
+    std::cout << m_costume[3]->getEy(210) << "\n";
+    std::cout << "plane 2" << "\n";
+    std::cout << "pos2" << "\n";
+    std::cout << m_costume[2]->getPos(442) << "\n";
+    std::cout << "Ex2" << "\n";
+    std::cout << m_costume[2]->getEx(442) << "\n";
+    std::cout << "Ey2" << "\n";
+    std::cout << m_costume[2]->getEy(442) << "\n";
+}
+
+void Phantom::dumpCostume() {
+    for (auto bp = m_costume.begin(); bp != m_costume.end(); bp++) {
+        BoundingBox bb = **bp;
+        std::cout << bb << std::endl;
+    }
+}
+
+void Phantom::serializeCostume()
+{
+    Json::Value root;
+    std::ofstream file("costume.json");
+    int num = 0;
+    for (auto bp = m_costume.begin(); bp != m_costume.end(); bp++) {
+        BoundingBox bb = **bp;
+        root[num]["xPos"] = bb.getPosition().x();
+        root[num]["yPos"] = bb.getPosition().y();
+        root[num]["zPos"] = bb.getPosition().z();
+        root[num]["xEx"]  = bb.getEx().x();
+        root[num]["yEx"]  = bb.getEx().y();
+        root[num]["zEx"]  = bb.getEx().z();
+        num++;
+    }
+    Json::StyledStreamWriter writer;
+    writer.write(file, root);
+    file.close();
 }

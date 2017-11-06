@@ -209,6 +209,18 @@ void MainWindow::keyPressEvent( QKeyEvent * event )
             m_lineArea->decScale();
         }
     }
+    if (event->key() == Qt::Key_S) {
+        std::cout << "press save";
+        if ( m_tab->currentIndex() == 0 ) {
+            m_paintAreaZ->saveImage();
+        }
+        else if ( m_tab->currentIndex() == 1 ) {
+            m_paintAreaY->saveImage();
+        }
+        else if ( m_tab->currentIndex() == 2 ) {
+            m_paintAreaX->saveImage();
+        }
+    }
 }
 
 void MainWindow::showScenario()

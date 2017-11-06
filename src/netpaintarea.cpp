@@ -38,6 +38,7 @@ void NetPaintArea::paintEvent(QPaintEvent * event)
         for (int ix = 0; ix < m_slice.getSizeX(); ix++)
         {
             value = m_slice.getValue(ix, iy);
+//            if (value != 0)
             painter.fillRect( m_wProp * ix, m_hProp * (m_slice.getSizeY() - iy - 1), m_wProp, m_hProp, m_palette[value] );
         }
     }
@@ -117,6 +118,17 @@ void NetPaintArea::setScale(float scale)
 void NetPaintArea::incScale()
 {
     m_scale += 0.1;
+
+//    int width = m_wProp * m_slice.getSizeX();
+//    int height = m_hProp * m_slice.getSizeY();
+
+//    QPixmap pixmap = { width, height };
+//    QPainter painter(&pixmap);
+//    painter.fillRect( 0, 0, width, height, m_palette[0] );
+//    int h = height * m_scale;
+//    int w = width * m_scale;
+
+//    setPixmap(pixmap.scaled( w, h ));
 }
 
 void NetPaintArea::decScale()
@@ -137,4 +149,41 @@ void  NetPaintArea::mousePressEvent(QMouseEvent *e)
 
     QString str = QString("%1:%2").arg(_x).arg(_y);
     emit mouseChanged(str);
+}
+
+void NetPaintArea::saveImage()
+{
+    std::cout << "Inside saveimage" << "\n";
+    QPixmap const * px = pixmap();
+    QDateTime time = QDateTime::currentDateTime();
+    QString _time = time.toString();
+    _time.append(".png");
+    QFile file(_time);
+    file.open(QIODevice::WriteOnly);
+
+    unsigned char value;
+    int width = m_wProp * m_slice.getSizeX();
+    int height = m_hProp * m_slice.getSizeY();
+
+    QPixmap pixmap = { width, height };
+    QPainter painter(&pixmap);
+
+    for (int iy = 0; iy < m_slice.getSizeY(); iy++)
+    {
+        for (int ix = 0; ix < m_slice.getSizeX(); ix++)
+        {
+            value = m_slice.getValue(ix, iy);
+            painter.fillRect( m_wProp * ix, m_hProp * (m_slice.getSizeY() - iy - 1), m_wProp, m_hProp, m_palette[value] );
+        }
+    }
+
+    int h = height * m_scale;
+    int w = width * m_scale;
+    QPixmap p = px->scaled( w, h );
+
+    bool suc = p.save(&file, "PNG");
+    if (suc) {
+        std::cout << "SUCCESS" << "\n";
+        file.close();
+    }
 }

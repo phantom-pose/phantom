@@ -70,6 +70,10 @@ public:
     void makeNet();
     void rotate();
     void loadScenario();
+    void fillCostume();
+    void printLegPlanes();
+    void dumpCostume();
+    void serializeCostume();
 
 private:
     BoxNet m_boxNet;
@@ -80,7 +84,7 @@ private:
 //    std::vector<int> m_leftLeg1, m_leftLeg2, m_leftLeg, m_rightLeg, m_leftHand, m_rightHand;
     BodyPart * m_leftLeg1;
     std::vector <BodyPart*> m_bodyparts;
-    std::vector <Cylinder*> m_costume;
+    std::vector <BoundingBox*> m_costume;
     Point3D <float> m_rotpoints[8];
 };
 

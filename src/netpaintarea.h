@@ -6,6 +6,7 @@
 #include "slice.h"
 #include "boxnet.h"
 #include <QMouseEvent>
+#include <QDateTime>
 
 /*!
  * \brief NetPaintArea - Виждет области отрисовки двухмерного изображения
@@ -25,6 +26,7 @@ public:
 
     void incScale();
     void decScale();
+    void saveImage();
 
     void fillPalette();
 
