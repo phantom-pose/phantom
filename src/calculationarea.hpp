@@ -7,6 +7,7 @@
 #include "vector3d.h"
 #include <limits>
 #include "line.h"
+#include "cjsonserializer.h"
 
 class CalculationArea
 {
@@ -19,6 +20,7 @@ public:
     bool hasInsideBox(Vector3D v);
     bool hasInsideBox(Point3D <float> const & pt);
     int searchIntersect(Line & line, double * tk, unsigned char * ck, int & k);
+    int searchIntersectCostume(Line & line, double * tk, unsigned char * ck, int & k);
     int prepLineOut(Line & line);
     int prepLineIn(Line & line);
     int linePlaneIntersect(float & len, Line const & line, Vector3D const & plane);
@@ -26,6 +28,8 @@ public:
     void startParallelIterations(Line & line, int const & index, double * tk, unsigned char * ck, int & k);
     void startIterations(Line const & line, double * tk, unsigned char * ck, int & k);
     void startIterations(Line const & line, int fbIndex, double * tk, unsigned char * ck, int & k);
+
+    int costumeIntersect(Line const & line, std::vector <Segment> & segments);
 
 
 private:
@@ -35,4 +39,5 @@ private:
     float m_zScale = 2.50;
     Point3D <float> m_boxSize;
     std::vector <Vector3D> m_planes; // Содержит 6 проскостей основной коробки
+    std::vector <BoundingBox *> m_costume;
 };

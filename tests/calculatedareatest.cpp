@@ -103,3 +103,15 @@ TEST(calculationArea_test, test_searchIntersect)
 //        std::cout << i << ") len = " << tk[i] << " col = " << int(ck[i]) << "\n";
 //    }
 }
+
+TEST(calculationArea_test, test_costumeIntersect)
+{
+    Line line(324, 377, -1, 0, 0, 1);
+    std::vector <Segment> segments;
+    BoxNet box;
+    CalculationArea area( box );
+    area.costumeIntersect(line, segments);
+    for (auto it = segments.begin(); it != segments.end(); it++) {
+        std::cout << (*it).pos << " " << (*it).end << std::endl;
+    }
+}

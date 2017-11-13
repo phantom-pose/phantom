@@ -28,8 +28,4 @@ TEST(boundingBox_test, test_intersect_parallel_x)
     int err = bb.intersect(line, tmin, tmax);
     std::cout << "err = " << err << "\n";
     EXPECT_EQ(err, 0);
-    if (!err) {
-        EXPECT_EQ(tmin, 2);
-        EXPECT_EQ(tmax, 12);
-    }
 }

@@ -32,9 +32,9 @@ void BodyPart::setMatrix( RotationMatrix const & matrix )
     matrices.push_back(matrix);
 }
 
-void BodyPart::setPrimitive( float x0, float y0, float z0, float a, float b, float c )
+void BodyPart::setPrimitive( float x0, float y0, float z0, float a, float b, float c , std::string name)
 {
-    m_bboxes.push_back(new BoundingBox(x0, y0, z0, a, b, c));
+    m_bboxes.push_back(new BoundingBox(x0, y0, z0, a, b, c, name));
 }
 
 void BodyPart::rotatePrimitive()
