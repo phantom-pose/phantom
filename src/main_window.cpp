@@ -71,31 +71,22 @@ MainWindow::MainWindow()
         }
     }
 
-    CalculationArea area = { m_phantom->boxNet() };
+//    CalculationArea area = { m_phantom->boxNet() };
 
-    std::vector <Line> lines;
-//    for (int i = 0; i < 185; i++) {
-//        Line ray = { { float(i), -10, 50 }, { 0, 3, 0 } };
+//    std::vector <Line> lines;
+
+//    double * tk = new double [1500];
+//    unsigned char * ck = new unsigned char [1500];
+//    int k = 0;
+
+//    for (int i = 0; i < 10000; i++) {
+//        Line ray = { { 0, 0, -1 }, { 561, 257, 1740 } };
 //        int err = area.prepLineOut(ray);
-//        if (!err) {
-//            area.startIterations(ray);
-//            lines.push_back(ray);
-//        }
+//        area.startIterations(ray, tk, ck, k);
 //    }
+//    Logger::Instance() << "k = " << k;
 
-    double * tk = new double [1500];
-    unsigned char * ck = new unsigned char [1500];
-    int k = 0;
-
-    for (int i = 0; i < 10000; i++) {
-        Line ray = { { 0, 0, -1 }, { 561, 257, 1740 } };
-        int err = area.prepLineOut(ray);
-        area.startIterations(ray, tk, ck, k);
-    }
-//    lines.push_back(ray);
-    Logger::Instance() << "k = " << k;
-
-    m_lineArea = new LinePaintArea(0, lines);
+//    m_lineArea = new LinePaintArea(0, lines);
 
     createMainArea();
 }
@@ -138,7 +129,6 @@ void MainWindow::createMainArea()
     connect(m_paintAreaX, SIGNAL( mouseChanged(QString) ), mouseLabel, SLOT( setText(QString) ));
     connect(m_paintAreaY, SIGNAL( mouseChanged(QString) ), mouseLabel, SLOT( setText(QString) ));
 
-
     QScrollArea * scrollAreaZ = new QScrollArea();
     scrollAreaZ->setWidget(m_paintAreaZ);
     scrollAreaZ->setBackgroundRole(QPalette::Dark);
@@ -154,15 +144,9 @@ void MainWindow::createMainArea()
     scrollAreaY->setBackgroundRole(QPalette::Dark);
     scrollAreaY->setWidgetResizable( true );
 
-    QScrollArea * scrollLinesArea = new QScrollArea();
-    scrollLinesArea->setWidget(m_lineArea);
-    scrollLinesArea->setBackgroundRole(QPalette::Dark);
-    scrollLinesArea->setWidgetResizable( true );
-
     m_tab->addTab(scrollAreaZ, "Horizontal");
     m_tab->addTab(scrollAreaY, "Frontal");
     m_tab->addTab(scrollAreaX, "Profile");
-    m_tab->addTab(scrollLinesArea, "Lines");
 
     upDownLayout->addWidget(upDownSBZ);
     upDownLayout->addWidget(upDownSBY);
@@ -190,9 +174,6 @@ void MainWindow::keyPressEvent( QKeyEvent * event )
         else if ( m_tab->currentIndex() == 2 ) {
             m_paintAreaX->incScale();
         }
-        else if ( m_tab->currentIndex() == 3 ) {
-            m_lineArea->incScale();
-        }
     }
     if (event->key() == Qt::Key_Minus)
     {
@@ -204,9 +185,6 @@ void MainWindow::keyPressEvent( QKeyEvent * event )
         }
         else if ( m_tab->currentIndex() == 2 ) {
             m_paintAreaX->decScale();
-        }
-        else if ( m_tab->currentIndex() == 3 ) {
-            m_lineArea->decScale();
         }
     }
     if (event->key() == Qt::Key_S) {

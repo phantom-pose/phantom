@@ -21,7 +21,6 @@
 #include "plane.h"
 
 #include "line.h"
-#include "linepaintarea.h"
 #include "calculationarea.hpp"
 
 /*!
@@ -44,7 +43,6 @@ private slots:
     void setBoxRightKnee();
 private:
     NetPaintArea *m_paintAreaX, *m_paintAreaY, *m_paintAreaZ;
-    LinePaintArea *m_lineArea;
     Phantom * m_phantom;
     QTabWidget * m_tab;
     QWidget * scenario;
