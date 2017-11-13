@@ -60,8 +60,7 @@ void BoundingBox::rotate(RotationMatrix matrix)
 
 int BoundingBox::intersect(Line const & line, float & tmin, float & tmax)
 {
-    bool iTrigger = false;
-    float values[2];
+    float values[2] = { 0, 0 };
     int   valuesCounter = 0;
     Point3D<float> linePos = line.getPosition();
     Point3D<float> lineDir = line.getDirection();
@@ -99,13 +98,11 @@ int BoundingBox::intersect(Line const & line, float & tmin, float & tmax)
         err = validate(t1, 0);
         if (!err) {
 //            std::cout << "SUCCESS VALIDATE t1 = " << t1 << std::endl;
-            iTrigger = true;
             values[valuesCounter++] = t1;
         }
         err = validate(t2, 0);
         if (!err) {
 //            std::cout << "SUCCESS VALIDATE t2 = " << t2 << std::endl;
-            iTrigger = true;
             values[valuesCounter++] = t2;
         }
     }
@@ -118,13 +115,11 @@ int BoundingBox::intersect(Line const & line, float & tmin, float & tmax)
         err = validate(t1, 1);
         if (!err) {
 //            std::cout << "SUCCESS VALIDATE t1 = " << t1 << std::endl;
-            iTrigger = true;
             values[valuesCounter++] = t1;
         }
         err = validate(t2, 1);
         if (!err) {
 //            std::cout << "SUCCESS VALIDATE t2 = " << t2 << std::endl;
-            iTrigger = true;
             values[valuesCounter++] = t2;
         }
     }
@@ -138,19 +133,18 @@ int BoundingBox::intersect(Line const & line, float & tmin, float & tmax)
         err = validate(t1, 2);
         if (!err) {
 //            std::cout << "SUCCESS VALIDATE t1 = " << t1 << std::endl;
-            iTrigger = true;
             values[valuesCounter++] = t1;
         }
         err = validate(t2, 2);
         if (!err) {
 //            std::cout << "SUCCESS VALIDATE t2 = " << t2 << std::endl;
-            iTrigger = true;
             values[valuesCounter++] = t2;
         }
     }
 
-    if (iTrigger) {
-        // отстртируем values
+    if (!valuesCounter) {
+        return 1; // Нет пересечений
+    } else {
         if (values[0] > values[1]) {
             tmax = values[0];
             tmin = values[1];
@@ -158,10 +152,9 @@ int BoundingBox::intersect(Line const & line, float & tmin, float & tmax)
             tmax = values[1];
             tmin = values[0];
         }
-//        std::cout << values[0] << "   " << values[1] << std::endl;
         return 0;
     }
-    return 1;
+    return 2;
 }
 
 int BoundingBox::intersect(Line const & line, Segment & s)
