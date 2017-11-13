@@ -17,7 +17,7 @@ public:
     std::vector <int> data;
     std::vector <RotationMatrix> matrices;
     void setMatrix( RotationMatrix const & matrix );
-    void setPrimitive( float x0, float y0, float z0, float a, float b, float c );
+    void setPrimitive( float x0, float y0, float z0, float a, float b, float c , std::string name);
     void rotatePrimitive();
     void shiftPrimitivePosition( Point3D <float> const & shift );
     void appendToVector( std::vector <BoundingBox *> & obj );

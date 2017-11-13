@@ -652,7 +652,8 @@ void Phantom::loadScenario()
             float a = primitives[k]["a"].asFloat();
             float b = primitives[k]["b"].asFloat();
             float c = primitives[k]["c"].asFloat();
-            bodypart->setPrimitive(x0, y0, z0, a, b, c);
+            std::string name = primitives[k]["name"].asString();
+            bodypart->setPrimitive(x0, y0, z0, a, b, c, name);
         }
         // Добавляем бадипарт в вектор частей тела
         m_bodyparts.push_back(bodypart);
@@ -671,7 +672,8 @@ void Phantom::loadScenario()
         float a = parts[i]["a"].asFloat();
         float b = parts[i]["b"].asFloat();
         float c = parts[i]["c"].asFloat();
-        m_costume.push_back(new BoundingBox(x0, y0, z0, a, b, c));
+        std::string name = parts[i]["name"].asString();
+        m_costume.push_back(new BoundingBox(x0, y0, z0, a, b, c, name));
     }
 }
 
@@ -724,22 +726,28 @@ void Phantom::dumpCostume() {
 
 void Phantom::serializeCostume()
 {
-    Json::Value root;
-    std::ofstream file("costume.json");
-    int num = 0;
-    for (auto bp = m_costume.begin(); bp != m_costume.end(); bp++) {
-        BoundingBox bb = **bp;
-        root[num]["xPos"] = bb.getPosition().x();
-        root[num]["yPos"] = bb.getPosition().y();
-        root[num]["zPos"] = bb.getPosition().z();
-        root[num]["xEx"]  = bb.getEx().x();
-        root[num]["yEx"]  = bb.getEx().y();
-        root[num]["zEx"]  = bb.getEx().z();
-        num++;
-    }
-    Json::StyledStreamWriter writer;
-    writer.write(file, root);
-    file.close();
+//    Json::Value root;
+//    std::ofstream file("costume.json");
+    std::vector <IJsonSerializable *>  costume(m_costume.begin(), m_costume.end());
+    std::string output;
+    bool err = CJsonSerializer::Serialize(costume, output);
+    std::ofstream out("data/serCostume.json");
+    out << output;
+    out.close();
+//    Json::StyledStreamWriter writer;
+//    writer.write(file, root);
+//    file.close();
+}
+
+void Phantom::deserializeCostume()
+{
+    std::vector <BoundingBox *>  costume;
+    bool err = CJsonSerializer::Deserialize(costume, "data/serCostume.json");
+
+    std::string output;
+    std::vector <IJsonSerializable *>  costume2(costume.begin(), costume.end());
+    err = CJsonSerializer::Serialize(costume2, output);
+    std::cout << output;
 }
 
 void Phantom::rightKneeRotate()

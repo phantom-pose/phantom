@@ -16,6 +16,8 @@
 #include "boundingbox.h"
 #include "knee.h"
 #include "elbow.h"
+#include "cjsonserializer.h"
+#include "ijsonserializable.h"
 
 /*!
  * \brief Основной класс для работы с воксельной моделью - Phantom
@@ -80,6 +82,7 @@ public:
     void printLegPlanes();
     void dumpCostume();
     void serializeCostume();
+    void deserializeCostume();
 
 private:
     BoxNet m_boxNet;
@@ -90,7 +93,7 @@ private:
 //    std::vector<int> m_leftLeg1, m_leftLeg2, m_leftLeg, m_rightLeg, m_leftHand, m_rightHand;
     BodyPart * m_leftLeg1;
     std::vector <BodyPart*> m_bodyparts;
-    std::vector <BoundingBox*> m_costume;
+    std::vector <BoundingBox *> m_costume;
     Point3D <float> m_rotpoints[8];
     Point3D <int> m_nymph;
     BoxNet m_rightKnee, m_leftKnee, m_rightElbow;
