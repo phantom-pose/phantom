@@ -8,21 +8,14 @@ CalculationArea::CalculationArea( BoxNet const & box )
     float zLen = m_zScale * m_boxNet.getSizeZ();
     m_boxSize = { xLen, yLen, zLen };
 
-    // Математически плоскость определяется точкой и нормалью
-    // Считаем, что точка расположена снаружи
-    // Box состоит из 6ти плоскостей:
-    //     { 0, 0, 0 }     { 0, 0, 1 }
-    //     { 0, 0, 0 }     { 0, 1, 0 }
-    //     { 0, 0, 0 }     { 1, 0, 0 }
-    //     { xLen, 0, 0 }  { -1, 0, 0 }
-    //     { 0, yLen, 0 }  { 0, -1, 0 }
-    //     { 0, 0, zLen }  { 0, 0, -1 }
     m_planes.push_back({ { 0, 0, 0 }, { 0, 0, 1 } });
     m_planes.push_back({ { 0, 0, 0 }, { 0, 1, 0 } });
     m_planes.push_back({ { 0, 0, 0 }, { 1, 0, 0 } });
     m_planes.push_back({ { xLen, 0, 0 }, { -1, 0, 0 } });
     m_planes.push_back({ { 0, yLen, 0 }, { 0, -1, 0 } });
     m_planes.push_back({ { 0, 0, zLen }, { 0, 0, -1 } });
+
+    CJsonSerializer::Deserialize(m_costume, "data/serCostume.json");
 }
 
 unsigned char CalculationArea::getValue( Point3D <float> point )
@@ -267,7 +260,7 @@ void CalculationArea::startIterations(Line const & line, double * tk, unsigned c
     float tempLen;
     float leni;
     int _i;
-    k = 0;
+//    k = 0;
     float lastLen = 0;
     while(1) {
         // Найдём минимальную длину !от начальной точки! и соответствующий ей индекс (x, y или z)
@@ -360,7 +353,7 @@ void CalculationArea::startIterations(Line const & line, int fbIndex, double * t
     float tempLen;
     float leni;
     int _i;
-    k = 0;
+//    k = 0;
     float lastLen = 0;
     while(1) {
         // Найдём минимальную длину !от начальной точки! и соответствующий ей индекс (x, y или z)
@@ -426,7 +419,7 @@ void CalculationArea::startParallelIterations(Line & line, int const & index, do
     Size[1] = m_yScale;
     Size[2] = m_zScale;
 
-    k = 0;
+//    k = 0;
     unsigned char _color;
     float lastLen = 0;
     int size;
@@ -487,6 +480,97 @@ int CalculationArea::searchIntersect(Line & line, double * tk, unsigned char * c
     } else {
         startIterations(line, tk, ck, k);
 //        std::cout << "NO PARALLEL"<< "\n";
+    }
+    return 0;
+}
+
+int CalculationArea::costumeIntersect(Line const & line, std::vector <Segment> & segments)
+{
+    std::vector <Segment> _segments; // Все сегменты ( без объединения )
+    for (auto it = m_costume.begin(); it != m_costume.end(); it++) {
+        Segment s;
+        int err = (*it)->intersect(line, s);
+        if (!err)
+            _segments.push_back(s);
+    }
+
+//    _segments.push_back({10, 20});
+//    _segments.push_back({1200, 1800});
+//    _segments.push_back({12, 450});
+//    _segments.push_back({300, 330});
+//    _segments.push_back({480, 1000});
+
+    if ( !_segments.empty() ) {
+        std::sort(_segments.begin(), _segments.end());
+//        for (auto it = _segments.begin(); it != _segments.end(); it++) {
+//            std::cout << (*it).pos << "  " << (*it).end << std::endl;
+//        }
+//        std::cout << "--------------" << std::endl;
+        float begin = _segments[0].pos;
+        float end   = _segments[0].end;
+        for (auto it = _segments.begin(); it != _segments.end(); it++) {
+            if( (*it).pos > end ) {
+                segments.push_back({begin, end});
+                begin = (*it).pos;
+                end   = (*it).end;
+            } else {
+                if ( end < (*it).end ) {
+                    end = (*it).end;
+                }
+            }
+        }
+        segments.push_back({begin, end});
+    } else {
+        return 1; // пересечений нет
+    }
+
+//    for (auto it = segmentBank.begin(); it != segmentBank.end(); it++) {
+//        std::cout << (*it).pos << "  " << (*it).end << std::endl;
+//    }
+    return 0;
+}
+
+int CalculationArea::searchIntersectCostume(Line & line, double * tk, unsigned char * ck, int & k)
+{
+    k = 0;
+    // Поиск вектора пересечений с костюмом
+    std::vector <Segment> segments;
+    int err = costumeIntersect(line, segments);
+    if (err)
+        return 1; // нет пересечений
+
+
+    for (auto it = segments.begin(); it != segments.end(); it++) {
+        if (!k) {
+            tk[k] = (*it).pos;
+            line.shiftPosition( (*it).pos );
+        } else {
+            tk[k] = (*it).pos - (*(it-1)).end;
+            line.shiftPosition( (*it).pos - (*(it-1)).pos );
+        }
+        line.setMaxLen( (*it).len );
+        ck[k++] = 0;
+
+        // Оцениваем нет ли параллельности
+        if ( line.hasParallel() ) {
+            int pFactor = line.getPFactor();
+            // Определяем тип параллельности и обрабатываем его
+            if (pFactor == 1) { // имеет проекции y и z
+                startIterations(line, 0, tk, ck, k);
+            } else if (pFactor == 2) { // имеет проекции x и z
+                startIterations(line, 1, tk, ck, k);
+            } else if (pFactor == 4) { // имеет проекции x и y
+                startIterations(line, 2, tk, ck, k);
+            } else if (pFactor == 3) { // Имеет только проекцию z
+                startParallelIterations(line, 2, tk, ck, k);
+            } else if (pFactor == 5) { // Имеет только проекцию y
+                startParallelIterations(line, 1, tk, ck, k);
+            } else if (pFactor == 6) { // Имеет только проекцию x
+                startParallelIterations(line, 0, tk, ck, k);
+            }
+        } else {
+            startIterations(line, tk, ck, k);
+        }
     }
     return 0;
 }

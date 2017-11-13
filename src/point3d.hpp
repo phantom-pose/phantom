@@ -3,6 +3,8 @@
 #include <cmath>
 #include <functional>
 #include <ostream>
+#include "ijsonserializable.h"
+#include "json/json.h"
 
 float const kEps = 1e-5;
 
@@ -11,13 +13,15 @@ float const kEps = 1e-5;
  * положением в сетке { int int int }
  */
 template < class T >
-class Point3D
+class Point3D : public IJsonSerializable
 {
 public:
     /*!
      * \brief Конструктор по умолчанию, устанавливаются нулевые параметры
      */
     Point3D() = default;
+
+    ~Point3D() = default;
 
     /*!
      * \brief Конструктор копирования
@@ -186,6 +190,21 @@ public:
 
     float operator * (Point3D const & obj) const {
         return m_x * obj.m_x + m_y * obj.m_y + m_z * obj.m_z;
+    }
+
+
+    void Serialize(Json::Value & root)
+    {
+        root["x"] = m_x;
+        root["y"] = m_y;
+        root["z"] = m_z;
+    }
+
+    void Deserialize(Json::Value & root)
+    {
+        m_x = (T)root.get("x",0).asFloat();
+        m_y = (T)root.get("y",0).asFloat();
+        m_z = (T)root.get("z",0).asFloat();
     }
 
 private:
