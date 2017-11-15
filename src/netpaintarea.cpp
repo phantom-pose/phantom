@@ -38,7 +38,6 @@ void NetPaintArea::paintEvent(QPaintEvent * event)
         for (int ix = 0; ix < m_slice.getSizeX(); ix++)
         {
             value = m_slice.getValue(ix, iy);
-//            if (value != 0)
             painter.fillRect( m_wProp * ix, m_hProp * (m_slice.getSizeY() - iy - 1), m_wProp, m_hProp, m_palette[value] );
         }
     }

@@ -731,7 +731,7 @@ void Phantom::serializeCostume()
     std::vector <IJsonSerializable *>  costume(m_costume.begin(), m_costume.end());
     std::string output;
     bool err = CJsonSerializer::Serialize(costume, output);
-    std::ofstream out("data/serCostume.json");
+    std::ofstream out("data/serCostume2.json");
     out << output;
     out.close();
 //    Json::StyledStreamWriter writer;
