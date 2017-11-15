@@ -1,6 +1,7 @@
 #pragma once
 #include "vector3d.h"
 #include "logger.h"
+#include <iostream>
 
 class Plane
 {
