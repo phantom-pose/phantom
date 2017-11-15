@@ -14,6 +14,7 @@
 #include <string>
 #include "cylinder.h"
 #include "boundingbox.h"
+#include "joint.h"
 
 /*!
  * \brief Основной класс для работы с воксельной моделью - Phantom
@@ -65,6 +66,7 @@ public:
     void checkBin(char const * filename);
     void check(BodyPart const & bp);
     void cutBin(char const * filename, int firstEdge, int secondEdge);
+    void rightKneeRotate();
 
 //    void rotateBodyPart(BodyPart const & bp, float pitch, float yaw);
     void makeNet();
@@ -86,6 +88,8 @@ private:
     std::vector <BodyPart*> m_bodyparts;
     std::vector <BoundingBox*> m_costume;
     Point3D <float> m_rotpoints[8];
+    Point3D <int> m_nymph;
+    BoxNet m_knee;
 };
 
 std::ostream & operator << (std::ostream & os, Phantom const & obj);

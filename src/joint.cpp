@@ -3,7 +3,6 @@
 #include <cmath>
 #include <iostream>
 #include <cmath>
-#include <phantom.h>
 #include <boxnet.h>
 
 using namespace std;
@@ -363,8 +362,7 @@ constexpr int RIGHT_KNEE_Y1 = 43;
 constexpr int RIGHT_KNEE_X2 = 144;
 constexpr int RIGHT_KNEE_Y2 = 131;
 
-BoxNet RightKnee(Phantom phantom, float phi, float theta, Point3D <int> * coord) {
-    BoxNet b1 = phantom.boxNet();
+BoxNet RightKnee(BoxNet b1, float phi, float theta, Point3D <int> * coord) {
     BoxNet b = b1.cut( {RIGHT_KNEE_X1, RIGHT_KNEE_Y1, KNEE_BOTTOM_Z}, {RIGHT_KNEE_X2, RIGHT_KNEE_Y2, KNEE_TOP_Z} );
     const float xmax = 100;
     const float ymax = 400;

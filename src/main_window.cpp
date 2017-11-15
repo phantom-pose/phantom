@@ -302,7 +302,7 @@ void MainWindow::setBoxLeftKnee()
 void MainWindow::setBoxRightKnee()
 {
     Point3D <int> point;
-    BoxNet b = RightKnee(*m_phantom, M_PI/2, M_PI/2, &point);
+    BoxNet b = RightKnee(m_phantom->boxNet(), M_PI/2, M_PI/2, &point);
     std::cout << point;
     m_phantom->setBox(b);
 }

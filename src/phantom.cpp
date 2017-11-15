@@ -32,6 +32,7 @@ Phantom::Phantom()
     // **********************************************************************
 //    makeNet();
 //    rotate();
+    rightKneeRotate();
 }
 
 /*!
@@ -472,6 +473,7 @@ void Phantom::makeNet()
         pos = pos + _position;
         (*pbb)->setPosition(pos);
     }
+    m_nymph = m_nymph + position;
     m_boxNet.grow(size, position);
 }
 
@@ -604,6 +606,12 @@ void Phantom::loadScenario()
     rotate();
     fillCostume();
     serializeCostume();
+    std::cout << "BOXNET PARAMETERS" << std::endl;
+    std::cout << "size = { " << m_knee.getSizeX() << " " << m_knee.getSizeY() << " " << m_knee.getSizeZ() << " }\n";
+    std::cout << "position = " << m_nymph << "\n";
+    std::cout << "sizeTHIS = { " << m_boxNet.getSizeX() << " " << m_boxNet.getSizeY() << " " << m_boxNet.getSizeZ() << " }\n";
+    m_boxNet.insert(m_knee, m_nymph);
+
 //    dumpCostume();
 }
 
@@ -657,4 +665,11 @@ void Phantom::serializeCostume()
     Json::StyledStreamWriter writer;
     writer.write(file, root);
     file.close();
+}
+
+void Phantom::rightKneeRotate()
+{
+    Point3D <int> point;
+    m_knee = RightKnee(m_boxNet, M_PI/2, M_PI/2, &point);
+    m_nymph = m_nymph + point;
 }

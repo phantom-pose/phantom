@@ -62,6 +62,7 @@ public:
     void grow( Point3D <int> const & sizes, Point3D <int> const & position );
     int getNum(int x, int y, int z);
     int translitNum(int num);
+    void insert(BoxNet const & box, Point3D <int> pos);
 
 private:
     int m_xSize = 0, m_ySize = 0, m_zSize = 0, m_length = 0;

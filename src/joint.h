@@ -3,7 +3,6 @@
 #include "plane.h"
 #include "point3d.hpp"
 #include "boxnet.h"
-#include "phantom.h"
 
 class Joint {
 public:
@@ -56,4 +55,4 @@ private:
     Joint * m_joint;
 };
 
-BoxNet RightKnee(Phantom phantom, float phi, float theta, Point3D <int> * coord);
+BoxNet RightKnee(BoxNet b1, float phi, float theta, Point3D <int> * coord);
