@@ -12,7 +12,58 @@ using namespace std;
 MainWindow::MainWindow()
 {
     setWindowTitle("phantom");
-    m_phantom = new Phantom();
+
+    BoxNet box = { 100, 100, 100 };
+    for (int iz = 0; iz < 100; iz++) {
+        for (int iy = 0; iy < 100; iy++) {
+            for (int ix = 0; ix < 100; ix++) {
+                box.setByXyz(ix, iy, iz, 1);
+            }
+        }
+    }
+
+    // Рисую Layer One
+    for (int iz = 15; iz < 55; iz++) {
+        for (int iy = 25; iy < 75; iy++) {
+            for (int ix = 15; ix < 85; ix++) {
+                box.setByXyz(ix, iy, iz, 17);
+            }
+        }
+    }
+    // Рисую Layer Two
+    for (int iz = 25; iz < 85; iz++) {
+        for (int iy = 35; iy < 65; iy++) {
+            for (int ix = 25; ix < 35; ix++) {
+                box.setByXyz(ix, iy, iz, 77);
+            }
+        }
+    }
+    // Рисую Layer Three
+    for (int iz = 25; iz < 85; iz++) {
+        for (int iy = 35; iy < 65; iy++) {
+            for (int ix = 65; ix < 75; ix++) {
+                box.setByXyz(ix, iy, iz, 88);
+            }
+        }
+    }
+    // Рисую Layer Four
+    for (int iz = 30; iz < 50; iz++) {
+        for (int iy = 40; iy < 60; iy++) {
+            for (int ix = 30; ix < 70; ix++) {
+                box.setByXyz(ix, iy, iz, 113);
+            }
+        }
+    }
+
+    m_phantom = new Phantom( box );
+
+    std::vector <BoundingBox *> costume;
+    costume.push_back(new BoundingBox(18.75, 37.5, 25, 150, 112.5, 125, "alpha"));
+    costume.push_back(new BoundingBox(37.5, 56.25, 50, 37.5, 75, 175, "beta"));
+    costume.push_back(new BoundingBox(112.5, 56.25, 50, 37.5, 75, 175, "gamma"));
+
+
+//    m_phantom = new Phantom();
 
 //    m_phantom = new Phantom( box );
 //    m_phantom->grow( { 200, 200, 200 }, { 50, 50, 50 } );
@@ -54,22 +105,7 @@ MainWindow::MainWindow()
     m_paintAreaZ->setAlignment(Qt::AlignTop);
 
     /////////////////////////////////////////////////////////////////////////
-    BoxNet box = { 100, 100, 100 };
-    for (int iz = 0; iz < 100; iz++) {
-        for (int iy = 0; iy < 100; iy++) {
-            for (int ix = 0; ix < 100; ix++) {
-                int x = ix - 50;
-                int y = iy - 50;
-                float hyp = sqrt(x*x + y*y);
 
-                if (hyp < 20) {
-                    box.setByXyz(ix, iy, iz, 141);
-                } else if (hyp < 25 && hyp >= 20) {
-                    box.setByXyz(ix, iy, iz, 50);
-                }
-            }
-        }
-    }
 
 //    CalculationArea area = { m_phantom->boxNet() };
 

@@ -5,6 +5,7 @@
 #include "line.h"
 #include "ijsonserializable.h"
 #include "json/json.h"
+#include <unistd.h>
 
 class BoundingBox : public IJsonSerializable
 {
@@ -32,7 +33,7 @@ public:
     void rotate(RotationMatrix matrix);
     int intersect(Line const & line, float & tmin, float & tmax);
     int intersect(Line const & line, Segment & s);
-    int validate(float const &t, int pFactor);
+    int validate(float const & t, int pFactor);
     Point3D<float> getEndpoint() const;
     void Serialize( Json::Value & root );
     void Deserialize( Json::Value & root );

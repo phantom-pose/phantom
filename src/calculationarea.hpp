@@ -25,11 +25,12 @@ public:
     int prepLineIn(Line & line);
     int linePlaneIntersect(float & len, Line const & line, Vector3D const & plane);
     void startIterations(Line & line);
-    void startParallelIterations(Line & line, int const & index, double * tk, unsigned char * ck, int & k);
-    void startIterations(Line const & line, double * tk, unsigned char * ck, int & k);
-    void startIterations(Line const & line, int fbIndex, double * tk, unsigned char * ck, int & k);
+    void startParallelIterations(Line & line, float interLayer, int const & index, double * tk, unsigned char * ck, int & k);
+    void startIterations(Line const & line, float interLayer, double * tk, unsigned char * ck, int & k);
+    void startIterations(Line const & line, float interLayer, int fbIndex, double * tk, unsigned char * ck, int & k);
 
     int costumeIntersect(Line const & line, std::vector <Segment> & segments);
+    void setCostume(std::vector <BoundingBox *> costume);
 
 
 private:
