@@ -60,7 +60,10 @@ void BoundingBox::rotate(RotationMatrix matrix)
 
 int BoundingBox::intersect(Line const & line, float & tmin, float & tmax)
 {
-    float values[2] = { 0, 0 };
+//    std::cout << "intersect " << m_name << std::endl;
+    float values[2];
+    values[0] = 0;
+    values[1] = 0.0f;
     int   valuesCounter = 0;
     Point3D<float> linePos = line.getPosition();
     Point3D<float> lineDir = line.getDirection();
@@ -129,6 +132,8 @@ int BoundingBox::intersect(Line const & line, float & tmin, float & tmax)
         t1 = -m_z0 / m_zDir;
         t2 = (m_c - m_z0) / m_zDir;
 //        std::cout << "z0 = " << m_z0 << " zDir = " << m_zDir << " c = " << m_c << "\n";
+//        usleep(10000);
+//        std::cout << "t1 = " << t1 << std::endl;
         // Валидация
         err = validate(t1, 2);
         if (!err) {
@@ -177,26 +182,29 @@ bool BoundingBox::hasInsideBox(float x, float y, float z)
 
 int BoundingBox::validate(float const & t, int pFactor)
 {
+    float x, y, z;
+//    std::cout << "t = " << t << std::endl;
     if (t > 0) {
         if (pFactor == 0) {
-            float y = m_y0 + m_yDir * t;
-            float z = m_z0 + m_zDir * t;
+            y = m_y0 + m_yDir * t;
+            z = m_z0 + m_zDir * t;
             if ( y > 0 && y < m_b && z > 0 && z < m_c ) {
                 return 0;
             } else {
                 return 1;
             }
         } else if (pFactor == 1) {
-            float x = m_x0 + m_xDir * t;
-            float z = m_z0 + m_zDir * t;
+            x = m_x0 + m_xDir * t;
+            z = m_z0 + m_zDir * t;
             if ( x > 0 && x < m_a && z > 0 && z < m_c ) {
                 return 0;
             } else {
                 return 1;
             }
         } else if (pFactor == 2) {
-            float x = m_x0 + m_xDir * t;
-            float y = m_y0 + m_yDir * t;
+//            std::cout << "validate t = " << t << std::endl;
+            x = m_x0 + m_xDir * t;
+            y = m_y0 + m_yDir * t;
             if ( x > 0 && x < m_a && y > 0 && y < m_b ) {
                 return 0;
             } else {
@@ -204,6 +212,7 @@ int BoundingBox::validate(float const & t, int pFactor)
             }
         }
     }
+    return 1;
 }
 
 Point3D<float> const & BoundingBox::getEx() const { return m_ex; }

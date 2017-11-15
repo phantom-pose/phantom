@@ -22,4 +22,9 @@ namespace utils
         return 0;
     }
 
+    float dist(float x, float y, float z)
+    {
+        return sqrt( (x*x*1.875*1.875) + (y*y*1.875*1.875) + (z*z*2.5*2.5) );
+    }
+
 }

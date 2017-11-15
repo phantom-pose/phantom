@@ -15,7 +15,7 @@ CalculationArea::CalculationArea( BoxNet const & box )
     m_planes.push_back({ { 0, yLen, 0 }, { 0, -1, 0 } });
     m_planes.push_back({ { 0, 0, zLen }, { 0, 0, -1 } });
 
-    CJsonSerializer::Deserialize(m_costume, "data/serCostume.json");
+    CJsonSerializer::Deserialize(m_costume, "data/stdCostume.json");
 }
 
 unsigned char CalculationArea::getValue( Point3D <float> point )
@@ -206,7 +206,8 @@ void CalculationArea::startIterations(Line & line) {
 //    std::cout << "p = " << p << "\n";
 }
 
-void CalculationArea::startIterations(Line const & line, double * tk, unsigned char * ck, int & k) {
+void CalculationArea::startIterations(Line const & line, float interLayer, double * tk, unsigned char * ck, int & k) {
+    std::cout << "IN NO PARALLEL ITERATE FUNCTION" << std::endl;
     // Извлеку максимально возможную длину из line для проверок выхода за пределы блока
     float stopLen = line.getMaxLen() - 0.001;
     // Запишу направление | НЕ МЕНЯЕТСЯ |
@@ -261,7 +262,8 @@ void CalculationArea::startIterations(Line const & line, double * tk, unsigned c
     float leni;
     int _i;
 //    k = 0;
-    float lastLen = 0;
+    float lastLen = - interLayer;
+    std::cout << "IN NO PARALLEL INTERSECT PREV LOOP" << std::endl;
     while(1) {
         // Найдём минимальную длину !от начальной точки! и соответствующий ей индекс (x, y или z)
         tempLen = minLen;
@@ -297,7 +299,7 @@ void CalculationArea::startIterations(Line const & line, double * tk, unsigned c
     }
 }
 
-void CalculationArea::startIterations(Line const & line, int fbIndex, double * tk, unsigned char * ck, int & k) {
+void CalculationArea::startIterations(Line const & line, float interLayer, int fbIndex, double * tk, unsigned char * ck, int & k) {
     // fbIndex - запрещённый индекс
     // Извлеку максимально возможную длину из line для проверок выхода за пределы блока
     float stopLen = line.getMaxLen() - 0.001;
@@ -354,7 +356,7 @@ void CalculationArea::startIterations(Line const & line, int fbIndex, double * t
     float leni;
     int _i;
 //    k = 0;
-    float lastLen = 0;
+    float lastLen = - interLayer;
     while(1) {
         // Найдём минимальную длину !от начальной точки! и соответствующий ей индекс (x, y или z)
         tempLen = minLen;
@@ -384,7 +386,6 @@ void CalculationArea::startIterations(Line const & line, int fbIndex, double * t
             tk[k] = tempLen - lastLen;
             ck[k] = color;
             k++;
-            lastLen = tempLen;
             break;
         }
         // Передвигаем индекс In в сторону направления распространения
@@ -392,7 +393,7 @@ void CalculationArea::startIterations(Line const & line, int fbIndex, double * t
     }
 }
 
-void CalculationArea::startParallelIterations(Line & line, int const & index, double * tk, unsigned char * ck, int & k)
+void CalculationArea::startParallelIterations(Line & line, float interLayer, int const & index, double * tk, unsigned char * ck, int & k)
 {
     // Запишу направление | НЕ МЕНЯЕТСЯ |
     float Dir[3];
@@ -421,7 +422,7 @@ void CalculationArea::startParallelIterations(Line & line, int const & index, do
 
 //    k = 0;
     unsigned char _color;
-    float lastLen = 0;
+    float lastLen = - interLayer;
     int size;
     size = line.getMaxLen() / Size[index];
 //    if (Oct) {
@@ -464,21 +465,21 @@ int CalculationArea::searchIntersect(Line & line, double * tk, unsigned char * c
 //        std::cout << "PFACTOR == " << pFactor << "\n";
         // Определяем тип параллельности и обрабатываем его
         if (pFactor == 1) { // имеет проекции y и z
-            startIterations(line, 0, tk, ck, k);
+            startIterations(line, 0, 0, tk, ck, k);
 //            std::cout << "HAS Y AND Z\n";
         } else if (pFactor == 2) { // имеет проекции x и z
-            startIterations(line, 1, tk, ck, k);
+            startIterations(line, 0, 1, tk, ck, k);
         } else if (pFactor == 4) { // имеет проекции x и y
-            startIterations(line, 2, tk, ck, k);
+            startIterations(line, 0, 2, tk, ck, k);
         } else if (pFactor == 3) { // Имеет только проекцию z
-            startParallelIterations(line, 2, tk, ck, k);
+            startParallelIterations(line, 0, 2, tk, ck, k);
         } else if (pFactor == 5) { // Имеет только проекцию y
-            startParallelIterations(line, 1, tk, ck, k);
+            startParallelIterations(line, 0, 1, tk, ck, k);
         } else if (pFactor == 6) { // Имеет только проекцию x
-            startParallelIterations(line, 0, tk, ck, k);
+            startParallelIterations(line, 0, 0, tk, ck, k);
         }
     } else {
-        startIterations(line, tk, ck, k);
+        startIterations(line, 0, tk, ck, k);
 //        std::cout << "NO PARALLEL"<< "\n";
     }
     return 0;
@@ -539,38 +540,45 @@ int CalculationArea::searchIntersectCostume(Line & line, double * tk, unsigned c
     if (err)
         return 1; // нет пересечений
 
-
+    float interLayer;
     for (auto it = segments.begin(); it != segments.end(); it++) {
+        std::cout << "IN SEGMENT LOOP PREV LINE" << std::endl;
         if (!k) {
-            tk[k] = (*it).pos;
+            interLayer = (*it).pos;
             line.shiftPosition( (*it).pos );
         } else {
-            tk[k] = (*it).pos - (*(it-1)).end;
+            interLayer = (*it).pos - (*(it-1)).end;
             line.shiftPosition( (*it).pos - (*(it-1)).pos );
         }
         line.setMaxLen( (*it).len );
-        ck[k++] = 0;
+        std::cout << "IN SEGMENT LOOP POST LINE" << std::endl;
 
         // Оцениваем нет ли параллельности
         if ( line.hasParallel() ) {
             int pFactor = line.getPFactor();
             // Определяем тип параллельности и обрабатываем его
             if (pFactor == 1) { // имеет проекции y и z
-                startIterations(line, 0, tk, ck, k);
+                startIterations(line, interLayer, 0, tk, ck, k);
             } else if (pFactor == 2) { // имеет проекции x и z
-                startIterations(line, 1, tk, ck, k);
+                startIterations(line, interLayer, 1, tk, ck, k);
             } else if (pFactor == 4) { // имеет проекции x и y
-                startIterations(line, 2, tk, ck, k);
+                startIterations(line, interLayer, 2, tk, ck, k);
             } else if (pFactor == 3) { // Имеет только проекцию z
-                startParallelIterations(line, 2, tk, ck, k);
+                startParallelIterations(line, interLayer, 2, tk, ck, k);
             } else if (pFactor == 5) { // Имеет только проекцию y
-                startParallelIterations(line, 1, tk, ck, k);
+                startParallelIterations(line, interLayer, 1, tk, ck, k);
             } else if (pFactor == 6) { // Имеет только проекцию x
-                startParallelIterations(line, 0, tk, ck, k);
+                startParallelIterations(line, interLayer, 0, tk, ck, k);
             }
         } else {
-            startIterations(line, tk, ck, k);
+            std::cout << "IN NOT PARALLEL" << std::endl;
+            startIterations(line, interLayer, tk, ck, k);
         }
     }
     return 0;
+}
+
+void CalculationArea::setCostume(std::vector <BoundingBox *> costume)
+{
+    m_costume.swap(costume);
 }
