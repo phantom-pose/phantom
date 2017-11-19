@@ -7,6 +7,8 @@
 #include "utils.h"
 #include "cylinder.h"
 
+float const Eps = 1e-4;
+
 TEST(calculationArea_test, test_sumple_constructor)
 {
     BoxNet box = { 20, 20, 20 };
@@ -162,34 +164,34 @@ TEST(calculationArea_test, test_costumeIntersect)
     std::vector <Segment> segmentsX1;
     area.costumeIntersect(lineX1, segmentsX1);
     f = fabs(segmentsX1[0].pos - (20 * 1.875 + 1));
-    EXPECT_LT(f, kEps);
+    EXPECT_LT(f, Eps);
     f = fabs(segmentsX1[0].end - (40 * 1.875 + 1));
-    EXPECT_LT(f, kEps);
+    EXPECT_LT(f, Eps);
     f = fabs(segmentsX1[0].len - 20 * 1.875);
-    EXPECT_LT(f, kEps);
+    EXPECT_LT(f, Eps);
     f = fabs(segmentsX1[1].pos - (60 * 1.875 + 1));
-    EXPECT_LT(f, kEps);
+    EXPECT_LT(f, Eps);
     f = fabs(segmentsX1[1].end - (80 * 1.875 + 1));
-    EXPECT_LT(f, kEps);
+    EXPECT_LT(f, Eps);
     f = fabs(segmentsX1[1].len - 20 * 1.875);
-    EXPECT_LT(f, kEps);
+    EXPECT_LT(f, Eps);
 
     // Inside
     Line lineX2(30 * 1.875, 50 * 1.875, 70 * 2.5, 1, 0, 0);
     std::vector <Segment> segmentsX2;
     area.costumeIntersect(lineX2, segmentsX2);
     f = fabs(segmentsX2[0].pos - (0));
-    EXPECT_LT(f, kEps);
+    EXPECT_LT(f, Eps);
     f = fabs(segmentsX2[0].end - (10 * 1.875));
-    EXPECT_LT(f, kEps);
+    EXPECT_LT(f, Eps);
     f = fabs(segmentsX2[0].len - 10 * 1.875);
-    EXPECT_LT(f, kEps);
+    EXPECT_LT(f, Eps);
     f = fabs(segmentsX2[1].pos - (30 * 1.875));
-    EXPECT_LT(f, kEps);
+    EXPECT_LT(f, Eps);
     f = fabs(segmentsX2[1].end - (50 * 1.875));
-    EXPECT_LT(f, kEps);
+    EXPECT_LT(f, Eps);
     f = fabs(segmentsX2[1].len - 20 * 1.875);
-    EXPECT_LT(f, kEps);
+    EXPECT_LT(f, Eps);
 
     // Parallel y
 
@@ -198,22 +200,22 @@ TEST(calculationArea_test, test_costumeIntersect)
     std::vector <Segment> segmentsY1;
     area.costumeIntersect(lineY1, segmentsY1);
     f = fabs(segmentsY1[0].pos - (312.5 + 20 * 1.875));
-    EXPECT_LT(f, kEps);
+    EXPECT_LT(f, Eps);
     f = fabs(segmentsY1[0].end - (312.5 + 80 * 1.875));
-    EXPECT_LT(f, kEps);
+    EXPECT_LT(f, Eps);
     f = fabs(segmentsY1[0].len - 60 * 1.875);
-    EXPECT_LT(f, kEps);
+    EXPECT_LT(f, Eps);
 
     // Inside
     Line lineY2(30 * 1.875, 70 * 1.875, 30 * 2.5, 0, -1, 0);
     std::vector <Segment> segmentsY2;
     area.costumeIntersect(lineY2, segmentsY2);
     f = fabs(segmentsY2[0].pos - (0));
-    EXPECT_LT(f, kEps);
+    EXPECT_LT(f, Eps);
     f = fabs(segmentsY2[0].end - 50 * 1.875);
-    EXPECT_LT(f, kEps);
+    EXPECT_LT(f, Eps);
     f = fabs(segmentsY2[0].len - 50 * 1.875);
-    EXPECT_LT(f, kEps);
+    EXPECT_LT(f, Eps);
 
     // Parallel z
 
@@ -222,22 +224,22 @@ TEST(calculationArea_test, test_costumeIntersect)
     std::vector <Segment> segmentsZ1;
     area.costumeIntersect(lineZ1, segmentsZ1);
     f = fabs(segmentsZ1[0].pos - (10 * 2.5 + 3));
-    EXPECT_LT(f, kEps);
+    EXPECT_LT(f, Eps);
     f = fabs(segmentsZ1[0].end - (90 * 2.5 + 3));
-    EXPECT_LT(f, kEps);
+    EXPECT_LT(f, Eps);
     f = fabs(segmentsZ1[0].len - 80 * 2.5);
-    EXPECT_LT(f, kEps);
+    EXPECT_LT(f, Eps);
 
     // Inside
     Line lineZ2(30 * 1.875, 50 * 1.875, 70, 0, 0, 1);
     std::vector <Segment> segmentsZ2;
     area.costumeIntersect(lineZ2, segmentsZ2);
     f = fabs(segmentsZ2[0].pos - (0));
-    EXPECT_LT(f, kEps);
+    EXPECT_LT(f, Eps);
     f = fabs(segmentsZ2[0].end - 155);
-    EXPECT_LT(f, kEps);
+    EXPECT_LT(f, Eps);
     f = fabs(segmentsZ2[0].len - 155);
-    EXPECT_LT(f, kEps);
+    EXPECT_LT(f, Eps);
 
     // Parallel XoY
 
@@ -246,18 +248,55 @@ TEST(calculationArea_test, test_costumeIntersect)
     std::vector <Segment> segmentsXoY1;
     area.costumeIntersect(lineXoY1, segmentsXoY1);
     f = fabs(segmentsXoY1[0].pos - utils::dist(40, 30, 0));
-    EXPECT_LT(f, kEps);
+    EXPECT_LT(f, Eps);
     f = fabs(segmentsXoY1[0].end - utils::dist(50, 37.5, 0));
-    EXPECT_LT(f, kEps);
+    EXPECT_LT(f, Eps);
     f = fabs(segmentsXoY1[0].len - utils::dist(10, 7.5, 0));
-    EXPECT_LT(f, kEps);
+    EXPECT_LT(f, Eps);
     f = fabs(segmentsXoY1[1].pos - utils::dist(70, 52.5, 0));
-    EXPECT_LT(f, kEps);
+    EXPECT_LT(f, Eps);
     f = fabs(segmentsXoY1[1].end - utils::dist(90, 67.5, 0));
-    EXPECT_LT(f, kEps);
+    EXPECT_LT(f, Eps);
     f = fabs(segmentsXoY1[1].len - utils::dist(20, 15, 0));
-    EXPECT_LT(f, kEps);
+    EXPECT_LT(f, Eps);
 
     // Not parallel
+    float d;
+    // Outside
+    Line line1(-10 * 1.875, -20 * 1.875, -30 * 2.5, 75 * 1.875, 85 * 1.875, 110 * 2.5);
+    std::vector <Segment> segments1;
+    area.costumeIntersect(line1, segments1);
+    d = utils::dist((float)600/17, 40, (float)880/17);
+    f = fabs(segments1[0].pos - d);
+    std::cout << " pos0 = " << d << std::endl;
+    EXPECT_LT(f, Eps);
+    d = utils::dist((float)675/11, (float)765/11, (float)90);
+    f = fabs(segments1[0].end - d);
+    std::cout << " end0 = " << d << std::endl;
+    EXPECT_LT(f, Eps);
+    d = utils::dist((float)675/11 - (float)600/17, (float)765/11 - (float)40, (float)90 - (float)880/17);
+    f = fabs(segments1[0].len - d);
+    EXPECT_LT(f, Eps);
 
+    d = utils::dist((float)70, (float)238/3, (float)308/3);
+    f = fabs(segments1[1].pos - d);
+    std::cout << " pos1 = " << d << std::endl;
+    EXPECT_LT(f, Eps);
+    d = utils::dist((float)1350/17, (float)90, (float)1980/17);
+    f = fabs(segments1[1].end - d);
+    std::cout << " end1 = " << d << std::endl;
+    EXPECT_LT(f, Eps);
+    d = utils::dist((float)1350/17 - (float)70, (float)90 - (float)238/3, (float)1980/17 - (float)308/3);
+    f = fabs(segments1[1].len - d);
+    EXPECT_LT(f, Eps);
+
+    double * tk = new double [10];
+    unsigned char * ck = new unsigned char [10];
+    int k = 0;
+    float sum = 0;
+    area.searchIntersectCostume(line1, tk, ck, k);
+    for (int i = 0; i < k; i++) {
+        sum += tk[i];
+        std::cout << "i = " << i <<" col = " << int(ck[i]) << " len = " << tk[i] << " sum = " << sum << std::endl;
+    }
 }

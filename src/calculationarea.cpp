@@ -288,7 +288,7 @@ void CalculationArea::startIterations(Line const & line, float interLayer, doubl
         }
         // Проверяем эту длину на выход за пределы основного блока
         if (minLen > stopLen) {
-            tk[k] = tempLen - lastLen;
+            tk[k] = minLen - lastLen;
             ck[k] = color;
             k++;
             lastLen = tempLen;
@@ -542,7 +542,7 @@ int CalculationArea::searchIntersectCostume(Line & line, double * tk, unsigned c
 
     float interLayer;
     for (auto it = segments.begin(); it != segments.end(); it++) {
-        std::cout << "IN SEGMENT LOOP PREV LINE" << std::endl;
+//        std::cout << "IN SEGMENT LOOP PREV LINE" << std::endl;
         if (!k) {
             interLayer = (*it).pos;
             line.shiftPosition( (*it).pos );
@@ -551,7 +551,9 @@ int CalculationArea::searchIntersectCostume(Line & line, double * tk, unsigned c
             line.shiftPosition( (*it).pos - (*(it-1)).pos );
         }
         line.setMaxLen( (*it).len );
-        std::cout << "IN SEGMENT LOOP POST LINE" << std::endl;
+//        std::cout << "IN SEGMENT LOOP POST LINE" << std::endl;
+        std::cout << line << std::endl;
+        std::cout << "interlayer = " << interLayer << std::endl;
 
         // Оцениваем нет ли параллельности
         if ( line.hasParallel() ) {
@@ -571,7 +573,7 @@ int CalculationArea::searchIntersectCostume(Line & line, double * tk, unsigned c
                 startParallelIterations(line, interLayer, 0, tk, ck, k);
             }
         } else {
-            std::cout << "IN NOT PARALLEL" << std::endl;
+//            std::cout << "IN NOT PARALLEL" << std::endl;
             startIterations(line, interLayer, tk, ck, k);
         }
     }
