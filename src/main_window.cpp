@@ -243,60 +243,10 @@ void MainWindow::showScenario()
 
 void MainWindow::setBoxLeftKnee()
 {
-    BoxNet b1 = m_phantom->boxNet();
-    BoxNet b = b1.cut( {148, 43, 175}, {227, 131, 260} );
-    b.grow({89,170,130},{0,0,30});
-    BoxNet b2 = {89,170,130};
-
-    const float PHI = M_PI/2;
-
-    Knee knee = {
-        {0,0,0},
-        {42*1.875, 40*1.875, 74*2.5},
-        {0, 0, 115*2.5},
-        79*1.875,
-        88*1.875,
-        78*2.5,
-        0,
-        PHI
-    };
-
-    int ymin = 0;
-    int ymax = int(std::max(88.0, 43+33*sin(PHI)*2.5/1.875+45*cos(PHI))+1);
-    int zmin = 0;
-    int zmax = int(std::max(115.0, 70-33*cos(PHI)+45*sin(PHI)*1.875/2.5)+1);
-    int xmin = 0;
-    int xmax = 76;
-
-    for (int iz = zmin; iz < zmax+1; iz++)
-    {
-        std::cout << iz << std::endl;
-        for (int iy = ymin; iy < ymax+1; iy++)
-        {
-            //std::cout << iz << " " << iy<< std::endl;
-            //xmin = 42; xmax=42;
-            for (int ix = xmin; ix < xmax+1; ix++)
-            {
-                //std::cout << iy << " " << ix<< std::endl;
-                Point3D <float> end = { (ix+0.5)*1.875, (iy+0.5)*1.875, (iz+0.5)*2.5 };
-                Point3D <float> start;
-                Point3D <float> * pend = &end;
-                Point3D <float> * pstart = &start;
-                bool hasDef = knee.getStartPoint( pend, pstart, 3 );
-                float x = pstart->x();
-                float y = pstart->y();
-                float z = pstart->z();
-                if (hasDef && x > 0 && x < 89*1.875 && y > 0 && y < 170*1.875 && z > 0 && z < 130*2.5)
-                {
-                    b2.setByXyz(ix,iy,iz,b.getByXyz(int(x/1.875),int(y/1.875),int(z/2.5)));
-                }
-                else {
-                    b2.setByXyz(ix, iy, iz, 0);
-                }
-            }
-        }
-    }
-    m_phantom->setBox(b2);
+    Point3D <int> point;
+    BoxNet b = LeftKnee(m_phantom->boxNet(), M_PI/2, M_PI/2, &point);
+    std::cout << point;
+    m_phantom->setBox(b);
 }
 
 void MainWindow::setBoxRightKnee()
