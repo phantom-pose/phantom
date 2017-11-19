@@ -62,7 +62,7 @@ int BoundingBox::intersect(Line const & line, float & tmin, float & tmax)
 {
 //    std::cout << "intersect " << m_name << std::endl;
     float values[2];
-    values[0] = 0;
+    values[0] = 0.0f;
     values[1] = 0.0f;
     int   valuesCounter = 0;
     Point3D<float> linePos = line.getPosition();
