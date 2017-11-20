@@ -208,6 +208,7 @@ void CalculationArea::startIterations(Line & line) {
 
 void CalculationArea::startIterations(Line const & line, float interLayer, double * tk, unsigned char * ck, int & k) {
     std::cout << "IN NO PARALLEL ITERATE FUNCTION" << std::endl;
+    std::cout << "interlayer = "  << interLayer << std::endl;
     // Извлеку максимально возможную длину из line для проверок выхода за пределы блока
     float stopLen = line.getMaxLen() - 0.001;
     // Запишу направление | НЕ МЕНЯЕТСЯ |
@@ -235,6 +236,7 @@ void CalculationArea::startIterations(Line const & line, float interLayer, doubl
     In[0] = (Bp[0] + Dir[0] * 0.01) / m_xScale;
     In[1] = (Bp[1] + Dir[1] * 0.01) / m_yScale;
     In[2] = (Bp[2] + Dir[2] * 0.01) / m_zScale;
+    std::cout << "Index = { "  << In[0] << " " << In[1] << " " << In[2] << " }" << std::endl;
     // Установлю первоначальное значение цвета
     unsigned char color = m_boxNet.getByXyz(In[0], In[1], In[2]);
     // Запишем размеры ячеек в массив для единообразия
@@ -276,8 +278,10 @@ void CalculationArea::startIterations(Line const & line, float interLayer, doubl
                 _i = i;
             }
         }
+        std::cout << "len until next = " << minLen << std::endl;
         // Извлекаем цвет
         unsigned char _color = m_boxNet.getByXyz(In[0], In[1], In[2]);
+        std::cout << "Index = { "  << In[0] << " " << In[1] << " " << In[2] << " } color = " << int(_color) << std::endl;
         // Сравниваем с предыдущим
         if (color != _color) {
             tk[k] = tempLen - lastLen;
@@ -288,7 +292,7 @@ void CalculationArea::startIterations(Line const & line, float interLayer, doubl
         }
         // Проверяем эту длину на выход за пределы основного блока
         if (minLen > stopLen) {
-            tk[k] = minLen - lastLen;
+            tk[k] = line.getMaxLen() - lastLen;
             ck[k] = color;
             k++;
             lastLen = tempLen;
@@ -383,7 +387,7 @@ void CalculationArea::startIterations(Line const & line, float interLayer, int f
         }
         // Проверяем эту длину на выход за пределы основного блока
         if (minLen > stopLen) {
-            tk[k] = tempLen - lastLen;
+            tk[k] = minLen - lastLen;
             ck[k] = color;
             k++;
             break;
@@ -491,8 +495,10 @@ int CalculationArea::costumeIntersect(Line const & line, std::vector <Segment> &
     for (auto it = m_costume.begin(); it != m_costume.end(); it++) {
         Segment s;
         int err = (*it)->intersect(line, s);
-        if (!err)
+        if (!err) {
             _segments.push_back(s);
+            std::cout << s.pos << "  " << s.end << std::endl;
+        }
     }
 
 //    _segments.push_back({10, 20});
@@ -502,6 +508,9 @@ int CalculationArea::costumeIntersect(Line const & line, std::vector <Segment> &
 //    _segments.push_back({480, 1000});
 
     if ( !_segments.empty() ) {
+//        for (auto it = _segments.begin(); it != _segments.end(); it++) {
+//            std::cout << (*it).pos << "  " << (*it).end << std::endl;
+//        }
         std::sort(_segments.begin(), _segments.end());
 //        for (auto it = _segments.begin(); it != _segments.end(); it++) {
 //            std::cout << (*it).pos << "  " << (*it).end << std::endl;

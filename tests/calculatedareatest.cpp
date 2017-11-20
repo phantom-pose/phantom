@@ -106,7 +106,7 @@ TEST(calculationArea_test, test_searchIntersect)
 //    }
 }
 
-TEST(calculationArea_test, test_costumeIntersect)
+TEST(calculationArea_test, test_modelIntersect)
 {
     BoxNet box = { 100, 100, 100 };
     for (int iz = 0; iz < 100; iz++) {
@@ -299,4 +299,30 @@ TEST(calculationArea_test, test_costumeIntersect)
         sum += tk[i];
         std::cout << "i = " << i <<" col = " << int(ck[i]) << " len = " << tk[i] << " sum = " << sum << std::endl;
     }
+}
+
+TEST(calculationArea_test, test_costumeIntersect)
+{
+    Phantom phantom;
+    CalculationArea area(phantom.boxNet());
+
+    Line line(-0.3, -0.1, 0.73, 0.2951, 0.1376, 0.9455);
+    double * tk = new double [1000];
+    unsigned char * ck = new unsigned char [1000];
+    int k = 0;
+    float sum = 0;
+    area.searchIntersectCostume(line, tk, ck, k);
+    for (int i = 0; i < k; i++) {
+        sum += tk[i];
+        std::cout << "i = " << i <<" col = " << int(ck[i]) << " len = " << tk[i] << " sum = " << sum << std::endl;
+    }
+
+    Line line2(-0.3, -0.1, 0.73, 0.2951, 0.1376, 0.9455);
+    std::vector <Segment> segments;
+    area.costumeIntersect(line2, segments);
+    for (auto it = segments.begin(); it != segments.end(); it++) {
+        std::cout << "begin = " << (*it).pos << " end = " << (*it).end << std::endl;
+    }
+
+    // TODO Исправления во всех параллелях и случай с заменой цвета и пересечением границы одновременно
 }
