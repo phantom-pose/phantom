@@ -67,9 +67,6 @@ MainWindow::MainWindow()
 //    costume.push_back(new BoundingBox(18.75, 37.5, 25, 150, 112.5, 125, "alpha"));
 //    costume.push_back(new BoundingBox(37.5, 56.25, 50, 37.5, 75, 175, "beta"));
 //    costume.push_back(new BoundingBox(112.5, 56.25, 50, 37.5, 75, 175, "gamma"));
-
-
-//    m_phantom = new Phantom();
 // ************** serialization branch stuff end ***********************
 
 //    m_phantom = new Phantom( box );
@@ -149,11 +146,11 @@ void MainWindow::createMainArea()
     QVBoxLayout * upDownLayout = new QVBoxLayout();
 
     QSpinBox * upDownSBZ = new QSpinBox();
-    upDownSBZ->setMaximum( 500 );
+    upDownSBZ->setMaximum( m_phantom->boxSizeZ() );
     QSpinBox * upDownSBX = new QSpinBox();
-    upDownSBX->setMaximum( 500 );
+    upDownSBX->setMaximum( m_phantom->boxSizeX() );
     QSpinBox * upDownSBY = new QSpinBox();
-    upDownSBY->setMaximum( 500 );
+    upDownSBY->setMaximum( m_phantom->boxSizeY() );
 
     QPushButton * scenario = new QPushButton("Scen");
     connect(scenario, SIGNAL(clicked()), this, SLOT(executeScenario()));

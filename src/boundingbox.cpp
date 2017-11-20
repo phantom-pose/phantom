@@ -60,7 +60,7 @@ void BoundingBox::rotate(RotationMatrix matrix)
 
 int BoundingBox::intersect(Line const & line, float & tmin, float & tmax)
 {
-//    std::cout << "intersect " << m_name << std::endl;
+    std::cout << "intersect " << m_name << std::endl;
     float values[2];
     values[0] = 0.0f;
     values[1] = 0.0f;
@@ -85,6 +85,10 @@ int BoundingBox::intersect(Line const & line, float & tmin, float & tmax)
     m_xDir = c11 * lineDir.x() + c21 * lineDir.y() + c31 * lineDir.z();
     m_yDir = c12 * lineDir.x() + c22 * lineDir.y() + c32 * lineDir.z();
     m_zDir = c13 * lineDir.x() + c23 * lineDir.y() + c33 * lineDir.z();
+
+//    std::cout << "Новые координаты:\n";
+//    std::cout << "x0 = " << m_x0 << " y0 = " << m_y0 << " z0 = " << m_z0 << "\n";
+//    std::cout << "xDir = " << m_xDir << " yDir = " << m_yDir << " zDir = " << m_zDir << "\n";
 
     float t1, t2;
     int err = 1;
