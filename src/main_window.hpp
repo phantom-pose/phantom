@@ -17,7 +17,8 @@
 #include "json/json.h"
 #include <fstream>
 #include <string>
-#include "joint.h"
+#include "knee.h"
+#include "elbow.h"
 #include "plane.h"
 
 #include "line.h"
@@ -42,6 +43,7 @@ private slots:
     void loadScenario();
     void setBoxLeftKnee();
     void setBoxRightKnee();
+    void setBoxRightElbow();
 private:
     NetPaintArea *m_paintAreaX, *m_paintAreaY, *m_paintAreaZ;
     LinePaintArea *m_lineArea;

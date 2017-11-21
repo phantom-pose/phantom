@@ -127,6 +127,8 @@ void MainWindow::createMainArea()
     connect(setBoxBtnRightKnee, SIGNAL(clicked()), this, SLOT(setBoxRightKnee()));
     QPushButton * setBoxBtnLeftKnee = new QPushButton("setBox Left Knee");
     connect(setBoxBtnLeftKnee, SIGNAL(clicked()), this, SLOT(setBoxLeftKnee()));
+    QPushButton * setBoxBtnRightElbow = new QPushButton("setBox RightElbow");
+    connect(setBoxBtnRightElbow, SIGNAL(clicked()), this, SLOT(setBoxRightElbow()));
 
     connect(upDownSBZ, SIGNAL( valueChanged(int) ),  m_paintAreaZ, SLOT( paintZ(int) ));
     connect(upDownSBX, SIGNAL( valueChanged(int) ),  m_paintAreaX, SLOT( paintX(int) ));
@@ -171,6 +173,7 @@ void MainWindow::createMainArea()
     upDownLayout->addWidget(scenario);
     upDownLayout->addWidget(setBoxBtnRightKnee);
     upDownLayout->addWidget(setBoxBtnLeftKnee);
+    upDownLayout->addWidget(setBoxBtnRightElbow);
 
     mainLayout->addLayout(upDownLayout, 0, 0, Qt::AlignTop);
     mainLayout->addWidget(m_tab, 0, 1);
@@ -245,15 +248,20 @@ void MainWindow::setBoxLeftKnee()
 {
     Point3D <int> point;
     BoxNet b = LeftKnee(m_phantom->boxNet(), M_PI/2, M_PI/2, &point);
-    std::cout << point;
     m_phantom->setBox(b);
 }
 
 void MainWindow::setBoxRightKnee()
 {
     Point3D <int> point;
-    BoxNet b = RightKnee(m_phantom->boxNet(), M_PI/2, M_PI/2, &point);
-    std::cout << point;
+    BoxNet b = RightKnee(m_phantom->boxNet(), M_PI/2, 0, &point);
+    m_phantom->setBox(b);
+}
+
+void MainWindow::setBoxRightElbow()
+{
+    Point3D <int> point;
+    BoxNet b = RightElbow(m_phantom->boxNet(), M_PI/6, 0, 0, &point);
     m_phantom->setBox(b);
 }
 

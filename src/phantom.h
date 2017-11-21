@@ -14,7 +14,7 @@
 #include <string>
 #include "cylinder.h"
 #include "boundingbox.h"
-#include "joint.h"
+#include "knee.h"
 
 /*!
  * \brief Основной класс для работы с воксельной моделью - Phantom

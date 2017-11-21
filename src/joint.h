@@ -44,16 +44,5 @@ private:
     Plane m_endPlane2;
 };
 
-class Knee
-{
-public:
-    Knee(Point3D <float> rot1, Point3D <float> rot2, Point3D <float> start, float x, float y,float z, float theta, float phi);
-
-    bool getStartPoint(Point3D <float> * end, Point3D <float> * start, float der);
-
-private:
-    Joint * m_joint;
-};
-
-BoxNet RightKnee(BoxNet b1, float phi, float theta, Point3D <int> * coord);
-BoxNet LeftKnee(BoxNet b1, float phi, float theta, Point3D <int> * coord);
+Point3D <float> RotateX(Point3D <float> rot, Point3D <float>  start, float angle);
+Point3D <float> RotateY(Point3D <float> rot, Point3D <float>  start, float angle);
