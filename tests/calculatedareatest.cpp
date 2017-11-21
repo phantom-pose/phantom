@@ -314,7 +314,8 @@ TEST(calculationArea_test, test_costumeIntersect)
     area.searchIntersectCostume(line, tk, ck, k);
     for (int i = 0; i < k; i++) {
         sum += tk[i];
-        std::cout << "i = " << i <<" col = " << int(ck[i]) << " len = " << tk[i] << " sum = " << sum << std::endl;
+//        std::cout << "i = " << i <<" col = " << int(ck[i]) << " len = " << tk[i] << " sum = " << sum << std::endl;
+        printf("k = %3d col = %3d len = %8.3f sum = %8.3f\n", i, int(ck[i]), tk[i], sum );
     }
 
     Line line2(-0.3, -0.1, 0.73, 0.2951, 0.1376, 0.9455);
