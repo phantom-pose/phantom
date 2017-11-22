@@ -35,6 +35,8 @@ public:
     bool operator == (Vector3D const & obj) const;
     Vector3D & operator = ( Vector3D const & obj );
     Vector3D operator * (Vector3D const & obj) const;
+    Vector3D operator - (Vector3D const & obj) const;
+    Vector3D operator + (Vector3D const & obj) const;
 
 private:
     void calculateEndpoint();

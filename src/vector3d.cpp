@@ -211,6 +211,45 @@ Vector3D Vector3D::operator * (Vector3D const & obj) const
     return res;
 }
 
+Vector3D Vector3D::operator + (Vector3D const & obj) const
+{
+    Point3D <float> pos = { m_x0, m_y0, m_z0 };
+    if (pos != obj.getPosition()) { return *this; }
+    float ax = m_x1 - m_x0;
+    float ay = m_y1 - m_y0;
+    float az = m_z1 - m_z0;
+    Point3D <float> objPos = obj.getPosition();
+    Point3D <float> objEp = obj.getEndpoint();
+    float bx = objEp.x() - objPos.x();
+    float by = objEp.y() - objPos.y();
+    float bz = objEp.z() - objPos.z();
+
+    float sumx = ax + bx;
+    float sumy = ay + by;
+    float sumz = az + bz;
+
+    return { true, pos, { m_x0 + sumx, m_y0 + sumy, m_z0 + sumz } };
+}
+
+Vector3D Vector3D::operator - (Vector3D const & obj) const
+{
+    Point3D <float> pos = { m_x0, m_y0, m_z0 };
+    if (pos != obj.getPosition()) { return *this; }
+    float ax = m_x1 - m_x0;
+    float ay = m_y1 - m_y0;
+    float az = m_z1 - m_z0;
+    Point3D <float> objPos = obj.getPosition();
+    Point3D <float> objEp = obj.getEndpoint();
+    float bx = objEp.x() - objPos.x();
+    float by = objEp.y() - objPos.y();
+    float bz = objEp.z() - objPos.z();
+
+    float diffx = ax - bx;
+    float diffy = ay - by;
+    float diffz = az - bz;
+
+    return { true, pos, { m_x0 + diffx, m_y0 + diffy, m_z0 + diffz } };
+}
 
 /*!
  * \brief Vector3D::calculateEndpoint внутренняя функция расчета

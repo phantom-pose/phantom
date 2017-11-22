@@ -116,3 +116,45 @@ TEST(vector3d_test, multiply)
     EXPECT_EQ(ep, _ep);
     EXPECT_EQ(len, _len);
 }
+
+TEST(vector3d_test, plus)
+{
+    Vector3D vec1 = { { 3, 4, 5 }, { 10, 0, 0 }, 15 };
+    Vector3D vec2 = { { 3, 4, 5 }, { 0, 6, 0 }, 10 };
+    Vector3D vec3 = vec1 + vec2;
+    Point3D <float> dir = vec3.getDirection();
+    Point3D <float> pos = vec3.getPosition();
+    Point3D <float> ep = vec3.getEndpoint();
+    float len = vec3.getLength();
+
+    Point3D <float> _dir = { 3 * sqrt(13) / 13, 2 * sqrt(13) / 13, 0 };
+    Point3D <float> _pos = { 3, 4, 5 };
+    Point3D <float> _ep = { 18, 14, 5 };
+    float _len = 5 * sqrt(13);
+
+    EXPECT_EQ(dir, _dir);
+    EXPECT_EQ(pos, _pos);
+    EXPECT_EQ(ep, _ep);
+    EXPECT_EQ(len, _len);
+}
+
+TEST(vector3d_test, minus)
+{
+    Vector3D vec1 = { { 3, 4, 5 }, { 10, 0, 0 }, 15 };
+    Vector3D vec2 = { { 3, 4, 5 }, { 0, 6, 0 }, 10 };
+    Vector3D vec3 = vec1 - vec2;
+    Point3D <float> dir = vec3.getDirection();
+    Point3D <float> pos = vec3.getPosition();
+    Point3D <float> ep = vec3.getEndpoint();
+    float len = vec3.getLength();
+
+    Point3D <float> _dir = { 3 * sqrt(13) / 13, - 2 * sqrt(13) / 13, 0 };
+    Point3D <float> _pos = { 3, 4, 5 };
+    Point3D <float> _ep = { 18, -6, 5 };
+    float _len = 5 * sqrt(13);
+
+    EXPECT_EQ(dir, _dir);
+    EXPECT_EQ(pos, _pos);
+    EXPECT_EQ(ep, _ep);
+    EXPECT_EQ(len, _len);
+}
