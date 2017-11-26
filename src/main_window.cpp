@@ -44,13 +44,13 @@ MainWindow::MainWindow()
 //    m_phantom->pickLegs();
 //    m_phantom->readBin("rightLeg.bin");
     m_paintAreaX = new NetPaintArea(0, m_phantom->boxNet());
-    m_paintAreaX->setProps( 3, 4 );
+    m_paintAreaX->setProps( 4, 11 );
     m_paintAreaX->setAlignment(Qt::AlignTop);
     m_paintAreaY = new NetPaintArea(0, m_phantom->boxNet());
-    m_paintAreaY->setProps( 3, 4 );
+    m_paintAreaY->setProps( 4, 11 );
     m_paintAreaY->setAlignment(Qt::AlignTop);
     m_paintAreaZ = new NetPaintArea(0, m_phantom->boxNet());
-    m_paintAreaZ->setProps( 3, 3 );
+    m_paintAreaZ->setProps( 4, 11 );
     m_paintAreaZ->setAlignment(Qt::AlignTop);
 
     /////////////////////////////////////////////////////////////////////////
@@ -254,14 +254,14 @@ void MainWindow::setBoxLeftKnee()
 void MainWindow::setBoxRightKnee()
 {
     Point3D <int> point;
-    BoxNet b = RightKnee(m_phantom->boxNet(), M_PI/2, 0, &point);
+    BoxNet b = RightKnee(m_phantom->boxNet(), 0, -M_PI/2, &point);
     m_phantom->setBox(b);
 }
 
 void MainWindow::setBoxRightElbow()
 {
     Point3D <int> point;
-    BoxNet b = RightElbow(m_phantom->boxNet(), M_PI/6, 0, 0, &point);
+    BoxNet b = RightElbow(m_phantom->boxNet(), M_PI/2, 0, 0, &point);
     m_phantom->setBox(b);
 }
 

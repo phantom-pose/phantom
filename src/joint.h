@@ -4,6 +4,10 @@
 #include "point3d.hpp"
 #include "boxnet.h"
 
+float constexpr VOX_X = 1.775;
+float constexpr VOX_Y = 1.775;
+float constexpr VOX_Z = 4.84;
+
 class Joint {
 public:
     /*!

@@ -79,10 +79,10 @@ public:
 
 private:
     BoxNet m_boxNet;
-    float m_xScale = 1.875;
-    float m_yScale = 1.875;
-    float m_zScale = 2.50;
-    Point3D <float> m_scales = { 1.875, 1.875, 2.50 };
+    float m_xScale = 1.775;
+    float m_yScale = 1.775;
+    float m_zScale = 4.84;
+    Point3D <float> m_scales = { 1.775, 1.775, 4.84 };
 //    std::vector<int> m_leftLeg1, m_leftLeg2, m_leftLeg, m_rightLeg, m_leftHand, m_rightHand;
     BodyPart * m_leftLeg1;
     std::vector <BodyPart*> m_bodyparts;

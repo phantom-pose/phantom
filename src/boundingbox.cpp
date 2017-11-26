@@ -245,8 +245,8 @@ Point3D<float> BoundingBox::getEndpoint() const
 std::ostream & operator << (std::ostream & os, BoundingBox const & obj)
 {
     os << "|BoundingBox|\n\
-        position  = {" << obj.getPosition().getShrink(1.875, 1.875, 2.5) << "}\n\
-        end = {" << obj.getEndpoint().getShrink(1.875, 1.875, 2.5) << "}\n";
+        position  = {" << obj.getPosition().getShrink(1.775, 1.775, 4.84) << "}\n\
+        end = {" << obj.getEndpoint().getShrink(1.775, 1.775, 4.84) << "}\n";
 //        ex = {" << obj.getEx() << "}\n\
 //        ey = {" << obj.getEy() << "}\n\
 //        ez = {" << obj.getEz() << "}\n
