@@ -32,7 +32,7 @@ Phantom::Phantom()
     // **********************************************************************
 //    makeNet();
 //    rotate();
-//    rightKneeRotate();
+    rightKneeRotate();
 }
 
 /*!
