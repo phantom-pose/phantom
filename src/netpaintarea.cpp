@@ -27,8 +27,8 @@ NetPaintArea::NetPaintArea(QWidget *parent, BoxNet const & boxNet)
 void NetPaintArea::paintEvent(QPaintEvent * event)
 {
     unsigned char value;
-    int width = m_wProp * m_slice.getSizeX();
-    int height = m_hProp * m_slice.getSizeY();
+    int width = (int)(m_wProp * m_slice.getSizeX());
+    int height = (int)(m_hProp * m_slice.getSizeY());
 
     QPixmap pixmap = { width, height };
     QPainter painter(&pixmap);
@@ -104,10 +104,31 @@ void NetPaintArea::setScales(float w, float h)
     (h > w) ? m_hScale = h/w : m_wScale = w/h;
 }
 
-void NetPaintArea::setProps(int w, int h)
+void NetPaintArea::setProps(float w, float h)
 {
-    m_wProp = w;
-    m_hProp = h;
+    // будем искать приближенные целые значения для пропорций
+    // На попытку нахождения нужной точности будет 7 итераций
+    float eps = 0.1;
+    float attitude = h / w;
+    for (int i = 1; i < 8; i++) {
+        float cur_attitude = attitude * i;
+        int bot_edge = int(cur_attitude);
+        int top_edge = int(cur_attitude + 1);
+//        std::cout << "bot_edge = " << bot_edge << "top_edge = " << top_edge << std::endl;
+        float bot_diff = cur_attitude - bot_edge;
+        if (bot_diff < eps) {
+            m_wProp = i;
+            m_hProp = bot_edge;
+            break;
+        }
+        float top_diff = top_edge - cur_attitude;
+        if (top_diff < eps) {
+            m_wProp = i;
+            m_hProp = top_edge;
+            break;
+        }
+    }
+//    std::cout << "Выставлены значения w = " << m_wProp << " h = " << m_hProp << std::endl;
 }
 
 void NetPaintArea::setScale(float scale)
@@ -162,8 +183,8 @@ void NetPaintArea::saveImage()
     file.open(QIODevice::WriteOnly);
 
     unsigned char value;
-    int width = m_wProp * m_slice.getSizeX();
-    int height = m_hProp * m_slice.getSizeY();
+    int width = (int)(m_wProp * m_slice.getSizeX());
+    int height = (int)(m_hProp * m_slice.getSizeY());
 
     QPixmap pixmap = { width, height };
     QPainter painter(&pixmap);

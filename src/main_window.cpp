@@ -44,13 +44,13 @@ MainWindow::MainWindow()
 //    m_phantom->pickLegs();
 //    m_phantom->readBin("rightLeg.bin");
     m_paintAreaX = new NetPaintArea(0, m_phantom->boxNet());
-    m_paintAreaX->setProps( 4, 11 );
+    m_paintAreaX->setProps( m_phantom->yScale(), m_phantom->zScale() );
     m_paintAreaX->setAlignment(Qt::AlignTop);
     m_paintAreaY = new NetPaintArea(0, m_phantom->boxNet());
-    m_paintAreaY->setProps( 4, 11 );
+    m_paintAreaY->setProps( m_phantom->xScale(), m_phantom->zScale() );
     m_paintAreaY->setAlignment(Qt::AlignTop);
     m_paintAreaZ = new NetPaintArea(0, m_phantom->boxNet());
-    m_paintAreaZ->setProps( 4, 11 );
+    m_paintAreaZ->setProps( m_phantom->xScale(), m_phantom->yScale() );
     m_paintAreaZ->setAlignment(Qt::AlignTop);
 
     /////////////////////////////////////////////////////////////////////////
