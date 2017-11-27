@@ -26,8 +26,8 @@ bool Knee::getStartPoint(Point3D <float> * end, Point3D <float> * start, float d
     m_joint->getStartPoint(end, start, der);
 }
 
-constexpr int KNEE_TOP_Z = 240;
-constexpr int KNEE_BOTTOM_Z = 200;
+constexpr int KNEE_TOP_Z = 270;
+constexpr int KNEE_BOTTOM_Z = 170;
 
 //constexpr int ROT_RIGHT_LEG_X = 82;
 //constexpr int ROT_RIGHT_LEG_Y = 72;
@@ -71,10 +71,10 @@ BoxNet RightKnee(BoxNet b1, float phi, float theta, Point3D <int> * coord) {
     int ROT_RIGHT_LEG_Y  = points[7]["xyz"][1].asInt();
     int ROT_RIGHT_LEG_Z  = points[7]["xyz"][2].asInt();
 
-    const float dx = 0, dy =140, dz=50;
+    const float dx = 0, dy =150, dz=50;
     const float xmax = 100;
-    const float ymax = 350;
-    const float zmax = 200;
+    const float ymax = 370;
+    const float zmax = 230;
     Knee knee = {
         {(dx+ROT_RIGHT_LEG_X-RIGHT_KNEE_X1)*VOX_X,(ROT_RIGHT_LEG_Y-RIGHT_KNEE_Y1+dy)*VOX_Y,(ROT_RIGHT_LEG_Z-KNEE_BOTTOM_Z+dz)*VOX_Z},
         {(dx+ROT_RIGHT_KNEE_X-RIGHT_KNEE_X1)*VOX_X, (ROT_RIGHT_KNEE_Y-RIGHT_KNEE_Y1+dy)*VOX_Y, (ROT_RIGHT_KNEE_Z-KNEE_BOTTOM_Z+dz)*VOX_Z},
@@ -136,10 +136,10 @@ BoxNet RightKnee(BoxNet b1, float phi, float theta, Point3D <int> * coord) {
 
 BoxNet LeftKnee(BoxNet b1, float phi, float theta, Point3D <int> * coord) {
 
-    const float dx = 0, dy =140, dz=50;
+    const float dx = 0, dy =150, dz=50;
     const float xmax = 100;
-    const float ymax = 350;
-    const float zmax = 200;
+    const float ymax = 370;
+    const float zmax = 230;
     Knee knee = {
         {(dx+ROT_LEFT_LEG_X-LEFT_KNEE_X1)*VOX_X,(ROT_LEFT_LEG_Y-LEFT_KNEE_Y1+dy)*VOX_Y,(ROT_LEFT_LEG_Z-KNEE_BOTTOM_Z+dz)*VOX_Z},
         {(dx+ROT_LEFT_KNEE_X-LEFT_KNEE_X1)*VOX_X, (ROT_LEFT_KNEE_Y-LEFT_KNEE_Y1+dy)*VOX_Y, (ROT_LEFT_KNEE_Z-KNEE_BOTTOM_Z+dz)*VOX_Z},
