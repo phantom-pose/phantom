@@ -54,8 +54,8 @@ bool Knee::getStartPoint(Point3D <float> * end, Point3D <float> * start, float d
 //constexpr int RIGHT_KNEE_X2 = 144;
 //constexpr int RIGHT_KNEE_Y2 = 131;
 
-constexpr int LEFT_KNEE_X2 = 227;
-constexpr int LEFT_KNEE_Y2 = 131;
+//constexpr int LEFT_KNEE_X2 = 227;
+//constexpr int LEFT_KNEE_Y2 = 131;
 
 BoxNet RightKnee(BoxNet b1, float phi, float theta, Point3D <int> * coord) {
 

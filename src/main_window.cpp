@@ -13,7 +13,10 @@ MainWindow::MainWindow()
 {
     setWindowTitle("phantom");
     m_phantom = new Phantom();
-
+//    m_phantom->combineBin("data/bodyparts/leftHand-1.bin", "data/bodyparts/leftHand-2.bin", "data/bodyparts/leftHand-3.bin", "data/bodyparts/leftHand.bin");
+//    m_phantom->combineBin("data/bodyparts/rightHand-1.bin", "data/bodyparts/rightHand-2.bin", "data/bodyparts/rightHand-3.bin", "data/bodyparts/rightHand.bin");
+//    m_phantom->combineBin("data/bodyparts/leftLeg-1.bin", "data/bodyparts/leftLeg-2.bin", "data/bodyparts/leftLeg-3.bin", "data/bodyparts/leftLeg.bin");
+//    m_phantom->combineBin("data/bodyparts/rightLeg-1.bin", "data/bodyparts/rightLeg-2.bin", "data/bodyparts/rightLeg-3.bin", "data/bodyparts/rightLeg.bin");
 //    m_phantom = new Phantom( box );
 //    m_phantom->grow( { 200, 200, 200 }, { 50, 50, 50 } );
 

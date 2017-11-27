@@ -65,7 +65,9 @@ public:
     void readBin(char const * filename);
     void checkBin(char const * filename);
     void check(BodyPart const & bp);
-    void cutBin(char const * filename, int firstEdge, int secondEdge);
+    void cutBin(char const * filename, int firstEdge, int secondEdge, const char * newname);
+    void cutBodyparts();
+    void combineBin(char const * filename1, char const * filename2, char const * filename3, const char * out);
     void rightKneeRotate();
 
 //    void rotateBodyPart(BodyPart const & bp, float pitch, float yaw);

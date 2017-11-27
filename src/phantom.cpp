@@ -30,6 +30,7 @@ Phantom::Phantom()
         m_rotpoints[i] = p;
     }
     // **********************************************************************
+    cutBodyparts();
     loadScenario();
     rightKneeRotate();
 }
@@ -378,16 +379,16 @@ void Phantom::check(BodyPart const & bp)
     }
 }
 
-void Phantom::cutBin(char const * filename, int firstEdge, int secondEdge)
+void Phantom::cutBin(char const * filename, int firstEdge, int secondEdge, char const * newname)
 {
     int num = 0, z = 0;
     int square = m_boxNet.getSizeX() * m_boxNet.getSizeY();
     char name1[40];
     char name2[40];
     char name3[40];
-    sprintf(name1, "1-%s", filename);
-    sprintf(name2, "2-%s", filename);
-    sprintf(name3, "3-%s", filename);
+    sprintf(name1, "%s-1.bin", newname);
+    sprintf(name2, "%s-2.bin", newname);
+    sprintf(name3, "%s-3.bin", newname);
     std::ifstream input(filename, std::ios::binary);
     std::ofstream output1(name1, std::ios::binary);
     std::ofstream output2(name2, std::ios::binary);
@@ -408,6 +409,53 @@ void Phantom::cutBin(char const * filename, int firstEdge, int secondEdge)
     output1.close();
     output2.close();
     output3.close();
+}
+
+void Phantom::cutBodyparts()
+{
+    Json::Value rootJoint;
+    std::ifstream jointfile("data/jointParams.json", std::ifstream::binary);
+    jointfile >> rootJoint;
+    jointfile.close();
+
+    // Правая коленка
+    int rKz1 = rootJoint["rightKnee"]["z1"].asInt();
+    int rKz2 = rootJoint["rightKnee"]["z2"].asInt();
+    cutBin("data/bodyparts/rightLeg.bin", rKz1, rKz2-1, "data/bodyparts/rightLeg");
+    // Левая
+    int lKz1 = rootJoint["leftKnee"]["z1"].asInt();
+    int lKz2 = rootJoint["lefttKnee"]["z2"].asInt();
+    cutBin("data/bodyparts/leftLeg.bin", lKz1, lKz2-1, "data/bodyparts/leftLeg");
+}
+
+void Phantom::combineBin(char const * filename1, char const * filename2, char const * filename3, char const * out)
+{
+    int num = 0;
+
+    std::ofstream output(out, std::ios::binary);
+    std::ifstream input1(filename1, std::ios::binary);
+    std::ifstream input2(filename2, std::ios::binary);
+    std::ifstream input3(filename3, std::ios::binary);
+    while (!input1.eof())
+    {
+        input1.read(reinterpret_cast<char*>(&num), sizeof(num));
+        output.write(reinterpret_cast<char const*>(&num), sizeof(num));
+    }
+    while (!input2.eof())
+    {
+        input2.read(reinterpret_cast<char*>(&num), sizeof(num));
+        output.write(reinterpret_cast<char const*>(&num), sizeof(num));
+    }
+    while (!input3.eof())
+    {
+        input3.read(reinterpret_cast<char*>(&num), sizeof(num));
+        output.write(reinterpret_cast<char const*>(&num), sizeof(num));
+    }
+
+    output.close();
+    input1.close();
+    input2.close();
+    input3.close();
 }
 
 void Phantom::makeNet()
