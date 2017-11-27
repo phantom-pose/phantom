@@ -59,5 +59,5 @@ macro(copy_files GLOBPAT DESTINATION)
   endforeach(FILENAME)
 endmacro(copy_files)
 
-set(DATA_FILES_LIST data/test.dat data/AF.dat data/AF_organs.dat data/palette.dat data/AF_bin.dat data/test_bin.dat data/bodyparts/leftHand-1.bin data/bodyparts/leftHand-2.bin data/bodyparts/leftHand-3.bin data/bodyparts/rightHand-1.bin data/bodyparts/rightHand-2.bin data/bodyparts/rightHand-3.bin data/bodyparts/leftLeg-1.bin data/bodyparts/leftLeg-2.bin data/bodyparts/leftLeg-3.bin data/bodyparts/rightLeg-1.bin data/bodyparts/rightLeg-2.bin data/bodyparts/rightLeg-3.bin data/rotPoints.json data/scenario.json data/costume.json)
+set(DATA_FILES_LIST data/test.dat data/AF.dat data/AF_organs.dat data/palette.dat data/AF_bin.dat data/test_bin.dat data/bodyparts/leftHand-1.bin data/bodyparts/leftHand-2.bin data/bodyparts/leftHand-3.bin data/bodyparts/rightHand-1.bin data/bodyparts/rightHand-2.bin data/bodyparts/rightHand-3.bin data/bodyparts/leftLeg-1.bin data/bodyparts/leftLeg-2.bin data/bodyparts/leftLeg-3.bin data/bodyparts/rightLeg-1.bin data/bodyparts/rightLeg-2.bin data/bodyparts/rightLeg-3.bin data/rotPoints.json data/scenario.json data/costume.json data/jointParams.json)
 copy_files("${DATA_FILES_LIST}" ${CMAKE_CURRENT_BINARY_DIR})

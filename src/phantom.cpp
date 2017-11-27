@@ -30,8 +30,7 @@ Phantom::Phantom()
         m_rotpoints[i] = p;
     }
     // **********************************************************************
-//    makeNet();
-//    rotate();
+    loadScenario();
     rightKneeRotate();
 }
 
@@ -602,17 +601,19 @@ void Phantom::loadScenario()
         float c = parts[i]["c"].asFloat();
         m_costume.push_back(new BoundingBox(x0, y0, z0, a, b, c));
     }
+}
+
+void Phantom::executeScenario()
+{
     makeNet();
     rotate();
     fillCostume();
     serializeCostume();
-    std::cout << "BOXNET PARAMETERS" << std::endl;
-    std::cout << "size = { " << m_knee.getSizeX() << " " << m_knee.getSizeY() << " " << m_knee.getSizeZ() << " }\n";
-    std::cout << "position = " << m_nymph << "\n";
-    std::cout << "sizeTHIS = { " << m_boxNet.getSizeX() << " " << m_boxNet.getSizeY() << " " << m_boxNet.getSizeZ() << " }\n";
+//    std::cout << "BOXNET PARAMETERS" << std::endl;
+//    std::cout << "size = { " << m_knee.getSizeX() << " " << m_knee.getSizeY() << " " << m_knee.getSizeZ() << " }\n";
+//    std::cout << "position = " << m_nymph << "\n";
+//    std::cout << "sizeTHIS = { " << m_boxNet.getSizeX() << " " << m_boxNet.getSizeY() << " " << m_boxNet.getSizeZ() << " }\n";
     m_boxNet.insert(m_knee, m_nymph);
-
-//    dumpCostume();
 }
 
 void Phantom::fillCostume()

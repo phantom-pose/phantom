@@ -122,7 +122,7 @@ void MainWindow::createMainArea()
     upDownSBY->setMaximum( 500 );
 
     QPushButton * scenario = new QPushButton("Scen");
-    connect(scenario, SIGNAL(clicked()), this, SLOT(loadScenario()));
+    connect(scenario, SIGNAL(clicked()), this, SLOT(executeScenario()));
     QPushButton * setBoxBtnRightKnee = new QPushButton("setBox Right Knee");
     connect(setBoxBtnRightKnee, SIGNAL(clicked()), this, SLOT(setBoxRightKnee()));
     QPushButton * setBoxBtnLeftKnee = new QPushButton("setBox Left Knee");
@@ -265,7 +265,7 @@ void MainWindow::setBoxRightElbow()
     m_phantom->setBox(b);
 }
 
-void MainWindow::loadScenario()
+void MainWindow::executeScenario()
 {
-    m_phantom->loadScenario();
+    m_phantom->executeScenario();
 }

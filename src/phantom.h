@@ -72,6 +72,7 @@ public:
     void makeNet();
     void rotate();
     void loadScenario();
+    void executeScenario();
     void fillCostume();
     void printLegPlanes();
     void dumpCostume();
