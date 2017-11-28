@@ -264,7 +264,7 @@ void MainWindow::setBoxRightKnee()
 void MainWindow::setBoxRightElbow()
 {
     Point3D <int> point;
-    BoxNet b = RightElbow(m_phantom->boxNet(), M_PI/2, 0, 0, &point);
+    BoxNet b = RightElbow(m_phantom->boxNet(), M_PI/6, 0, 0, &point);
     m_phantom->setBox(b);
 }
 
