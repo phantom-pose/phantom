@@ -40,9 +40,9 @@ Phantom::Phantom()
 //    m_nymph = m_nymph + point;
 //    m_rightKnee.setPosition(point);
     m_leftKnee = LeftKnee(m_boxNet, M_PI/2, M_PI/2, &point);
-//    m_rightElbow = RightElbow(m_boxNet, M_PI/2, 0, 0, &point);
-//    pos = m_leftKnee.position();
-//    std::cout << "position in m_leftknee after LeftKnee" << pos << std::endl;
+    m_rightElbow = RightElbow(m_boxNet, M_PI/2, 0, 0, &point);
+    Point3D <int> pos = m_rightElbow.position();
+    std::cout << "position in m_rightElbow after RightElbow" << pos << std::endl;
 //    m_leftKnee.setPosition(point);
 }
 
@@ -539,6 +539,8 @@ void Phantom::makeNet()
     m_rightKnee.shiftPos(position);
     m_leftKnee.shiftPos(position);
     m_rightElbow.shiftPos(position);
+    Point3D <int> pos = m_rightElbow.position();
+    std::cout << "position in m_rightElbow after makeNet" << pos << std::endl;
 //    Point3D <int> pos = m_rightKnee.position();
 //    std::cout << "position in m_leftknee after makeNet" << pos << std::endl;
 //    pos = m_leftKnee.position();
@@ -685,8 +687,7 @@ void Phantom::executeScenario()
 //    std::cout << "sizeTHIS = { " << m_boxNet.getSizeX() << " " << m_boxNet.getSizeY() << " " << m_boxNet.getSizeZ() << " }\n";
     m_boxNet.insert(m_rightKnee);
     m_boxNet.insert(m_leftKnee);
-//    m_boxNet.insert(m_rightElbow);
-//    m_boxNet.insert(m_rightElbow);
+    m_boxNet.insert(m_rightElbow);
 }
 
 void Phantom::fillCostume()

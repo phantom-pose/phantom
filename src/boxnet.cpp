@@ -580,7 +580,7 @@ void BoxNet::insert(BoxNet const & box, Point3D <int> pos)
     for (int k = 0; k < box.getSizeZ(); k++) {
         for (int j = 0; j < box.getSizeY(); j++) {
             for (int i = 0; i < box.getSizeX(); i++) {
-                if ((i + posX) < m_xSize && (j + posY) < m_ySize && (k + posZ) < m_zSize) {
+                if ((i + posX) > 0 && (i + posX) < m_xSize && (j + posY) > 0 && (j + posY) < m_ySize && (k + posZ) > 0 && (k + posZ) < m_zSize) {
                     unsigned char value = m_list[i + posX][j + posY][k + posZ];
                     if (value == 0) {
                         m_list[i + posX][j + posY][k + posZ] = box.getByXyz(i, j, k);
@@ -601,7 +601,7 @@ void BoxNet::insert(BoxNet const & box)
     for (int k = 0; k < box.getSizeZ(); k++) {
         for (int j = 0; j < box.getSizeY(); j++) {
             for (int i = 0; i < box.getSizeX(); i++) {
-                if ((i + posX) < m_xSize && (j + posY) < m_ySize && (k + posZ) < m_zSize) {
+                if ((i + posX) > 0 && (i + posX) < m_xSize && (j + posY) > 0 && (j + posY) < m_ySize && (k + posZ) > 0 && (k + posZ) < m_zSize) {
                     unsigned char value = m_list[i + posX][j + posY][k + posZ];
                     if (value == 0) {
                         m_list[i + posX][j + posY][k + posZ] = box.getByXyz(i, j, k);

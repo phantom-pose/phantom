@@ -199,7 +199,8 @@ BezierCoords3D * StartCoefs(Plane * plane1, Plane * plane2, Point3D<float> * poi
             v2.getDirection().z()*e2_2.getDirection().z()) * v2.getLength()/e2_2.getLength();
     //std::cout <<"\n"<< a1 << " " << a2 << " " << b1 << " " << b2 << " " << lenn1_s << " " << lenn2_s << std::endl;
     //std::cout <<*plane1 << *plane2 <<v1<<v2<< std::endl;
-    return new BezierCoords3D(a1 > a2 ? a2 : a1, b1 > b2 ? b1 : b2, lenn1_s/(lenn1_s+lenn2_s));
+//    return new BezierCoords3D(a1 > a2 ? a2 : a1, b1 > b2 ? b1 : b2, lenn1_s/(lenn1_s+lenn2_s));
+    return new BezierCoords3D(lenn1 > lenn2 ? a2 : a1, lenn1 > lenn2 ? b2 : b1, lenn1_s/(lenn1_s+lenn2_s));
 }
 
 /*!
