@@ -26,25 +26,50 @@ bool Elbow::getStartPoint(Point3D <float> * end, Point3D <float> * start, float 
     m_joint->getStartPoint(end, start, der);
 }
 
-constexpr int ELBOW_TOP_Z = 500;
-constexpr int ELBOW_BOTTOM_Z = 450;
+//constexpr int ELBOW_TOP_Z = 500;
+//constexpr int ELBOW_BOTTOM_Z = 450;
 
-constexpr int ROT_RIGHT_HAND_X = 60;
-constexpr int ROT_RIGHT_HAND_Y = 70;
-constexpr int ROT_RIGHT_HAND_Z = 579;
+//constexpr int ROT_RIGHT_HAND_X = 60;
+//constexpr int ROT_RIGHT_HAND_Y = 70;
+//constexpr int ROT_RIGHT_HAND_Z = 579;
 
-constexpr int ROT_RIGHT_ELBOW_X = 41;
-constexpr int ROT_RIGHT_ELBOW_Y = 113;
-constexpr int ROT_RIGHT_ELBOW_Z = 473;
+//constexpr int ROT_RIGHT_ELBOW_X = 41;
+//constexpr int ROT_RIGHT_ELBOW_Y = 113;
+//constexpr int ROT_RIGHT_ELBOW_Z = 473;
 
-constexpr int RIGHT_ELBOW_X1 = 20;
-constexpr int RIGHT_ELBOW_Y1 = 76;
+//constexpr int RIGHT_ELBOW_X1 = 20;
+//constexpr int RIGHT_ELBOW_Y1 = 76;
 
-constexpr int RIGHT_ELBOW_X2 = 70;
-constexpr int RIGHT_ELBOW_Y2 = 132;
+//constexpr int RIGHT_ELBOW_X2 = 70;
+//constexpr int RIGHT_ELBOW_Y2 = 132;
 
 
 BoxNet RightElbow(BoxNet b1, float phi, float thetaX, float thetaY, Point3D <int> * coord) {
+
+    Json::Value rootJoint;
+    std::ifstream jointfile("data/jointParams.json", std::ifstream::binary);
+    jointfile >> rootJoint;
+    jointfile.close();
+    int RIGHT_ELBOW_X1  = rootJoint["rightElbow"]["x1"].asInt();
+    int RIGHT_ELBOW_Y1  = rootJoint["rightElbow"]["y1"].asInt();
+    int ELBOW_BOTTOM_Z  = rootJoint["rightElbow"]["z1"].asInt();
+    int RIGHT_ELBOW_X2  = rootJoint["rightElbow"]["x2"].asInt();
+    int RIGHT_ELBOW_Y2  = rootJoint["rightElbow"]["y2"].asInt();
+    int ELBOW_TOP_Z     = rootJoint["rightElbow"]["z2"].asInt();
+    int indexShoulderRP = rootJoint["rightElbow"]["rot1"].asInt();
+    int indexElbowRP    = rootJoint["rightElbow"]["rot2"].asInt();
+
+    Json::Value rootRot;
+    std::ifstream rotfile("data/rotPoints.json", std::ifstream::binary);
+    rotfile >> rootRot;
+    rotfile.close();
+    Json::Value const & points = rootRot;
+    int ROT_RIGHT_ELBOW_X = points[indexElbowRP]["xyz"][0].asInt();
+    int ROT_RIGHT_ELBOW_Y = points[indexElbowRP]["xyz"][1].asInt();
+    int ROT_RIGHT_ELBOW_Z = points[indexElbowRP]["xyz"][2].asInt();
+    int ROT_RIGHT_HAND_X  = points[indexShoulderRP]["xyz"][0].asInt();
+    int ROT_RIGHT_HAND_Y  = points[indexShoulderRP]["xyz"][1].asInt();
+    int ROT_RIGHT_HAND_Z  = points[indexShoulderRP]["xyz"][2].asInt();
 
     const float dx = 110, dy =110, dz=50;
     const float xmax = 300;
@@ -108,6 +133,7 @@ BoxNet RightElbow(BoxNet b1, float phi, float thetaX, float thetaY, Point3D <int
     }
 
     *coord = {RIGHT_ELBOW_X1-dx+xshift, RIGHT_ELBOW_Y1-dy+yshift, ELBOW_BOTTOM_Z - dz+zshift};
-
+//    b2.setPosition(*coord);
+    b2.shiftPos(*coord);
     return b2;
 }

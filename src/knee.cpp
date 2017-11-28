@@ -143,7 +143,8 @@ BoxNet RightKnee(BoxNet b1, float phi, float theta, Point3D <int> * coord) {
     }
 
     *coord = {RIGHT_KNEE_X1-dx+xshift, RIGHT_KNEE_Y1-dy+yshift, KNEE_BOTTOM_Z - dz+zshift};
-
+//    b2.setPosition(*coord);
+    b2.shiftPos(*coord);
     return b2;
 }
 
@@ -233,6 +234,7 @@ BoxNet LeftKnee(BoxNet b1, float phi, float theta, Point3D <int> * coord) {
     }
 
     *coord = {LEFT_KNEE_X1-dx+xshift, LEFT_KNEE_Y1-dy+yshift, KNEE_BOTTOM_Z - dz+zshift};
-
+//    b2.setPosition(*coord);
+    b2.shiftPos(*coord);
     return b2;
 }

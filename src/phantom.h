@@ -15,6 +15,7 @@
 #include "cylinder.h"
 #include "boundingbox.h"
 #include "knee.h"
+#include "elbow.h"
 
 /*!
  * \brief Основной класс для работы с воксельной моделью - Phantom
@@ -92,7 +93,7 @@ private:
     std::vector <BoundingBox*> m_costume;
     Point3D <float> m_rotpoints[8];
     Point3D <int> m_nymph;
-    BoxNet m_knee;
+    BoxNet m_rightKnee, m_leftKnee, m_rightElbow;
 };
 
 std::ostream & operator << (std::ostream & os, Phantom const & obj);

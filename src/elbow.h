@@ -3,6 +3,7 @@
 #include "point3d.hpp"
 #include "plane.h"
 #include "boxnet.h"
+#include "json/json.h"
 
 class Elbow
 {
