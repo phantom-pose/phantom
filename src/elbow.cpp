@@ -1,60 +1,39 @@
 #include "elbow.h"
 
-Elbow::Elbow(Point3D <float> rot1, Point3D <float> rot2, Point3D <float> start, float x, float y, float z, float thetaX, float thetaY, float phi)
+Elbow::Elbow(Point3D <float> rot1, Point3D <float> rot2, Point3D <float> start, float x, float y, float z, float thetaX, float thetaY, float phi):
+    Joint(
+            { start, {start.x(), start.y()+y, start.z()}, {start.x()+x, start.y(), start.z()} },
+            { {start.x(), start.y(), start.z()-z}, {start.x()+x, start.y(), start.z()-z}, {start.x(), start.y()+y, start.z()-z} },
+            {
+                RotateY(rot1, RotateX(rot1, start, thetaX), thetaY),
+                RotateY(rot1, RotateX(rot1, {start.x(), start.y()+y, start.z()}, thetaX), thetaY),
+                RotateY(rot1, RotateX(rot1, {start.x()+x, start.y(), start.z()}, thetaX), thetaY)
+            },
+            {
+                RotateY(rot1, RotateX(rot1, RotateX(rot2, {start.x(), start.y(), start.z()-z}, phi), thetaX), thetaY),
+                RotateY(rot1, RotateX(rot1, RotateX(rot2, {start.x()+x, start.y(), start.z()-z}, phi), thetaX), thetaY),
+                RotateY(rot1, RotateX(rot1, RotateX(rot2, {start.x(), start.y()+y, start.z()-z}, phi), thetaX), thetaY)
+            }
+        )
 {
-    Plane startPlane1 = { start, {start.x(), start.y()+y, start.z()}, {start.x()+x, start.y(), start.z()} };
-    Plane startPlane2 = { {start.x(), start.y(), start.z()-z}, {start.x()+x, start.y(), start.z()-z}, {start.x(), start.y()+y, start.z()-z} };
-    Plane endPlane1 = {
-        RotateY(rot1, RotateX(rot1, start, thetaX), thetaY),
-        RotateY(rot1, RotateX(rot1, {start.x(), start.y()+y, start.z()}, thetaX), thetaY),
-        RotateY(rot1, RotateX(rot1, {start.x()+x, start.y(), start.z()}, thetaX), thetaY)
-    };
-
-    Plane endPlane2 = {
-        RotateY(rot1, RotateX(rot1, RotateX(rot2, {start.x(), start.y(), start.z()-z}, phi), thetaX), thetaY),
-        RotateY(rot1, RotateX(rot1, RotateX(rot2, {start.x()+x, start.y(), start.z()-z}, phi), thetaX), thetaY),
-        RotateY(rot1, RotateX(rot1, RotateX(rot2, {start.x(), start.y()+y, start.z()-z}, phi), thetaX), thetaY)
-    };
-
-    m_joint = new Joint(startPlane1, startPlane2, endPlane1, endPlane2);
-    Point3D <float> shift = endPlane1.getE1().getPosition() - startPlane1.getE1().getPosition();
+    Point3D <float> shift = m_endPlane1.getE1().getPosition() - m_startPlane1.getE1().getPosition();
     m_shift = new Vector3D(true, {0,0,0}, shift);
 }
 
-bool Elbow::getStartPoint(Point3D <float> * end, Point3D <float> * start, float der)
-{
-    m_joint->getStartPoint(end, start, der);
-}
 
-//constexpr int ELBOW_TOP_Z = 500;
-//constexpr int ELBOW_BOTTOM_Z = 450;
+BoxNet GetElbow(BoxNet b1, float phi, float thetaX, float thetaY, Point3D <int> * coord, bool right) {
 
-//constexpr int ROT_RIGHT_HAND_X = 60;
-//constexpr int ROT_RIGHT_HAND_Y = 70;
-//constexpr int ROT_RIGHT_HAND_Z = 579;
-
-//constexpr int ROT_RIGHT_ELBOW_X = 41;
-//constexpr int ROT_RIGHT_ELBOW_Y = 113;
-//constexpr int ROT_RIGHT_ELBOW_Z = 473;
-
-//constexpr int RIGHT_ELBOW_X1 = 20;
-//constexpr int RIGHT_ELBOW_Y1 = 76;
-
-//constexpr int RIGHT_ELBOW_X2 = 70;
-//constexpr int RIGHT_ELBOW_Y2 = 132;
-
-
-BoxNet RightElbow(BoxNet b1, float phi, float thetaX, float thetaY, Point3D <int> * coord) {
+    std::string partname = right ? "rightElbow" : "leftElbow";
 
     Json::Value rootJoint;
     std::ifstream jointfile("data/jointParams.json", std::ifstream::binary);
     jointfile >> rootJoint;
     jointfile.close();
-    int RIGHT_ELBOW_X1  = rootJoint["rightElbow"]["x1"].asInt();
-    int RIGHT_ELBOW_Y1  = rootJoint["rightElbow"]["y1"].asInt();
-    int ELBOW_BOTTOM_Z  = rootJoint["rightElbow"]["z1"].asInt();
-    int RIGHT_ELBOW_X2  = rootJoint["rightElbow"]["x2"].asInt();
-    int RIGHT_ELBOW_Y2  = rootJoint["rightElbow"]["y2"].asInt();
+    int ELBOW_X1  = rootJoint[partname]["x1"].asInt();
+    int ELBOW_Y1  = rootJoint[partname]["y1"].asInt();
+    int ELBOW_BOTTOM_Z  = rootJoint[partname]["z1"].asInt();
+    int ELBOW_X2  = rootJoint[partname]["x2"].asInt();
+    int ELBOW_Y2  = rootJoint["rightElbow"]["y2"].asInt();
     int ELBOW_TOP_Z     = rootJoint["rightElbow"]["z2"].asInt();
     int indexShoulderRP = rootJoint["rightElbow"]["rot1"].asInt();
     int indexElbowRP    = rootJoint["rightElbow"]["rot2"].asInt();
@@ -64,12 +43,12 @@ BoxNet RightElbow(BoxNet b1, float phi, float thetaX, float thetaY, Point3D <int
     rotfile >> rootRot;
     rotfile.close();
     Json::Value const & points = rootRot;
-    int ROT_RIGHT_ELBOW_X = points[indexElbowRP]["xyz"][0].asInt();
-    int ROT_RIGHT_ELBOW_Y = points[indexElbowRP]["xyz"][1].asInt();
-    int ROT_RIGHT_ELBOW_Z = points[indexElbowRP]["xyz"][2].asInt();
-    int ROT_RIGHT_HAND_X  = points[indexShoulderRP]["xyz"][0].asInt();
-    int ROT_RIGHT_HAND_Y  = points[indexShoulderRP]["xyz"][1].asInt();
-    int ROT_RIGHT_HAND_Z  = points[indexShoulderRP]["xyz"][2].asInt();
+    int ROT_ELBOW_X = points[indexElbowRP]["xyz"][0].asInt();
+    int ROT_ELBOW_Y = points[indexElbowRP]["xyz"][1].asInt();
+    int ROT_ELBOW_Z = points[indexElbowRP]["xyz"][2].asInt();
+    int ROT_HAND_X  = points[indexShoulderRP]["xyz"][0].asInt();
+    int ROT_HAND_Y  = points[indexShoulderRP]["xyz"][1].asInt();
+    int ROT_HAND_Z  = points[indexShoulderRP]["xyz"][2].asInt();
 
     const float dx = 90, dy = 90, dz=15;
     const float xmax = 185;
@@ -77,11 +56,11 @@ BoxNet RightElbow(BoxNet b1, float phi, float thetaX, float thetaY, Point3D <int
     const float zmax = 120;
 
     Elbow elbow = {
-        {(ROT_RIGHT_HAND_X-RIGHT_ELBOW_X1+dx)*VOX_X,(ROT_RIGHT_HAND_Y-RIGHT_ELBOW_Y1+dy)*VOX_Y,(ROT_RIGHT_HAND_Z-ELBOW_BOTTOM_Z+dz)*VOX_Z},
-        {(ROT_RIGHT_ELBOW_X-RIGHT_ELBOW_X1+dx)*VOX_X, (ROT_RIGHT_ELBOW_Y-RIGHT_ELBOW_Y1+dy)*VOX_Y, (ROT_RIGHT_ELBOW_Z-ELBOW_BOTTOM_Z+dz)*VOX_Z},
+        {(ROT_HAND_X-ELBOW_X1+dx)*VOX_X,(ROT_HAND_Y-ELBOW_Y1+dy)*VOX_Y,(ROT_HAND_Z-ELBOW_BOTTOM_Z+dz)*VOX_Z},
+        {(ROT_ELBOW_X-ELBOW_X1+dx)*VOX_X, (ROT_ELBOW_Y-ELBOW_Y1+dy)*VOX_Y, (ROT_ELBOW_Z-ELBOW_BOTTOM_Z+dz)*VOX_Z},
         {dx*VOX_X, dy*VOX_Y, (ELBOW_TOP_Z-ELBOW_BOTTOM_Z+dz)*VOX_Z},
-        (RIGHT_ELBOW_X2-RIGHT_ELBOW_X1)*VOX_Y,
-        (RIGHT_ELBOW_Y2-RIGHT_ELBOW_Y1)*VOX_Y,
+        (ELBOW_X2-ELBOW_X1)*VOX_Y,
+        (ELBOW_Y2-ELBOW_Y1)*VOX_Y,
         (ELBOW_TOP_Z-ELBOW_BOTTOM_Z)*VOX_Z,
         thetaX,
         thetaY,
@@ -100,7 +79,7 @@ BoxNet RightElbow(BoxNet b1, float phi, float thetaX, float thetaY, Point3D <int
         zshift = int((shift->getDirection().z() * shift->getLength())/VOX_Z);
     }
 
-    BoxNet b = b1.cut( {RIGHT_ELBOW_X1, RIGHT_ELBOW_Y1, ELBOW_BOTTOM_Z}, {RIGHT_ELBOW_X2, RIGHT_ELBOW_Y2, ELBOW_TOP_Z} );
+    BoxNet b = b1.cut( {ELBOW_X1, ELBOW_Y1, ELBOW_BOTTOM_Z}, {ELBOW_X2, ELBOW_Y2, ELBOW_TOP_Z} );
     b.grow({xmax,ymax,zmax},{dx,dy,dz});
     BoxNet b2 = {xmax,ymax,zmax};
 
@@ -132,8 +111,16 @@ BoxNet RightElbow(BoxNet b1, float phi, float thetaX, float thetaY, Point3D <int
         }
     }
 
-    *coord = {RIGHT_ELBOW_X1-dx+xshift, RIGHT_ELBOW_Y1-dy+yshift, ELBOW_BOTTOM_Z - dz+zshift};
+    *coord = {ELBOW_X1-dx+xshift, ELBOW_Y1-dy+yshift, ELBOW_BOTTOM_Z - dz+zshift};
 //    b2.setPosition(*coord);
     b2.shiftPos(*coord);
     return b2;
+}
+
+BoxNet RightElbow(BoxNet b1, float phi, float thetaX, float thetaY, Point3D <int> * coord) {
+    return GetElbow(b1,phi,thetaX, thetaY, coord, true);
+}
+
+BoxNet LeftElbow(BoxNet b1, float phi, float thetaX, float thetaY, Point3D <int> * coord) {
+    return GetElbow(b1,phi,thetaX, thetaY, coord, false);
 }

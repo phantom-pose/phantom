@@ -5,17 +5,14 @@
 #include "boxnet.h"
 #include "json/json.h"
 
-class Elbow
+class Elbow: public Joint
 {
 public:
     Elbow(Point3D <float> rot1, Point3D <float> rot2, Point3D <float> start, float x, float y,float z, float thetaX, float thetaY, float phi);
 
     Vector3D * getShift() { return m_shift; }
 
-    bool getStartPoint(Point3D <float> * end, Point3D <float> * start, float der);
-
 private:
-    Joint * m_joint;
     Vector3D * m_shift;
 };
 
