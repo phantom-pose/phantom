@@ -4,6 +4,7 @@
 #include "vector3d.h"
 #include "plane.h"
 #include "boxnet.h"
+#include "json/json.h"
 
 class Knee
 {

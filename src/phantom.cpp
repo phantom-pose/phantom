@@ -30,9 +30,20 @@ Phantom::Phantom()
         m_rotpoints[i] = p;
     }
     // **********************************************************************
-//    makeNet();
-//    rotate();
-    rightKneeRotate();
+    cutBodyparts();
+    loadScenario();
+//    rightKneeRotate();
+    Point3D <int> point;
+    m_rightKnee = RightKnee(m_boxNet, M_PI/2, M_PI/2, &point);
+//    Point3D <int> pos = m_rightKnee.position();
+//    std::cout << "position in m_rightknee after RightKnee" << pos << std::endl;
+//    m_nymph = m_nymph + point;
+//    m_rightKnee.setPosition(point);
+    m_leftKnee = LeftKnee(m_boxNet, M_PI/2, M_PI/2, &point);
+    m_rightElbow = RightElbow(m_boxNet, M_PI/2, 0, 0, &point);
+    Point3D <int> pos = m_rightElbow.position();
+    std::cout << "position in m_rightElbow after RightElbow" << pos << std::endl;
+//    m_leftKnee.setPosition(point);
 }
 
 /*!
@@ -379,16 +390,16 @@ void Phantom::check(BodyPart const & bp)
     }
 }
 
-void Phantom::cutBin(char const * filename, int firstEdge, int secondEdge)
+void Phantom::cutBin(char const * filename, int firstEdge, int secondEdge, char const * newname)
 {
     int num = 0, z = 0;
     int square = m_boxNet.getSizeX() * m_boxNet.getSizeY();
     char name1[40];
     char name2[40];
     char name3[40];
-    sprintf(name1, "1-%s", filename);
-    sprintf(name2, "2-%s", filename);
-    sprintf(name3, "3-%s", filename);
+    sprintf(name1, "%s-1.bin", newname);
+    sprintf(name2, "%s-2.bin", newname);
+    sprintf(name3, "%s-3.bin", newname);
     std::ifstream input(filename, std::ios::binary);
     std::ofstream output1(name1, std::ios::binary);
     std::ofstream output2(name2, std::ios::binary);
@@ -409,6 +420,57 @@ void Phantom::cutBin(char const * filename, int firstEdge, int secondEdge)
     output1.close();
     output2.close();
     output3.close();
+}
+
+void Phantom::cutBodyparts()
+{
+    Json::Value rootJoint;
+    std::ifstream jointfile("data/jointParams.json", std::ifstream::binary);
+    jointfile >> rootJoint;
+    jointfile.close();
+
+    // Правая коленка
+    int rKz1 = rootJoint["rightKnee"]["z1"].asInt();
+    int rKz2 = rootJoint["rightKnee"]["z2"].asInt();
+    cutBin("data/bodyparts/rightLeg.bin", rKz1, rKz2-1, "data/bodyparts/rightLeg");
+    // Левая
+    int lKz1 = rootJoint["leftKnee"]["z1"].asInt();
+    int lKz2 = rootJoint["leftKnee"]["z2"].asInt();
+    cutBin("data/bodyparts/leftLeg.bin", lKz1, lKz2-1, "data/bodyparts/leftLeg");
+    // Правый локоть
+    int rEz1 = rootJoint["rightElbow"]["z1"].asInt();
+    int rEz2 = rootJoint["rightElbow"]["z2"].asInt();
+    cutBin("data/bodyparts/rightHand.bin", rEz1, rEz2-1, "data/bodyparts/rightHand");
+}
+
+void Phantom::combineBin(char const * filename1, char const * filename2, char const * filename3, char const * out)
+{
+    int num = 0;
+
+    std::ofstream output(out, std::ios::binary);
+    std::ifstream input1(filename1, std::ios::binary);
+    std::ifstream input2(filename2, std::ios::binary);
+    std::ifstream input3(filename3, std::ios::binary);
+    while (!input1.eof())
+    {
+        input1.read(reinterpret_cast<char*>(&num), sizeof(num));
+        output.write(reinterpret_cast<char const*>(&num), sizeof(num));
+    }
+    while (!input2.eof())
+    {
+        input2.read(reinterpret_cast<char*>(&num), sizeof(num));
+        output.write(reinterpret_cast<char const*>(&num), sizeof(num));
+    }
+    while (!input3.eof())
+    {
+        input3.read(reinterpret_cast<char*>(&num), sizeof(num));
+        output.write(reinterpret_cast<char const*>(&num), sizeof(num));
+    }
+
+    output.close();
+    input1.close();
+    input2.close();
+    input3.close();
 }
 
 void Phantom::makeNet()
@@ -474,6 +536,15 @@ void Phantom::makeNet()
         (*pbb)->setPosition(pos);
     }
     m_nymph = m_nymph + position;
+    m_rightKnee.shiftPos(position);
+    m_leftKnee.shiftPos(position);
+    m_rightElbow.shiftPos(position);
+    Point3D <int> pos = m_rightElbow.position();
+    std::cout << "position in m_rightElbow after makeNet" << pos << std::endl;
+//    Point3D <int> pos = m_rightKnee.position();
+//    std::cout << "position in m_leftknee after makeNet" << pos << std::endl;
+//    pos = m_leftKnee.position();
+//    std::cout << "position in m_leftknee after makeNet" << pos << std::endl;
     m_boxNet.grow(size, position);
 }
 
@@ -602,17 +673,21 @@ void Phantom::loadScenario()
         float c = parts[i]["c"].asFloat();
         m_costume.push_back(new BoundingBox(x0, y0, z0, a, b, c));
     }
+}
+
+void Phantom::executeScenario()
+{
     makeNet();
     rotate();
     fillCostume();
     serializeCostume();
-    std::cout << "BOXNET PARAMETERS" << std::endl;
-    std::cout << "size = { " << m_knee.getSizeX() << " " << m_knee.getSizeY() << " " << m_knee.getSizeZ() << " }\n";
-    std::cout << "position = " << m_nymph << "\n";
-    std::cout << "sizeTHIS = { " << m_boxNet.getSizeX() << " " << m_boxNet.getSizeY() << " " << m_boxNet.getSizeZ() << " }\n";
-    m_boxNet.insert(m_knee, m_nymph);
-
-//    dumpCostume();
+//    std::cout << "BOXNET PARAMETERS" << std::endl;
+//    std::cout << "size = { " << m_rightKnee.getSizeX() << " " << m_rightKnee.getSizeY() << " " << m_rightKnee.getSizeZ() << " }\n";
+//    std::cout << "position = " << m_nymph << "\n";
+//    std::cout << "sizeTHIS = { " << m_boxNet.getSizeX() << " " << m_boxNet.getSizeY() << " " << m_boxNet.getSizeZ() << " }\n";
+    m_boxNet.insert(m_rightKnee);
+    m_boxNet.insert(m_leftKnee);
+    m_boxNet.insert(m_rightElbow);
 }
 
 void Phantom::fillCostume()
@@ -670,6 +745,6 @@ void Phantom::serializeCostume()
 void Phantom::rightKneeRotate()
 {
     Point3D <int> point;
-    m_knee = RightKnee(m_boxNet, M_PI/2, M_PI/2, &point);
+    m_rightKnee = RightKnee(m_boxNet, M_PI/2, M_PI/2, &point);
     m_nymph = m_nymph + point;
 }

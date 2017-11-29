@@ -40,7 +40,7 @@ public:
 private slots:
     void createMainArea();
     void showScenario();
-    void loadScenario();
+    void executeScenario();
     void setBoxLeftKnee();
     void setBoxRightKnee();
     void setBoxRightElbow();

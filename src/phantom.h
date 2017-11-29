@@ -15,6 +15,7 @@
 #include "cylinder.h"
 #include "boundingbox.h"
 #include "knee.h"
+#include "elbow.h"
 
 /*!
  * \brief Основной класс для работы с воксельной моделью - Phantom
@@ -65,13 +66,16 @@ public:
     void readBin(char const * filename);
     void checkBin(char const * filename);
     void check(BodyPart const & bp);
-    void cutBin(char const * filename, int firstEdge, int secondEdge);
+    void cutBin(char const * filename, int firstEdge, int secondEdge, const char * newname);
+    void cutBodyparts();
+    void combineBin(char const * filename1, char const * filename2, char const * filename3, const char * out);
     void rightKneeRotate();
 
 //    void rotateBodyPart(BodyPart const & bp, float pitch, float yaw);
     void makeNet();
     void rotate();
     void loadScenario();
+    void executeScenario();
     void fillCostume();
     void printLegPlanes();
     void dumpCostume();
@@ -81,15 +85,15 @@ private:
     BoxNet m_boxNet;
     float m_xScale = 1.775;
     float m_yScale = 1.775;
-    float m_zScale = 4.84;
-    Point3D <float> m_scales = { 1.775, 1.775, 4.84 };
+    float m_zScale = 2.42;
+    Point3D <float> m_scales = { 1.775, 1.775, 2.42 };
 //    std::vector<int> m_leftLeg1, m_leftLeg2, m_leftLeg, m_rightLeg, m_leftHand, m_rightHand;
     BodyPart * m_leftLeg1;
     std::vector <BodyPart*> m_bodyparts;
     std::vector <BoundingBox*> m_costume;
     Point3D <float> m_rotpoints[8];
     Point3D <int> m_nymph;
-    BoxNet m_knee;
+    BoxNet m_rightKnee, m_leftKnee, m_rightElbow;
 };
 
 std::ostream & operator << (std::ostream & os, Phantom const & obj);

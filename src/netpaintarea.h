@@ -21,7 +21,7 @@ public:
     virtual void paintEvent(QPaintEvent * event);
 
     void setScales(float w, float h);
-    void setProps(int w, int h);
+    void setProps(float w, float h);
     void setScale(float scale);
 
     void incScale();

@@ -53,7 +53,7 @@ BoxNet::BoxNet( BoxNet const & obj )
 //    m_length = obj.m_length;
 //    m_list = new unsigned char[m_length];
 //    std::copy( obj.m_list, obj.m_list + obj.m_length, m_list );
-
+    m_position = obj.m_position;
     m_length = obj.m_length;
     m_list = new unsigned char**[m_xSize];
     for (int ix = 0; ix < m_xSize; ix++) {
@@ -399,6 +399,7 @@ BoxNet &  BoxNet::operator = ( BoxNet const & obj )
             std::copy( obj.m_list[ix][iy], obj.m_list[ix][iy] + obj.m_zSize, m_list[ix][iy]);
         }
     }
+    m_position = obj.m_position;
 //    Logger::Instance() << "BoxNet = operator" << "\n";
     return *this;
 }
@@ -579,7 +580,7 @@ void BoxNet::insert(BoxNet const & box, Point3D <int> pos)
     for (int k = 0; k < box.getSizeZ(); k++) {
         for (int j = 0; j < box.getSizeY(); j++) {
             for (int i = 0; i < box.getSizeX(); i++) {
-                if ((i + posX) < m_xSize && (j + posY) < m_ySize && (k + posZ) < m_zSize) {
+                if ((i + posX) > 0 && (i + posX) < m_xSize && (j + posY) > 0 && (j + posY) < m_ySize && (k + posZ) > 0 && (k + posZ) < m_zSize) {
                     unsigned char value = m_list[i + posX][j + posY][k + posZ];
                     if (value == 0) {
                         m_list[i + posX][j + posY][k + posZ] = box.getByXyz(i, j, k);
@@ -588,6 +589,32 @@ void BoxNet::insert(BoxNet const & box, Point3D <int> pos)
             }
         }
     }
+}
+
+void BoxNet::insert(BoxNet const & box)
+{
+    Point3D <int> pos = box.position();
+    std::cout << "insert in position " << pos << std::endl;
+    int posX = pos.x();
+    int posY = pos.y();
+    int posZ = pos.z();
+    for (int k = 0; k < box.getSizeZ(); k++) {
+        for (int j = 0; j < box.getSizeY(); j++) {
+            for (int i = 0; i < box.getSizeX(); i++) {
+                if ((i + posX) > 0 && (i + posX) < m_xSize && (j + posY) > 0 && (j + posY) < m_ySize && (k + posZ) > 0 && (k + posZ) < m_zSize) {
+                    unsigned char value = m_list[i + posX][j + posY][k + posZ];
+                    if (value == 0) {
+                        m_list[i + posX][j + posY][k + posZ] = box.getByXyz(i, j, k);
+                    }
+                }
+            }
+        }
+    }
+}
+
+void BoxNet::shiftPos(Point3D <int> shift)
+{
+    m_position = m_position + shift;
 }
 
 std::ostream & operator << (std::ostream & os, BoxNet const & obj)

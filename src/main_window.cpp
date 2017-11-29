@@ -13,7 +13,10 @@ MainWindow::MainWindow()
 {
     setWindowTitle("phantom");
     m_phantom = new Phantom();
-
+//    m_phantom->combineBin("data/bodyparts/leftHand-1.bin", "data/bodyparts/leftHand-2.bin", "data/bodyparts/leftHand-3.bin", "data/bodyparts/leftHand.bin");
+//    m_phantom->combineBin("data/bodyparts/rightHand-1.bin", "data/bodyparts/rightHand-2.bin", "data/bodyparts/rightHand-3.bin", "data/bodyparts/rightHand.bin");
+//    m_phantom->combineBin("data/bodyparts/leftLeg-1.bin", "data/bodyparts/leftLeg-2.bin", "data/bodyparts/leftLeg-3.bin", "data/bodyparts/leftLeg.bin");
+//    m_phantom->combineBin("data/bodyparts/rightLeg-1.bin", "data/bodyparts/rightLeg-2.bin", "data/bodyparts/rightLeg-3.bin", "data/bodyparts/rightLeg.bin");
 //    m_phantom = new Phantom( box );
 //    m_phantom->grow( { 200, 200, 200 }, { 50, 50, 50 } );
 
@@ -44,13 +47,13 @@ MainWindow::MainWindow()
 //    m_phantom->pickLegs();
 //    m_phantom->readBin("rightLeg.bin");
     m_paintAreaX = new NetPaintArea(0, m_phantom->boxNet());
-    m_paintAreaX->setProps( 4, 11 );
+    m_paintAreaX->setProps( m_phantom->yScale(), m_phantom->zScale() );
     m_paintAreaX->setAlignment(Qt::AlignTop);
     m_paintAreaY = new NetPaintArea(0, m_phantom->boxNet());
-    m_paintAreaY->setProps( 4, 11 );
+    m_paintAreaY->setProps( m_phantom->xScale(), m_phantom->zScale() );
     m_paintAreaY->setAlignment(Qt::AlignTop);
     m_paintAreaZ = new NetPaintArea(0, m_phantom->boxNet());
-    m_paintAreaZ->setProps( 4, 11 );
+    m_paintAreaZ->setProps( m_phantom->xScale(), m_phantom->yScale() );
     m_paintAreaZ->setAlignment(Qt::AlignTop);
 
     /////////////////////////////////////////////////////////////////////////
@@ -122,7 +125,7 @@ void MainWindow::createMainArea()
     upDownSBY->setMaximum( 500 );
 
     QPushButton * scenario = new QPushButton("Scen");
-    connect(scenario, SIGNAL(clicked()), this, SLOT(loadScenario()));
+    connect(scenario, SIGNAL(clicked()), this, SLOT(executeScenario()));
     QPushButton * setBoxBtnRightKnee = new QPushButton("setBox Right Knee");
     connect(setBoxBtnRightKnee, SIGNAL(clicked()), this, SLOT(setBoxRightKnee()));
     QPushButton * setBoxBtnLeftKnee = new QPushButton("setBox Left Knee");
@@ -265,7 +268,7 @@ void MainWindow::setBoxRightElbow()
     m_phantom->setBox(b);
 }
 
-void MainWindow::loadScenario()
+void MainWindow::executeScenario()
 {
-    m_phantom->loadScenario();
+    m_phantom->executeScenario();
 }

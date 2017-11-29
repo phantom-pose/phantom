@@ -6,7 +6,7 @@
 
 float constexpr VOX_X = 1.775;
 float constexpr VOX_Y = 1.775;
-float constexpr VOX_Z = 4.84;
+float constexpr VOX_Z = 2.42;
 
 class Joint {
 public:

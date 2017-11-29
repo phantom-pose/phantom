@@ -26,43 +26,68 @@ bool Knee::getStartPoint(Point3D <float> * end, Point3D <float> * start, float d
     m_joint->getStartPoint(end, start, der);
 }
 
-constexpr int KNEE_TOP_Z = 240;
-constexpr int KNEE_BOTTOM_Z = 200;
+//constexpr int KNEE_TOP_Z = 270;
+//constexpr int KNEE_BOTTOM_Z = 170;
 
-constexpr int ROT_RIGHT_LEG_X = 82;
-constexpr int ROT_RIGHT_LEG_Y = 72;
-constexpr int ROT_RIGHT_LEG_Z = 351;
+//constexpr int ROT_RIGHT_LEG_X = 82;
+//constexpr int ROT_RIGHT_LEG_Y = 72;
+//constexpr int ROT_RIGHT_LEG_Z = 351;
 
-constexpr int ROT_LEFT_LEG_X = 216;
-constexpr int ROT_LEFT_LEG_Y = 72;
-constexpr int ROT_LEFT_LEG_Z = 351;
+//constexpr int ROT_LEFT_LEG_X = 216;
+//constexpr int ROT_LEFT_LEG_Y = 72;
+//constexpr int ROT_LEFT_LEG_Z = 351;
 
-constexpr int ROT_RIGHT_KNEE_X = 107;
-constexpr int ROT_RIGHT_KNEE_Y = 83;
-constexpr int ROT_RIGHT_KNEE_Z = 215;
+//constexpr int ROT_RIGHT_KNEE_X = 107;
+//constexpr int ROT_RIGHT_KNEE_Y = 83;
+//constexpr int ROT_RIGHT_KNEE_Z = 215;
 
-constexpr int ROT_LEFT_KNEE_X = 187;
-constexpr int ROT_LEFT_KNEE_Y = 83;
-constexpr int ROT_LEFT_KNEE_Z = 215;
+//constexpr int ROT_LEFT_KNEE_X = 187;
+//constexpr int ROT_LEFT_KNEE_Y = 83;
+//constexpr int ROT_LEFT_KNEE_Z = 215;
 
-constexpr int RIGHT_KNEE_X1 = 66;
-constexpr int RIGHT_KNEE_Y1 = 43;
+//constexpr int RIGHT_KNEE_X1 = 66;
+//constexpr int RIGHT_KNEE_Y1 = 43;
 
-constexpr int LEFT_KNEE_X1 = 148;
-constexpr int LEFT_KNEE_Y1 = 43;
+//constexpr int LEFT_KNEE_X1 = 148;
+//constexpr int LEFT_KNEE_Y1 = 43;
 
-constexpr int RIGHT_KNEE_X2 = 144;
-constexpr int RIGHT_KNEE_Y2 = 131;
+//constexpr int RIGHT_KNEE_X2 = 144;
+//constexpr int RIGHT_KNEE_Y2 = 131;
 
-constexpr int LEFT_KNEE_X2 = 227;
-constexpr int LEFT_KNEE_Y2 = 131;
+//constexpr int LEFT_KNEE_X2 = 227;
+//constexpr int LEFT_KNEE_Y2 = 131;
 
 BoxNet RightKnee(BoxNet b1, float phi, float theta, Point3D <int> * coord) {
 
-    const float dx = 0, dy =140, dz=50;
+    Json::Value rootJoint;
+    std::ifstream jointfile("data/jointParams.json", std::ifstream::binary);
+    jointfile >> rootJoint;
+    jointfile.close();
+    int RIGHT_KNEE_X1 = rootJoint["rightKnee"]["x1"].asInt();
+    int RIGHT_KNEE_Y1 = rootJoint["rightKnee"]["y1"].asInt();
+    int KNEE_BOTTOM_Z = rootJoint["rightKnee"]["z1"].asInt();
+    int RIGHT_KNEE_X2 = rootJoint["rightKnee"]["x2"].asInt();
+    int RIGHT_KNEE_Y2 = rootJoint["rightKnee"]["y2"].asInt();
+    int KNEE_TOP_Z    = rootJoint["rightKnee"]["z2"].asInt();
+    int indexLegRP    = rootJoint["rightKnee"]["rot1"].asInt();
+    int indexKneeRP   = rootJoint["rightKnee"]["rot2"].asInt();
+
+    Json::Value rootRot;
+    std::ifstream rotfile("data/rotPoints.json", std::ifstream::binary);
+    rotfile >> rootRot;
+    rotfile.close();
+    Json::Value const & points = rootRot;
+    int ROT_RIGHT_KNEE_X = points[indexKneeRP]["xyz"][0].asInt();
+    int ROT_RIGHT_KNEE_Y = points[indexKneeRP]["xyz"][1].asInt();
+    int ROT_RIGHT_KNEE_Z = points[indexKneeRP]["xyz"][2].asInt();
+    int ROT_RIGHT_LEG_X  = points[indexLegRP]["xyz"][0].asInt();
+    int ROT_RIGHT_LEG_Y  = points[indexLegRP]["xyz"][1].asInt();
+    int ROT_RIGHT_LEG_Z  = points[indexLegRP]["xyz"][2].asInt();
+
+    const float dx = 0, dy =150, dz=50;
     const float xmax = 100;
-    const float ymax = 350;
-    const float zmax = 200;
+    const float ymax = 370;
+    const float zmax = 230;
     Knee knee = {
         {(dx+ROT_RIGHT_LEG_X-RIGHT_KNEE_X1)*VOX_X,(ROT_RIGHT_LEG_Y-RIGHT_KNEE_Y1+dy)*VOX_Y,(ROT_RIGHT_LEG_Z-KNEE_BOTTOM_Z+dz)*VOX_Z},
         {(dx+ROT_RIGHT_KNEE_X-RIGHT_KNEE_X1)*VOX_X, (ROT_RIGHT_KNEE_Y-RIGHT_KNEE_Y1+dy)*VOX_Y, (ROT_RIGHT_KNEE_Z-KNEE_BOTTOM_Z+dz)*VOX_Z},
@@ -118,16 +143,42 @@ BoxNet RightKnee(BoxNet b1, float phi, float theta, Point3D <int> * coord) {
     }
 
     *coord = {RIGHT_KNEE_X1-dx+xshift, RIGHT_KNEE_Y1-dy+yshift, KNEE_BOTTOM_Z - dz+zshift};
-
+//    b2.setPosition(*coord);
+    b2.shiftPos(*coord);
     return b2;
 }
 
 BoxNet LeftKnee(BoxNet b1, float phi, float theta, Point3D <int> * coord) {
 
-    const float dx = 0, dy =140, dz=50;
+    Json::Value rootJoint;
+    std::ifstream jointfile("data/jointParams.json", std::ifstream::binary);
+    jointfile >> rootJoint;
+    jointfile.close();
+    int LEFT_KNEE_X1 = rootJoint["leftKnee"]["x1"].asInt();
+    int LEFT_KNEE_Y1 = rootJoint["leftKnee"]["y1"].asInt();
+    int KNEE_BOTTOM_Z = rootJoint["leftKnee"]["z1"].asInt();
+    int LEFT_KNEE_X2 = rootJoint["leftKnee"]["x2"].asInt();
+    int LEFT_KNEE_Y2 = rootJoint["leftKnee"]["y2"].asInt();
+    int KNEE_TOP_Z    = rootJoint["leftKnee"]["z2"].asInt();
+    int indexLegRP    = rootJoint["leftKnee"]["rot1"].asInt();
+    int indexKneeRP   = rootJoint["leftKnee"]["rot2"].asInt();
+
+    Json::Value rootRot;
+    std::ifstream rotfile("data/rotPoints.json", std::ifstream::binary);
+    rotfile >> rootRot;
+    rotfile.close();
+    Json::Value const & points = rootRot;
+    int ROT_LEFT_KNEE_X = points[indexKneeRP]["xyz"][0].asInt();
+    int ROT_LEFT_KNEE_Y = points[indexKneeRP]["xyz"][1].asInt();
+    int ROT_LEFT_KNEE_Z = points[indexKneeRP]["xyz"][2].asInt();
+    int ROT_LEFT_LEG_X  = points[indexLegRP]["xyz"][0].asInt();
+    int ROT_LEFT_LEG_Y  = points[indexLegRP]["xyz"][1].asInt();
+    int ROT_LEFT_LEG_Z  = points[indexLegRP]["xyz"][2].asInt();
+
+    const float dx = 0, dy =150, dz=50;
     const float xmax = 100;
-    const float ymax = 350;
-    const float zmax = 200;
+    const float ymax = 370;
+    const float zmax = 230;
     Knee knee = {
         {(dx+ROT_LEFT_LEG_X-LEFT_KNEE_X1)*VOX_X,(ROT_LEFT_LEG_Y-LEFT_KNEE_Y1+dy)*VOX_Y,(ROT_LEFT_LEG_Z-KNEE_BOTTOM_Z+dz)*VOX_Z},
         {(dx+ROT_LEFT_KNEE_X-LEFT_KNEE_X1)*VOX_X, (ROT_LEFT_KNEE_Y-LEFT_KNEE_Y1+dy)*VOX_Y, (ROT_LEFT_KNEE_Z-KNEE_BOTTOM_Z+dz)*VOX_Z},
@@ -183,6 +234,7 @@ BoxNet LeftKnee(BoxNet b1, float phi, float theta, Point3D <int> * coord) {
     }
 
     *coord = {LEFT_KNEE_X1-dx+xshift, LEFT_KNEE_Y1-dy+yshift, KNEE_BOTTOM_Z - dz+zshift};
-
+//    b2.setPosition(*coord);
+    b2.shiftPos(*coord);
     return b2;
 }
