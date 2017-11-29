@@ -29,7 +29,7 @@ public:
      */
     bool getStartPoint(Point3D <float> * end, Point3D <float> * start, float der);
 
-private:
+protected:
     /*!
      * \brief m_startPlane1 - плоскость 1 в недеформированном суставе, альфа вдоль E1, бета вдоль E2
      */
