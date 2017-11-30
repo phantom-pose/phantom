@@ -1,23 +1,8 @@
 #include "knee.h"
 
-Knee::Knee(Point3D <float> rot1, Point3D <float> rot2, Point3D <float> start, float x, float y, float z, float theta, float phi):
-    Joint(
-            { start, {start.x(), start.y()+y, start.z()}, {start.x()+x, start.y(), start.z()} },
-            { {start.x(), start.y(), start.z()-z}, {start.x()+x, start.y(), start.z()-z}, {start.x(), start.y()+y, start.z()-z} },
-            {
-                RotateX(rot1, start, theta),
-                RotateX(rot1, {start.x(), start.y()+y, start.z()}, theta),
-                RotateX(rot1, {start.x()+x, start.y(), start.z()}, theta)
-            },
-            {
-                RotateX(rot1, RotateX(rot2, {start.x(), start.y(), start.z()-z}, -phi), theta),
-                RotateX(rot1, RotateX(rot2, {start.x()+x, start.y(), start.z()-z}, -phi), theta),
-                RotateX(rot1, RotateX(rot2, {start.x(), start.y()+y, start.z()-z}, -phi), theta)
-            }
-        )
+BezierCoords3D * Knee::choose(float a1, float a2, float b1, float b2, float l1, float l2)
 {
-    Point3D <float> shift = m_endPlane1.getE1().getPosition() - m_startPlane1.getE1().getPosition();
-    m_shift = new Vector3D(true, {0,0,0}, shift);
+    return new BezierCoords3D(a1 > a2 ? a2 : a1, b1, l1/(l1+l2));
 }
 
 BoxNet GetKnee(BoxNet b1, float phi, float theta, Point3D <int> * coord, bool right) {
@@ -60,8 +45,8 @@ BoxNet GetKnee(BoxNet b1, float phi, float theta, Point3D <int> * coord, bool ri
         (KNEE_X2-KNEE_X1)*VOX_X,
         (KNEE_Y2-KNEE_Y1)*VOX_Y,
         (KNEE_TOP_Z-KNEE_BOTTOM_Z)*VOX_Z,
-        theta,
-        phi
+        phi,
+        theta
 
     };
     float xshift, yshift, zshift;
