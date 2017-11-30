@@ -1,23 +1,8 @@
 #include "elbow.h"
 
-Elbow::Elbow(Point3D <float> rot1, Point3D <float> rot2, Point3D <float> start, float x, float y, float z, float thetaX, float thetaY, float phi):
-    Joint(
-            { start, {start.x(), start.y()+y, start.z()}, {start.x()+x, start.y(), start.z()} },
-            { {start.x(), start.y(), start.z()-z}, {start.x()+x, start.y(), start.z()-z}, {start.x(), start.y()+y, start.z()-z} },
-            {
-                RotateY(rot1, RotateX(rot1, start, thetaX), thetaY),
-                RotateY(rot1, RotateX(rot1, {start.x(), start.y()+y, start.z()}, thetaX), thetaY),
-                RotateY(rot1, RotateX(rot1, {start.x()+x, start.y(), start.z()}, thetaX), thetaY)
-            },
-            {
-                RotateY(rot1, RotateX(rot1, RotateX(rot2, {start.x(), start.y(), start.z()-z}, phi), thetaX), thetaY),
-                RotateY(rot1, RotateX(rot1, RotateX(rot2, {start.x()+x, start.y(), start.z()-z}, phi), thetaX), thetaY),
-                RotateY(rot1, RotateX(rot1, RotateX(rot2, {start.x(), start.y()+y, start.z()-z}, phi), thetaX), thetaY)
-            }
-        )
+BezierCoords3D * Elbow::choose(float a1, float a2, float b1, float b2, float l1, float l2)
 {
-    Point3D <float> shift = m_endPlane1.getE1().getPosition() - m_startPlane1.getE1().getPosition();
-    m_shift = new Vector3D(true, {0,0,0}, shift);
+    return new BezierCoords3D(fabs(l1) > fabs(l2) ? a2 : a1, b1, l1/(l1+l2));
 }
 
 
@@ -29,14 +14,14 @@ BoxNet GetElbow(BoxNet b1, float phi, float thetaX, float thetaY, Point3D <int> 
     std::ifstream jointfile("data/jointParams.json", std::ifstream::binary);
     jointfile >> rootJoint;
     jointfile.close();
-    int ELBOW_X1  = rootJoint[partname]["x1"].asInt();
-    int ELBOW_Y1  = rootJoint[partname]["y1"].asInt();
-    int ELBOW_BOTTOM_Z  = rootJoint[partname]["z1"].asInt();
-    int ELBOW_X2  = rootJoint[partname]["x2"].asInt();
-    int ELBOW_Y2  = rootJoint["rightElbow"]["y2"].asInt();
-    int ELBOW_TOP_Z     = rootJoint["rightElbow"]["z2"].asInt();
-    int indexShoulderRP = rootJoint["rightElbow"]["rot1"].asInt();
-    int indexElbowRP    = rootJoint["rightElbow"]["rot2"].asInt();
+    const int ELBOW_X1  = rootJoint[partname]["x1"].asInt();
+    const int ELBOW_Y1  = rootJoint[partname]["y1"].asInt();
+    const int ELBOW_BOTTOM_Z  = rootJoint[partname]["z1"].asInt();
+    const int ELBOW_X2  = rootJoint[partname]["x2"].asInt();
+    const int ELBOW_Y2  = rootJoint[partname]["y2"].asInt();
+    const int ELBOW_TOP_Z     = rootJoint[partname]["z2"].asInt();
+    const int indexShoulderRP = rootJoint[partname]["rot1"].asInt();
+    const int indexElbowRP    = rootJoint[partname]["rot2"].asInt();
 
     Json::Value rootRot;
     std::ifstream rotfile("data/rotPoints.json", std::ifstream::binary);
@@ -66,7 +51,6 @@ BoxNet GetElbow(BoxNet b1, float phi, float thetaX, float thetaY, Point3D <int> 
         thetaY,
         phi
     };
-
     float xshift, yshift, zshift;
     auto shift = elbow.getShift();
     if (std::isnan(shift->getDirection().x()))
@@ -78,7 +62,6 @@ BoxNet GetElbow(BoxNet b1, float phi, float thetaX, float thetaY, Point3D <int> 
         yshift = int((shift->getDirection().y() * shift->getLength())/VOX_Y);
         zshift = int((shift->getDirection().z() * shift->getLength())/VOX_Z);
     }
-
     BoxNet b = b1.cut( {ELBOW_X1, ELBOW_Y1, ELBOW_BOTTOM_Z}, {ELBOW_X2, ELBOW_Y2, ELBOW_TOP_Z} );
     b.grow({xmax,ymax,zmax},{dx,dy,dz});
     BoxNet b2 = {xmax,ymax,zmax};

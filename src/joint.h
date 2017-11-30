@@ -8,6 +8,29 @@ float constexpr VOX_X = 1.775;
 float constexpr VOX_Y = 1.775;
 float constexpr VOX_Z = 2.42;
 
+/*!
+ * \brief The BezierCoords3D class - координаты Безье (альфа, бета, t)
+ */
+class BezierCoords3D
+{
+public:
+    BezierCoords3D(): m_alpha{-0.1}, m_beta{-0.1}, m_t{-1.0}
+    {}
+
+    BezierCoords3D(double a,double b, double t): m_alpha{a}, m_beta{b}, m_t{t}
+    {}
+
+    ~BezierCoords3D()
+    {}
+
+    double const & alpha() const { return m_alpha; }
+    double const & beta() const { return m_beta; }
+    double const & t() const { return m_t; }
+    double m_alpha;
+    double m_beta;
+    double m_t;
+};
+
 class Joint {
 public:
     /*!
@@ -30,6 +53,15 @@ public:
     bool getStartPoint(Point3D <float> * end, Point3D <float> * start, float der);
 
 protected:
+
+    Point3D <float> * findPoint(BezierCoords3D * bc);
+
+    BezierCoords3D * findAlpha(Point3D<float> * point, float der);
+
+    virtual BezierCoords3D * startCoefs(Point3D<float> * point) = 0;
+
+    virtual BezierCoords3D * choose(float a1, float a2, float b1, float b2, float l1, float l2) = 0;
+
     /*!
      * \brief m_startPlane1 - плоскость 1 в недеформированном суставе, альфа вдоль E1, бета вдоль E2
      */
