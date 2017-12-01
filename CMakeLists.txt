@@ -16,6 +16,10 @@ aux_source_directory(3party/jsoncpp/src/lib_json JSONCPP_SRC)
 
 add_executable(${PROJECT_NAME} ${SRC_LIST} ${JSONCPP_SRC})
 
+if (WIN32)
+    set (CMAKE_PREFIX_PATH "C:/Qt/5.9.3/mingw53_32")
+endif()
+
 find_package(Qt5Widgets REQUIRED)
 find_package(Qt5OpenGL REQUIRED)
 
