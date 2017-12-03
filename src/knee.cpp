@@ -103,6 +103,5 @@ BoxNet RightKnee(BoxNet b1, float phi, float theta, Point3D <int> * coord) {
 }
 
 BoxNet LeftKnee(BoxNet b1, float phi, float theta, Point3D <int> * coord) {
-
     return GetKnee(b1, phi, theta, coord, false);
 }
