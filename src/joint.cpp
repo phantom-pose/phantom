@@ -12,19 +12,19 @@ using namespace std;
  */
 float constexpr COEF = 0.5;
 
-void f3(float * x, float * fvec, float ** fjac, Plane * plane1, Plane * plane2, Point3D<float> * point)
+void Joint::funcNewt(float * x, float * fvec, float ** fjac, Point3D<float> * point)
 {
     float a = x[0];
     float b = x[1];
     float t = x[2];
-    auto n_1 = plane1->getN(); auto n_2 = plane2->getN();
+    auto n_1 = this->getNTop(); auto n_2 = m_endPlane2.getN();
     float nx_1 = n_1.getDirection().x();
     float ny_1 = n_1.getDirection().y();
     float nz_1 = n_1.getDirection().z();
     float nx_2 = n_2.getDirection().x();
     float ny_2 = n_2.getDirection().y();
     float nz_2 = n_2.getDirection().z();
-    auto e1_1 = plane1->getE1(); auto e2_1 = plane1->getE2();
+    auto e1_1 = m_endPlane1.getE1(); auto e2_1 = m_endPlane1.getE2();
     float e1x_1 = e1_1.getDirection().x() * e1_1.getLength();
     float e1y_1 = e1_1.getDirection().y() * e1_1.getLength();
     float e1z_1 = e1_1.getDirection().z() * e1_1.getLength();
@@ -33,7 +33,7 @@ void f3(float * x, float * fvec, float ** fjac, Plane * plane1, Plane * plane2, 
     float e2z_1 = e2_1.getDirection().z() * e2_1.getLength();
     auto p0_1 = e1_1.getPosition();
     float x0_1 = p0_1.x(); float y0_1 = p0_1.y(); float z0_1 = p0_1.z();
-    auto e2_2 = plane2->getE1(); auto e1_2 = plane2->getE2();
+    auto e2_2 = m_endPlane2.getE1(); auto e1_2 = m_endPlane2.getE2();
     float e1x_2 = e1_2.getDirection().x() * e1_2.getLength();
     float e1y_2 = e1_2.getDirection().y() * e1_2.getLength();
     float e1z_2 = e1_2.getDirection().z() * e1_2.getLength();
@@ -134,11 +134,10 @@ BezierCoords3D * Joint::findAlpha(Point3D<float> * point, float der)
     float t = startb->t();
     if (t < 0)
         return startb;
-    auto plane1 = &m_endPlane1; auto plane2 = &m_endPlane2;
-    std::function<void(float * , int , float * , float ** )> func = [plane1 ,plane2, point]
+    std::function<void(float * , int , float * , float ** )> func = [this, point]
             (float * x, int n, float * fvec, float ** fjac)
     {
-        f3(x,fvec,fjac,plane1 ,plane2,point);
+        this->funcNewt(x,fvec,fjac,point);
     };
     float x[3];
     x[0] = a;
@@ -160,7 +159,7 @@ Point3D<float> * Joint::findPoint(BezierCoords3D * bc)
     float a = bc->alpha();
     float b = bc->beta();
     float t = bc->t();
-    auto n_1 = m_startPlane1.getN(); auto n_2 = m_startPlane2.getN();
+    auto n_1 = this->getNTop(); auto n_2 = m_startPlane2.getN();
     float nx_1 = n_1.getDirection().x();
     float ny_1 = n_1.getDirection().y();
     float nz_1 = n_1.getDirection().z();
@@ -213,6 +212,7 @@ Point3D<float> * Joint::findPoint(BezierCoords3D * bc)
 
 bool Joint::getStartPoint(Point3D <float> * end, Point3D <float> * start, float der)
 {
+    //std::cout << m_endPlane1 << m_endPlane2;
     auto bezier = this->findAlpha(end, der);
     auto point = this->findPoint(bezier);
     *start = *point;

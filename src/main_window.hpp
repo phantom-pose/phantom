@@ -19,6 +19,7 @@
 #include <string>
 #include "knee.h"
 #include "elbow.h"
+#include "hip.h"
 #include "plane.h"
 
 #include "line.h"
@@ -44,6 +45,7 @@ private slots:
     void setBoxLeftKnee();
     void setBoxRightKnee();
     void setBoxRightElbow();
+    void setBoxRightHip();
 private:
     NetPaintArea *m_paintAreaX, *m_paintAreaY, *m_paintAreaZ;
     LinePaintArea *m_lineArea;
