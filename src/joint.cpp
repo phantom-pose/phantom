@@ -17,7 +17,7 @@ void Joint::funcNewt(float * x, float * fvec, float ** fjac, Point3D<float> * po
     float a = x[0];
     float b = x[1];
     float t = x[2];
-    auto n_1 = this->getNTop(); auto n_2 = m_endPlane2.getN();
+    auto n_1 = this->getNEndTop(); auto n_2 = m_endPlane2.getN();
     float nx_1 = n_1.getDirection().x();
     float ny_1 = n_1.getDirection().y();
     float nz_1 = n_1.getDirection().z();
@@ -159,7 +159,7 @@ Point3D<float> * Joint::findPoint(BezierCoords3D * bc)
     float a = bc->alpha();
     float b = bc->beta();
     float t = bc->t();
-    auto n_1 = this->getNTop(); auto n_2 = m_startPlane2.getN();
+    auto n_1 = this->getNStartTop(); auto n_2 = m_startPlane2.getN();
     float nx_1 = n_1.getDirection().x();
     float ny_1 = n_1.getDirection().y();
     float nz_1 = n_1.getDirection().z();

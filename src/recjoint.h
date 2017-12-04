@@ -15,8 +15,12 @@ protected:
 
     virtual BezierCoords3D * choose(float a1, float a2, float b1, float b2, float l1, float l2) = 0;
 
-    virtual Vector3D getNTop() override {
+    virtual Vector3D getNEndTop() override {
         return this->m_endPlane1.getN();
+    }
+
+    virtual Vector3D getNStartTop() override {
+        return this->m_startPlane1.getN();
     }
 
     Vector3D * m_shift;

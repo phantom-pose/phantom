@@ -64,7 +64,8 @@ protected:
 
     void funcNewt(float * x, float * fvec, float ** fjac, Point3D<float> * point);
 
-    virtual Vector3D getNTop() = 0;
+    virtual Vector3D getNEndTop() = 0;
+    virtual Vector3D getNStartTop() = 0;
 
     /*!
      * \brief m_startPlane1 - плоскость 1 в недеформированном суставе, альфа вдоль E1, бета вдоль E2
