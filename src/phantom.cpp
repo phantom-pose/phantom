@@ -9,9 +9,11 @@
 
 Phantom::Phantom()
 {
-    m_boxNet = { 299, 137, 348 };
-    m_boxNet.fillFromBin( "data/AF_bin.dat" );
-    m_boxNet.segmentation();
+//    m_boxNet = { 299, 137, 348 };
+    m_boxNet = { 299, 437, 696 };
+//    m_boxNet.fillFromBin( "data/AF_bin.dat" );
+    m_boxNet.fillFromBin( "data/savePhantom.bin" );
+//    m_boxNet.segmentation();
 //    m_boxNet = { 100, 117, 96 };
 //    m_boxNet.fillFromBin( "../Head.bin" );
 
@@ -34,15 +36,13 @@ Phantom::Phantom()
     cutBodyparts();
     loadScenario();
     Point3D <int> point;
-    m_rightKnee = RightKnee(m_boxNet, M_PI/2, M_PI/2, &point);
+
+//    m_rightKnee = RightKnee(m_boxNet, M_PI/2, M_PI/2, &point);
+//    BoxNet delHip = RightHip(m_boxNet, 0, &point);
+//    m_rightHip = RightHip(m_boxNet, M_PI/2, &point);
+//    m_boxNet.difference(delHip);
 //    m_leftKnee = LeftKnee(m_boxNet, M_PI/2, M_PI/2, &point);
 //    m_rightElbow = RightElbow(m_boxNet, M_PI/2, 0, 0, &point);
-
-    BoxNet delHip = RightHip(m_boxNet, 0, &point);
-    m_rightHip = RightHip(m_boxNet, M_PI/2, &point);
-    m_boxNet.difference(delHip);
-    m_leftKnee = LeftKnee(m_boxNet, M_PI/2, M_PI/2, &point);
-    m_rightElbow = RightElbow(m_boxNet, M_PI/2, 0, 0, &point);
 }
 
 /*!
@@ -721,10 +721,12 @@ void Phantom::executeScenario()
 //    std::cout << "size = { " << m_rightKnee.getSizeX() << " " << m_rightKnee.getSizeY() << " " << m_rightKnee.getSizeZ() << " }\n";
 //    std::cout << "position = " << m_nymph << "\n";
 //    std::cout << "sizeTHIS = { " << m_boxNet.getSizeX() << " " << m_boxNet.getSizeY() << " " << m_boxNet.getSizeZ() << " }\n";
-    m_boxNet.insert(m_rightKnee);
+
+//    m_boxNet.insert(m_rightKnee);
 //    m_boxNet.insert(m_leftKnee);
 //    m_boxNet.insert(m_rightElbow);
-    m_boxNet.insert(m_rightHip);
+//    m_boxNet.insert(m_rightHip);
+//    saveBin();
 }
 
 void Phantom::fillCostume()
@@ -790,4 +792,16 @@ void Phantom::rightKneeRotate()
     Point3D <int> point;
     m_rightKnee = RightKnee(m_boxNet, M_PI/2, M_PI/2, &point);
     m_nymph = m_nymph + point;
+}
+
+void Phantom::saveBin()
+{
+    m_boxNet.writeBinFile("data/savePhantom.bin");
+    std::cout << m_boxNet;
+//    ofstream outputFile;
+//    char buf[256];
+//    outputFile.open("data/phantomParams.txt", std::ofstream::out | std::ofstream::trunc);
+//    std::sprintf(buf, "xSize = %d\nySize = %d\nzSize = %d\n", m_boxNet.getSizeX(), m_boxNet.getSizeY(), m_boxNet.getSizeZ());
+//    outputFile << buf;
+//    outputFile.close();
 }

@@ -19,10 +19,12 @@ void BodyPart::fillData(char const * filename)
 {
     int num = 0;
     std::ifstream file(filename, std::ios::binary);
-    while (!file.eof())
-    {
-        file.read(reinterpret_cast<char*>(&num), sizeof(num));
-        data.push_back(num);
+    if (file) {
+        while (!file.eof())
+        {
+            file.read(reinterpret_cast<char*>(&num), sizeof(num));
+            data.push_back(num);
+        }
     }
     file.close();
 }
