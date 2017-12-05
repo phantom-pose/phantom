@@ -83,6 +83,7 @@ public:
     void dumpCostume();
     void serializeCostume();
     void deserializeCostume();
+    void saveBin();
 
 private:
     BoxNet m_boxNet;
