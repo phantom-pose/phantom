@@ -24,9 +24,9 @@ namespace utils
 
     float dist(float x, float y, float z)
     {
-        float x2 = x*x*1.875*1.875;
-        float y2 = y*y*1.875*1.875;
-        float z2 = z*z*2.5*2.5;
+        float x2 = x*x*1.775*1.775;
+        float y2 = y*y*1.775*1.775;
+        float z2 = z*z*2.42*2.42;
         return sqrt( x2 + y2 + z2 );
     }
 

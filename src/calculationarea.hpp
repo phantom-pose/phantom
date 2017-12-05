@@ -37,7 +37,7 @@ private:
     BoxNet m_boxNet;
     float m_xScale = 1.775;
     float m_yScale = 1.775;
-    float m_zScale = 4.84;
+    float m_zScale = 2.42;
     Point3D <float> m_boxSize;
     std::vector <Vector3D> m_planes; // Содержит 6 проскостей основной коробки
     std::vector <BoundingBox *> m_costume;
