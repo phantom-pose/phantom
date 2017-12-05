@@ -35,15 +35,8 @@ Phantom::Phantom()
 //    rightKneeRotate();
     Point3D <int> point;
     m_rightKnee = RightKnee(m_boxNet, M_PI/2, M_PI/2, &point);
-//    Point3D <int> pos = m_rightKnee.position();
-//    std::cout << "position in m_rightknee after RightKnee" << pos << std::endl;
-//    m_nymph = m_nymph + point;
-//    m_rightKnee.setPosition(point);
     m_leftKnee = LeftKnee(m_boxNet, M_PI/2, M_PI/2, &point);
     m_rightElbow = RightElbow(m_boxNet, M_PI/2, 0, 0, &point);
-    Point3D <int> pos = m_rightElbow.position();
-    std::cout << "position in m_rightElbow after RightElbow" << pos << std::endl;
-//    m_leftKnee.setPosition(point);
 }
 
 /*!

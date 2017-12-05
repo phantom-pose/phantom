@@ -64,9 +64,9 @@ MainWindow::MainWindow()
 //    m_phantom = new Phantom( box );
 
 //    std::vector <BoundingBox *> costume;
-//    costume.push_back(new BoundingBox(18.75, 37.5, 25, 150, 112.5, 125, "alpha"));
-//    costume.push_back(new BoundingBox(37.5, 56.25, 50, 37.5, 75, 175, "beta"));
-//    costume.push_back(new BoundingBox(112.5, 56.25, 50, 37.5, 75, 175, "gamma"));
+//    costume.push_back(new BoundingBox(10 * m_phantom->xScale(), 20 * m_phantom->yScale(), 10 * m_phantom->zScale(), 80 * m_phantom->xScale(), 60 * m_phantom->yScale(), 50 * m_phantom->zScale(), "alpha"));
+//    costume.push_back(new BoundingBox(20 * m_phantom->xScale(), 30 * m_phantom->yScale(), 20 * m_phantom->zScale(), 20 * m_phantom->xScale(), 40 * m_phantom->yScale(), 70 * m_phantom->zScale(), "beta"));
+//    costume.push_back(new BoundingBox(60 * m_phantom->xScale(), 30 * m_phantom->yScale(), 20 * m_phantom->zScale(), 20 * m_phantom->xScale(), 40 * m_phantom->yScale(), 70 * m_phantom->zScale(), "gamma"));
 // ************** serialization branch stuff end ***********************
 
 //    m_phantom = new Phantom( box );

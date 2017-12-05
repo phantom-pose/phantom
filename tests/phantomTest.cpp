@@ -66,16 +66,16 @@ TEST(phantom_test, center)
     Phantom phantom = { box };
 
     Point3D <float> p0 = phantom.center(0);
-    Point3D <float> _p0 = { 0.9375, 0.9375, 1.25};
+    Point3D <float> _p0 = { 0.8875, 0.8875, 1.21};
 
     Point3D <float> p1 = phantom.center(1);
-    Point3D <float> _p1 = { 2.8125, 0.9375, 1.25};
+    Point3D <float> _p1 = { 2.6625, 0.8875, 1.21};
 
     Point3D <float> p17 = phantom.center(17);
-    Point3D <float> _p17 = { 4.6875, 2.8125, 3.75};
+    Point3D <float> _p17 = { 4.4375, 2.6625, 3.63};
 
     Point3D <float> p59 = phantom.center(59);
-    Point3D <float> _p59 = { 4.6875, 6.5625, 11.25};
+    Point3D <float> _p59 = { 4.4375, 6.2125, 10.89};
 
     EXPECT_EQ(p0, _p0);
     EXPECT_EQ(p1, _p1);
