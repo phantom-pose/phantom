@@ -47,7 +47,8 @@ TEST(calculationArea_test, test_findBeginPoint)
 
     Line ray = { { -1, -1, -2 }, { 1, 1.3, 1 } };
 //    Line ray = { { 0, 0, -1 }, { 561, 257, 1740 } };
-    int err = area.prepLineOut(ray);
+    float il = 0;
+    int err = area.prepLineOut(ray, il);
 //    Logger::Instance() << ray;
 //    area.startIterations(ray);
     area.startIterations(ray, 0, tk, ck, k);
@@ -342,3 +343,40 @@ TEST(calculationArea_test, test_costumeIntersect)
 
     // TODO Исправления во всех параллелях и случай с заменой цвета и пересечением границы одновременно
 }
+
+TEST(calculationArea_test, test_bigPhantom)
+{
+    Phantom phantom;
+    CalculationArea area(phantom.boxNet());
+
+    std::vector <BoundingBox *> costume;
+    CJsonSerializer::Deserialize(costume, "../sittingCostume.json");
+    area.setCostume(costume);
+
+    Line line(-48, 60, -203, 236, 314, 808);
+
+    std::vector <Segment> segments;
+    area.costumeIntersect(line, segments);
+    for (auto it = segments.begin(); it != segments.end(); it++) {
+        std::cout << "begin = " << (*it).pos << " end = " << (*it).end << std::endl;
+    }
+    ofstream outputFile;
+    char buf[256];
+    outputFile.open("../intersectBigPool.txt", std::ofstream::out | std::ofstream::trunc);
+
+    double * tk = new double [1000];
+    unsigned char * ck = new unsigned char [1000];
+    int k = 0;
+    float sum = 0;
+//    area.searchIntersectCostume(line, tk, ck, k);
+    area.searchIntersect(line, tk, ck, k);
+    for (int i = 0; i < k; i++) {
+        sum += tk[i];
+        std::sprintf(buf, "%6d     %6d     %8.4f     %8.3f\n", i, int(ck[i]), tk[i]/10, sum/10);
+        outputFile << buf;
+//        std::cout << "i = " << i <<" col = " << int(ck[i]) << " len = " << tk[i] << " sum = " << sum << std::endl;
+        printf("k = %3d col = %3d len = %8.3f sum = %8.3f\n", i, int(ck[i]), tk[i], sum );
+    }
+    outputFile.close();
+}
+

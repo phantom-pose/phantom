@@ -83,7 +83,7 @@ public:
     void fillCostume();
     void printLegPlanes();
     void dumpCostume();
-    void serializeCostume();
+    void serializeCostume( char const * filename );
     void deserializeCostume();
     void saveBin();
 
