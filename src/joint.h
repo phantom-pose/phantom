@@ -58,7 +58,7 @@ protected:
 
     BezierCoords3D * findAlpha(Point3D<float> * point, float der);
 
-    virtual BezierCoords3D * startCoefs(Point3D<float> * point) = 0;
+    virtual BezierCoords3D * startCoefs(Point3D<float> * point);
 
     virtual BezierCoords3D * choose(float a1, float a2, float b1, float b2, float l1, float l2) = 0;
 

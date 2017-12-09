@@ -9,7 +9,6 @@ public:
     Hip(Point3D <float> rot, Point3D <float> start, float x, float y, float z, float dz, float theta);
 
 private:
-    virtual BezierCoords3D * startCoefs(Point3D<float> * point) override;
 
     virtual BezierCoords3D * choose(float a1, float a2, float b1, float b2, float l1, float l2) override;
 
