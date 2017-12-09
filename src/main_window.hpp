@@ -24,6 +24,8 @@
 
 #include "line.h"
 #include "calculationarea.hpp"
+#include <ctime>
+#include <stdio.h>
 
 /*!
  * \brief Класс MainWindow - основное окно программы

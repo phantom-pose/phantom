@@ -18,11 +18,17 @@ public:
     std::vector <RotationMatrix> matrices;
     void setMatrix( RotationMatrix const & matrix );
     void setPrimitive( float x0, float y0, float z0, float a, float b, float c , std::string name);
+    void sethasJoint(bool hrd);
+    bool hasJoint();
     void rotatePrimitive();
     void shiftPrimitivePosition( Point3D <float> const & shift );
     void appendToVector( std::vector <BoundingBox *> & obj );
+//    void setHasDelData(bool hdd);
+//    bool hasDelData();
 
 private:
 //    BoundingBox * m_bboxes = nullptr;
     std::vector <BoundingBox *> m_bboxes;
+    bool m_hasJoint = true;
+//    bool m_hasDelData = true;
 };

@@ -128,6 +128,65 @@ MainWindow::MainWindow()
 
 //    m_lineArea = new LinePaintArea(0, lines);
 
+    CalculationArea area(m_phantom->boxNet());
+
+    std::vector <BoundingBox *> costume;
+    CJsonSerializer::Deserialize(costume, "../sittingCostume.json");
+    area.setCostume(costume);
+
+    double * tk = new double [1000];
+    unsigned char * ck = new unsigned char [1000];
+    int k = 0;
+
+    clock_t begin1 = clock();
+    for (int i = 0; i < 100000; i++) {
+        k = 0;
+        Line line(-48, 60, -203, 236, 314, 808);
+        area.searchIntersectCostume(line, tk, ck, k);
+    }
+    clock_t end1 = clock();
+    double elapsed_secs1 = double(end1 - begin1) / CLOCKS_PER_SEC;
+    std::cout << "Costume seconds = " << elapsed_secs1 << std::endl;
+
+    ofstream outputFile;
+    char buf[256];
+    outputFile.open("../intCos.txt", std::ofstream::out | std::ofstream::trunc);
+    float sum = 0;
+    for (int i = 0; i < k; i++) {
+        sum += tk[i];
+        std::sprintf(buf, "%6d     %6d     %8.4f     %8.3f\n", i, int(ck[i]), tk[i]/10, sum/10);
+        outputFile << buf;
+//        printf("k = %3d col = %3d len = %8.3f sum = %8.3f\n", i, int(ck[i]), tk[i], sum );
+    }
+    outputFile.close();
+
+
+    double * tk2 = new double [1000];
+    unsigned char * ck2 = new unsigned char [1000];
+    int k2 = 0;
+
+    clock_t begin2 = clock();
+    for (int i = 0; i < 100000; i++) {
+        k2 = 0;
+        Line line2(-48, 60, -203, 236, 314, 808);
+        area.searchIntersect(line2, tk2, ck2, k2);
+    }
+    clock_t end2 = clock();
+    double elapsed_secs2 = double(end2 - begin2) / CLOCKS_PER_SEC;
+    std::cout << "Pool seconds = " << elapsed_secs2 << std::endl;
+
+    ofstream outputFile2;
+    char buf2[256];
+    outputFile2.open("../intBox.txt", std::ofstream::out | std::ofstream::trunc);
+    float sum2 = 0;
+    for (int i = 0; i < k2; i++) {
+        sum2 += tk2[i];
+        std::sprintf(buf2, "%6d     %6d     %8.4f     %8.3f\n", i, int(ck2[i]), tk2[i]/10, sum2/10);
+        outputFile2 << buf2;
+//        printf("k = %3d col = %3d len = %8.3f sum = %8.3f\n", i, int(ck2[i]), tk2[i], sum2 );
+    }
+    outputFile2.close();
+
     createMainArea();
 }
 

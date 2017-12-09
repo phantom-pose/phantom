@@ -548,38 +548,40 @@ void Phantom::rotate()
     unsigned char color, color1, color2;
     for (auto bp = m_bodyparts.begin(); bp != m_bodyparts.end(); bp++) {
         (*bp)->rotatePrimitive();
-        for (auto it = (*bp)->data.begin(); it != (*bp)->data.end(); it++) {
-            color = m_boxNet.getByNum(*it);
-            // Точки внутри вокселя, которые при любом повороте покроют требуемую область - 'четвертаки'
-            Point3D <float> firstQuarter = quarterOne(*it);
-            Point3D <float> secondQuarter = quarterTwo(*it);
-            // Находим кандидатов на перекрашивание
-            for (auto pm = (*bp)->matrices.begin(); pm != (*bp)->matrices.end(); pm++) {
-                RotationMatrix matrix = *pm;
-                matrix.Rotate(firstQuarter);
-                matrix.Rotate(secondQuarter);
-            }
+        if ( !(*bp)->hasJoint() ) {
+            for (auto it = (*bp)->data.begin(); it != (*bp)->data.end(); it++) {
+                color = m_boxNet.getByNum(*it);
+                // Точки внутри вокселя, которые при любом повороте покроют требуемую область - 'четвертаки'
+                Point3D <float> firstQuarter = quarterOne(*it);
+                Point3D <float> secondQuarter = quarterTwo(*it);
+                // Находим кандидатов на перекрашивание
+                for (auto pm = (*bp)->matrices.begin(); pm != (*bp)->matrices.end(); pm++) {
+                    RotationMatrix matrix = *pm;
+                    matrix.Rotate(firstQuarter);
+                    matrix.Rotate(secondQuarter);
+                }
 
-            // Находим центры ячеек куда попали четвертаки
-            Point3D <float> fq = center(firstQuarter);
-            Point3D <float> sq = center(secondQuarter);
-            // Копируем их
-            Point3D <float> _fq = fq;
-            Point3D <float> _sq = sq;
-            // И смотрим чем они были до поворота
-            for (auto pm = (*bp)->matrices.rbegin(); pm != (*bp)->matrices.rend(); pm++) {
-                RotationMatrix matrix = *pm;
-                matrix.negaRotate(fq);
-                matrix.negaRotate(sq);
-            }
-            // Находим их прежний цвет
-            color1 = getValue(fq);
-            color2 = getValue(sq);
+                // Находим центры ячеек куда попали четвертаки
+                Point3D <float> fq = center(firstQuarter);
+                Point3D <float> sq = center(secondQuarter);
+                // Копируем их
+                Point3D <float> _fq = fq;
+                Point3D <float> _sq = sq;
+                // И смотрим чем они были до поворота
+                for (auto pm = (*bp)->matrices.rbegin(); pm != (*bp)->matrices.rend(); pm++) {
+                    RotationMatrix matrix = *pm;
+                    matrix.negaRotate(fq);
+                    matrix.negaRotate(sq);
+                }
+                // Находим их прежний цвет
+                color1 = getValue(fq);
+                color2 = getValue(sq);
 
-            setValue(_fq, color1);
-//            std::cout << fq;
-            setValue(_sq, color2);
-//            setValue(*it, 0);
+                setValue(_fq, color1);
+    //            std::cout << fq;
+                setValue(_sq, color2);
+    //            setValue(*it, 0);
+            }
         }
     }
     // Затираем (обнуляем) старые воксели
@@ -617,8 +619,11 @@ void Phantom::loadScenario()
     for (unsigned int i = 0; i < bodyparts.size(); i++) {
         // Извлекаем имя файла для того, чтобы создать объект бадипарт
         char const * filename = bodyparts[i]["filename"].asCString();
+        // Извлекаем бул, который показывает будет ли поворачиваться data
+        bool hasJoint = static_cast<bool>(bodyparts[i]["hasJoint"].asInt());
         // Создаём указатель на бадипарт, впоследствии будет находиться в m_bodyparts. Загружаем данные из файла
         BodyPart * bodypart = new BodyPart(filename);
+        bodypart->sethasJoint(hasJoint);
         Json::Value const & matrices = bodyparts[i]["matrices"];
         // Итерируемся по матрицам внутри стека матриц
         for (unsigned int j = 0; j < matrices.size(); j++) {
@@ -670,6 +675,8 @@ void Phantom::loadScenario()
         std::string name = parts[i]["name"].asString();
         m_costume.push_back(new BoundingBox(x0, y0, z0, a, b, c, name));
     }
+//    fillCostume();
+//    serializeCostume("../primaryCostume.json");
 }
 
 void Phantom::executeScenario()
@@ -677,7 +684,7 @@ void Phantom::executeScenario()
     makeNet();
     rotate();
     fillCostume();
-    serializeCostume();
+    serializeCostume("../sittingCostume.json");
 //    std::cout << "BOXNET PARAMETERS" << std::endl;
 //    std::cout << "size = { " << m_rightKnee.getSizeX() << " " << m_rightKnee.getSizeY() << " " << m_rightKnee.getSizeZ() << " }\n";
 //    std::cout << "position = " << m_nymph << "\n";
@@ -720,14 +727,14 @@ void Phantom::dumpCostume() {
     }
 }
 
-void Phantom::serializeCostume()
+void Phantom::serializeCostume( char const * filename )
 {
 //    Json::Value root;
 //    std::ofstream file("costume.json");
     std::vector <IJsonSerializable *>  costume(m_costume.begin(), m_costume.end());
     std::string output;
     bool err = CJsonSerializer::Serialize(costume, output);
-    std::ofstream out("data/serCostume2.json");
+    std::ofstream out(filename);
     out << output;
     out.close();
 //    Json::StyledStreamWriter writer;

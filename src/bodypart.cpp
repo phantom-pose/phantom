@@ -62,3 +62,23 @@ void BodyPart::appendToVector( std::vector <BoundingBox *> & obj )
 {
     obj.insert(obj.end(), m_bboxes.begin(), m_bboxes.end());
 }
+
+void BodyPart::sethasJoint(bool hrd)
+{
+    m_hasJoint = hrd;
+}
+
+bool BodyPart::hasJoint()
+{
+    return m_hasJoint;
+}
+
+//void BodyPart::setHasDelData(bool hdd)
+//{
+//    m_hasDelData = hrd;
+//}
+
+//bool BodyPart::hasDelData()
+//{
+//    return m_hasDelData;
+//}

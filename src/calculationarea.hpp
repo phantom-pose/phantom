@@ -21,8 +21,8 @@ public:
     bool hasInsideBox(Point3D <float> const & pt);
     int searchIntersect(Line & line, double * tk, unsigned char * ck, int & k);
     int searchIntersectCostume(Line & line, double * tk, unsigned char * ck, int & k);
-    int prepLineOut(Line & line);
-    int prepLineIn(Line & line);
+    int prepLineOut(Line & line, float & il);
+    int prepLineIn(Line & line, float & il);
     int linePlaneIntersect(float & len, Line const & line, Vector3D const & plane);
     void startIterations(Line & line);
     void startParallelIterations(Line & line, float interLayer, int const & index, double * tk, unsigned char * ck, int & k);
