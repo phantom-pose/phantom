@@ -4,6 +4,7 @@
 #include <fstream>
 #include "slice.h"
 #include "point3d.hpp"
+#include <QColor>
 
 /*!
  * \brief Класс BoxNet - представление сетки и работа с ней
@@ -46,6 +47,7 @@ public:
 
     void fillFromFile(char const * filename);
     void writeBinFile(char const * filename);
+    void writeRGBA(char const * filename);
     void writeBinCMO(char const * filename);
     void fillFromBin(char const * filename);
 
@@ -64,6 +66,7 @@ public:
     int translitNum(int num);
     void insert(BoxNet const & box, Point3D <int> pos);
     void insert(BoxNet const & box);
+    void difference(BoxNet const & box);
     void shiftPos(Point3D <int> shift);
 
 private:
