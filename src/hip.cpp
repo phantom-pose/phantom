@@ -81,15 +81,16 @@ BoxNet GetHip(BoxNet b1, float theta, Point3D <int> * coord, bool right) {
                 Point3D <float> start;
                 Point3D <float> * pend = &end;
                 Point3D <float> * pstart = &start;
-                bool hasDef = hip.getStartPoint( pend, pstart, 3 );
                 float x = pstart->x();
                 float y = pstart->y();
                 float z = pstart->z();
-                unsigned char color = b.getByXyz(int(x/VOX_X),int(y/VOX_Y),int(z/VOX_Z));
-                if (hasDef && x > 0 && x < xmax*VOX_X && y > 0 && y < ymax*VOX_Y && z > 0 && z < zmax*VOX_Z &&
-                        ARM_COLORS.find(color) == ARM_COLORS.end())
+                if (x > 0 && int(std::round(x/VOX_X)) < xmax && y > 0 && int(std::round(y/VOX_Y)) < ymax && z > 0 && int(std::round(z/VOX_Z)) < zmax)
                 {
-                    b2.setByXyz(ix,iy,iz,color);
+                    unsigned char color = b.getByXyz(int(std::round(x/VOX_X)),int(std::round(y/VOX_Y)),int(std::round(z/VOX_Z)));
+                    if (ARM_COLORS.find(color) == ARM_COLORS.end())
+                        b2.setByXyz(ix,iy,iz,color);
+                    else
+                        b2.setByXyz(ix,iy,iz,0);
                 }
                 else {
                     b2.setByXyz(ix, iy, iz, 0);
