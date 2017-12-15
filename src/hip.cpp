@@ -81,6 +81,7 @@ BoxNet GetHip(BoxNet b1, float theta, Point3D <int> * coord, bool right) {
                 Point3D <float> start;
                 Point3D <float> * pend = &end;
                 Point3D <float> * pstart = &start;
+                hip.getStartPoint( pend, pstart, 3 );
                 float x = pstart->x();
                 float y = pstart->y();
                 float z = pstart->z();
