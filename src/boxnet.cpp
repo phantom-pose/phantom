@@ -297,6 +297,43 @@ void BoxNet::writeBinFile(char const * filename)
     file.close();
 }
 
+void BoxNet::writeRGBA(char const * filename)
+{
+    QColor m_palette[142];
+    // ---- //
+    FILE *fp;
+    fp = fopen("data/palette.dat", "r");
+    char line[20];
+    int id, color;
+    if(fp != NULL)
+    {
+        while (fgets ( line, 14, fp ))
+        {
+            if (sscanf(line, "%d%x", &id, &color))
+            {
+                m_palette[id] = QColor(color);
+            }
+        }
+        fclose(fp);
+    } else {
+        printf("Cant open file\n");
+    }
+    // ---- //
+    int r, g, b, a;
+    std::ofstream file(filename, std::ios::binary);
+    for (int iz = 0; iz < m_zSize; iz++) {
+        for (int iy = 0; iy < m_ySize; iy++) {
+            for (int ix = 0; ix < m_xSize; ix++) {
+                m_palette[ m_list[ix][iy][iz] ].getRgb(&r, &g, &b, &a);
+                unsigned long col = ((a * 256 + r) * 256 + g) * 256 + b;
+                file.write(reinterpret_cast<char const*>(&col), sizeof(col));
+            }
+        }
+    }
+    file.close();
+
+}
+
 void BoxNet::writeBinCMO(char const * filename)
 {
     int shift = m_xSize / 2;
@@ -605,6 +642,28 @@ void BoxNet::insert(BoxNet const & box)
                     unsigned char value = m_list[i + posX][j + posY][k + posZ];
                     if (value == 0) {
                         m_list[i + posX][j + posY][k + posZ] = box.getByXyz(i, j, k);
+                    }
+                }
+            }
+        }
+    }
+}
+
+void BoxNet::difference(BoxNet const & box)
+{
+    Point3D <int> pos = box.position();
+    std::cout << "insert in position " << pos << std::endl;
+    int posX = pos.x();
+    int posY = pos.y();
+    int posZ = pos.z();
+    for (int k = 0; k < box.getSizeZ(); k++) {
+        for (int j = 0; j < box.getSizeY(); j++) {
+            for (int i = 0; i < box.getSizeX(); i++) {
+                unsigned char boxValue = box.getByXyz(i, j, k);
+                if ((i + posX) > 0 && (i + posX) < m_xSize && (j + posY) > 0 && (j + posY) < m_ySize && (k + posZ) > 0 && (k + posZ) < m_zSize) {
+                    unsigned char value = m_list[i + posX][j + posY][k + posZ];
+                    if (boxValue != 0 && value != 0) {
+                        m_list[i + posX][j + posY][k + posZ] = 0;
                     }
                 }
             }

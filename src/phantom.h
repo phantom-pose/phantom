@@ -16,6 +16,7 @@
 #include "boundingbox.h"
 #include "knee.h"
 #include "elbow.h"
+#include "hip.h"
 
 /*!
  * \brief Основной класс для работы с воксельной моделью - Phantom
@@ -67,6 +68,7 @@ public:
     void checkBin(char const * filename);
     void check(BodyPart const & bp);
     void cutBin(char const * filename, int firstEdge, int secondEdge, const char * newname);
+    void cutBin(char const * filename, int firstEdge, int secondEdge, int thirdEdge, const char * newname);
     void cutBodyparts();
     void combineBin(char const * filename1, char const * filename2, char const * filename3, const char * out);
     void rightKneeRotate();
@@ -93,7 +95,7 @@ private:
     std::vector <BoundingBox*> m_costume;
     Point3D <float> m_rotpoints[8];
     Point3D <int> m_nymph;
-    BoxNet m_rightKnee, m_leftKnee, m_rightElbow;
+    BoxNet m_rightKnee, m_leftKnee, m_rightElbow, m_rightHip;
 };
 
 std::ostream & operator << (std::ostream & os, Phantom const & obj);
