@@ -19,7 +19,7 @@ Hip::Hip(Point3D <float> rot, Point3D <float> start, float x, float y, float z, 
         )
 {}
 
-BezierCoords3D * Hip::choose(float a1, float a2, float b1, float b2, float l1, float l2)
+BezierCoords3D * Hip::choose(float a1, float a2, float b1, float , float l1, float l2)
 {
     return new BezierCoords3D(a1 > a2 ? a2 : a1, b1, l1/(l1+l2));
 }
@@ -50,10 +50,10 @@ BoxNet GetHip(BoxNet b1, float theta, Point3D <int> * coord, bool right) {
     int ROT_LEG_Y  = points[indexLegRP]["xyz"][1].asInt();
     int ROT_LEG_Z  = points[indexLegRP]["xyz"][2].asInt();
 
-    const float dx = 0, dy =150, dz=50;
-    const float xmax = 300;
-    const float ymax = 370;
-    const float zmax = 230;
+    const int dx = 0, dy =150, dz=50;
+    const int xmax = 300;
+    const int ymax = 370;
+    const int zmax = 230;
     Hip hip = {
         {(dx+ROT_LEG_X-HIP_X1)*VOX_X,(ROT_LEG_Y-HIP_Y1+dy)*VOX_Y,(ROT_LEG_Z-HIP_BOTTOM_Z+dz)*VOX_Z},
         {dx*VOX_X, dy*VOX_Y, (HIP_TOP_Z-HIP_BOTTOM_Z+dz)*VOX_Z},
@@ -77,7 +77,7 @@ BoxNet GetHip(BoxNet b1, float theta, Point3D <int> * coord, bool right) {
             for (int ix = 0; ix < xmax; ix++)
             {
                 //std::cout << iy << " " << ix<< std::endl;
-                Point3D <float> end = { (ix+0.5)*VOX_X, (iy+0.5)*VOX_Y, (iz+0.5)*VOX_Z };
+                Point3D <float> end = { (ix+0.5f)*VOX_X, (iy+0.5f)*VOX_Y, (iz+0.5f)*VOX_Z };
                 Point3D <float> start;
                 Point3D <float> * pend = &end;
                 Point3D <float> * pstart = &start;

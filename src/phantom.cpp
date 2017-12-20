@@ -17,6 +17,7 @@ Phantom::Phantom()
 
 //    BoxNet b = m_boxNet.cut( {100, 0, 598}, {200, 117, 694} );
 //    b.writeBinFile("Head.bin");
+//    b.writeRGBA("../rgbaHead.raw");
 
     // Заполняем массив точек поворота из Json файла
     // **********************************************************************
@@ -32,18 +33,14 @@ Phantom::Phantom()
     // **********************************************************************
     cutBodyparts();
     loadScenario();
-//    rightKneeRotate();
     Point3D <int> point;
     m_rightKnee = RightKnee(m_boxNet, M_PI/2, M_PI/2, &point);
-//    Point3D <int> pos = m_rightKnee.position();
-//    std::cout << "position in m_rightknee after RightKnee" << pos << std::endl;
-//    m_nymph = m_nymph + point;
-//    m_rightKnee.setPosition(point);
-    m_leftKnee = LeftKnee(m_boxNet, M_PI/2, M_PI/2, &point);
-    m_rightElbow = RightElbow(m_boxNet, M_PI/2, 0, 0, &point);
-    Point3D <int> pos = m_rightElbow.position();
-    std::cout << "position in m_rightElbow after RightElbow" << pos << std::endl;
-//    m_leftKnee.setPosition(point);
+//    m_leftKnee = LeftKnee(m_boxNet, M_PI/2, M_PI/2, &point);
+//    m_rightElbow = RightElbow(m_boxNet, M_PI/2, 0, 0, &point);
+
+    BoxNet delHip = RightHip(m_boxNet, 0, &point);
+    m_rightHip = RightHip(m_boxNet, M_PI/2, &point);
+    m_boxNet.difference(delHip);
 }
 
 /*!
@@ -422,6 +419,38 @@ void Phantom::cutBin(char const * filename, int firstEdge, int secondEdge, char 
     output3.close();
 }
 
+void Phantom::cutBin(char const * filename, int firstEdge, int secondEdge, int thirdEdge, char const * newname)
+{
+    int num = 0, z = 0;
+    int square = m_boxNet.getSizeX() * m_boxNet.getSizeY();
+    char name1[40];
+    char name2[40];
+    char name3[40];
+    sprintf(name1, "%s-1.bin", newname);
+    sprintf(name2, "%s-2.bin", newname);
+    sprintf(name3, "%s-3.bin", newname);
+    std::ifstream input(filename, std::ios::binary);
+    std::ofstream output1(name1, std::ios::binary);
+    std::ofstream output2(name2, std::ios::binary);
+    std::ofstream output3(name3, std::ios::binary);
+    while (!input.eof())
+    {
+        input.read(reinterpret_cast<char*>(&num), sizeof(num));
+        z = num / square;
+        if (z <= firstEdge) {
+            output1.write(reinterpret_cast<char const*>(&num), sizeof(num));
+        } else if (z <= secondEdge) {
+            output2.write(reinterpret_cast<char const*>(&num), sizeof(num));
+        } else if (z <= thirdEdge) {
+            output3.write(reinterpret_cast<char const*>(&num), sizeof(num));
+        }
+    }
+    input.close();
+    output1.close();
+    output2.close();
+    output3.close();
+}
+
 void Phantom::cutBodyparts()
 {
     Json::Value rootJoint;
@@ -432,7 +461,9 @@ void Phantom::cutBodyparts()
     // Правая коленка
     int rKz1 = rootJoint["rightKnee"]["z1"].asInt();
     int rKz2 = rootJoint["rightKnee"]["z2"].asInt();
-    cutBin("data/bodyparts/rightLeg.bin", rKz1, rKz2-1, "data/bodyparts/rightLeg");
+    // Учитываем также нижнюю часть правого бедра
+    int rHz1 = rootJoint["rightHip"]["z1"].asInt();
+    cutBin("data/bodyparts/rightLeg.bin", rKz1, rKz2-1, rHz1, "data/bodyparts/rightLeg");
     // Левая
     int lKz1 = rootJoint["leftKnee"]["z1"].asInt();
     int lKz2 = rootJoint["leftKnee"]["z2"].asInt();
@@ -539,6 +570,7 @@ void Phantom::makeNet()
     m_rightKnee.shiftPos(position);
     m_leftKnee.shiftPos(position);
     m_rightElbow.shiftPos(position);
+    m_rightHip.shiftPos(position);
     Point3D <int> pos = m_rightElbow.position();
     std::cout << "position in m_rightElbow after makeNet" << pos << std::endl;
 //    Point3D <int> pos = m_rightKnee.position();
@@ -686,8 +718,9 @@ void Phantom::executeScenario()
 //    std::cout << "position = " << m_nymph << "\n";
 //    std::cout << "sizeTHIS = { " << m_boxNet.getSizeX() << " " << m_boxNet.getSizeY() << " " << m_boxNet.getSizeZ() << " }\n";
     m_boxNet.insert(m_rightKnee);
-    m_boxNet.insert(m_leftKnee);
-    m_boxNet.insert(m_rightElbow);
+//    m_boxNet.insert(m_leftKnee);
+//    m_boxNet.insert(m_rightElbow);
+    m_boxNet.insert(m_rightHip);
 }
 
 void Phantom::fillCostume()

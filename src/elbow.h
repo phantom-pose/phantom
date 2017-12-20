@@ -1,4 +1,4 @@
-#pragma once;
+#pragma once
 #include "recjoint.h"
 #include "point3d.hpp"
 #include "plane.h"
@@ -13,7 +13,7 @@ public:
     {}
 
 private:
-    virtual BezierCoords3D * choose(float a1, float a2, float b1, float b2, float l1, float l2) override;
+    virtual BezierCoords3D * choose(float a1, float a2, float b1, float, float l1, float l2) override;
 };
 
 BoxNet RightElbow(BoxNet b1, float phi, float thetaX, float thetaY, Point3D <int> * coord);

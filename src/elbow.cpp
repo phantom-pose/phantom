@@ -1,6 +1,6 @@
 #include "elbow.h"
 
-BezierCoords3D * Elbow::choose(float a1, float a2, float b1, float b2, float l1, float l2)
+BezierCoords3D * Elbow::choose(float a1, float a2, float b1, float, float l1, float l2)
 {
     return new BezierCoords3D(fabs(l1) > fabs(l2) ? a2 : a1, b1, l1/(l1+l2));
 }
@@ -35,10 +35,10 @@ BoxNet GetElbow(BoxNet b1, float phi, float thetaX, float thetaY, Point3D <int> 
     int ROT_HAND_Y  = points[indexShoulderRP]["xyz"][1].asInt();
     int ROT_HAND_Z  = points[indexShoulderRP]["xyz"][2].asInt();
 
-    const float dx = 90, dy = 90, dz=15;
-    const float xmax = 185;
-    const float ymax = 185;
-    const float zmax = 120;
+    const int dx = 90, dy = 90, dz=15;
+    const int xmax = 185;
+    const int ymax = 185;
+    const int zmax = 120;
 
     Elbow elbow = {
         {(ROT_HAND_X-ELBOW_X1+dx)*VOX_X,(ROT_HAND_Y-ELBOW_Y1+dy)*VOX_Y,(ROT_HAND_Z-ELBOW_BOTTOM_Z+dz)*VOX_Z},
@@ -51,7 +51,7 @@ BoxNet GetElbow(BoxNet b1, float phi, float thetaX, float thetaY, Point3D <int> 
         thetaY,
         phi
     };
-    float xshift, yshift, zshift;
+    int xshift, yshift, zshift;
     auto shift = elbow.getShift();
     if (std::isnan(shift->getDirection().x()))
     {
@@ -75,7 +75,7 @@ BoxNet GetElbow(BoxNet b1, float phi, float thetaX, float thetaY, Point3D <int> 
             for (int ix = 0; ix < xmax; ix++)
             {
                 //std::cout << iy << " " << ix<< std::endl;
-                Point3D <float> end = { (ix+0.5+xshift)*VOX_X, (iy+0.5+yshift)*VOX_Y, (iz+0.5+zshift)*VOX_Z };
+                Point3D <float> end = { (ix+0.5f+xshift)*VOX_X, (iy+0.5f+yshift)*VOX_Y, (iz+0.5f+zshift)*VOX_Z };
                 Point3D <float> start;
                 Point3D <float> * pend = &end;
                 Point3D <float> * pstart = &start;

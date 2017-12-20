@@ -274,7 +274,7 @@ void MainWindow::setBoxRightElbow()
 void MainWindow::setBoxRightHip()
 {
     Point3D <int> point;
-    BoxNet b = RightHip(m_phantom->boxNet(), M_PI/2, &point);
+    BoxNet b = RightHip(m_phantom->boxNet(), 0, &point);
     m_phantom->setBox(b);
 }
 
