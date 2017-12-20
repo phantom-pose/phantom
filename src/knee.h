@@ -1,4 +1,4 @@
-#pragma once;
+#pragma once
 #include "recjoint.h"
 #include "point3d.hpp"
 #include "vector3d.h"
