@@ -13,6 +13,7 @@ Phantom::Phantom()
     m_boxNet = { 299, 437, 696 };
 //    m_boxNet.fillFromBin( "data/AF_bin.dat" );
     m_boxNet.fillFromBin( "data/savePhantom.bin" );
+    saveSurface("../sitting");
 //    m_boxNet.segmentation();
 //    m_boxNet = { 100, 117, 96 };
 //    m_boxNet.fillFromBin( "../Head.bin" );
@@ -811,4 +812,50 @@ void Phantom::saveBin()
 //    std::sprintf(buf, "xSize = %d\nySize = %d\nzSize = %d\n", m_boxNet.getSizeX(), m_boxNet.getSizeY(), m_boxNet.getSizeZ());
 //    outputFile << buf;
 //    outputFile.close();
+}
+
+void Phantom::saveSurface( std::string const & filename )
+{
+    std::size_t found = filename.find_last_of("/\\");
+    Json::Value Root;
+    Root["sizeX"] = m_boxNet.getSizeX();
+    Root["sizeY"] = m_boxNet.getSizeY();
+    Root["sizeZ"] = m_boxNet.getSizeZ();
+    Root["propX"] = m_xScale;
+    Root["propY"] = m_yScale;
+    Root["propZ"] = m_zScale;
+    Root["name"]  = filename.substr(found+1);
+
+
+    int counter = 0;
+    bool contour = true;
+    std::string name = filename + ".bin";
+    std::ofstream binfile(name, std::ios::binary);
+    for (int iz = 0; iz < m_boxNet.getSizeZ(); iz++) {
+        for (int iy = 0; iy < m_boxNet.getSizeY(); iy++) {
+            for (int ix = 0; ix < m_boxNet.getSizeX(); ix++) {
+                unsigned char value = m_boxNet.getByXyz(ix, iy, iz);
+                if ( static_cast<bool>(value) == contour ) {
+                    counter++;
+                    contour = !contour;
+                    float x = ix * m_xScale;
+                    float y = (static_cast<float>(iy) + 0.5f) * m_yScale;
+                    float z = (static_cast<float>(iz) + 0.5f) * m_zScale;
+//                    m_boxNet.setByXyz(ix, iy, iz, 141);
+                    binfile.write(reinterpret_cast<char const*>(&x), sizeof(x));
+                    binfile.write(reinterpret_cast<char const*>(&y), sizeof(y));
+                    binfile.write(reinterpret_cast<char const*>(&z), sizeof(z));
+                }
+            }
+        }
+    }
+    binfile.close();
+
+    Root["counter"]  = counter;
+    Json::StyledWriter writer;
+    std::string output = writer.write( Root );
+    std::string fn = filename + ".json";
+    std::ofstream out(fn);
+    out << output;
+    out.close();
 }

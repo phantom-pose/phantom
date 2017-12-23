@@ -86,6 +86,7 @@ public:
     void serializeCostume( char const * filename );
     void deserializeCostume();
     void saveBin();
+    void saveSurface( const std::string & filename );
 
 private:
     BoxNet m_boxNet;
