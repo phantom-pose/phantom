@@ -34,13 +34,13 @@ Phantom::Phantom()
     cutBodyparts();
     loadScenario();
     Point3D <int> point;
-    m_rightKnee = RightKnee(m_boxNet, M_PI/2, M_PI/2, &point);
+    //m_rightKnee = RightKnee(m_boxNet, M_PI/2, M_PI/2, &point);
 //    m_leftKnee = LeftKnee(m_boxNet, M_PI/2, M_PI/2, &point);
 //    m_rightElbow = RightElbow(m_boxNet, M_PI/2, 0, 0, &point);
 
-    BoxNet delHip = RightHip(m_boxNet, 0, &point);
-    m_rightHip = RightHip(m_boxNet, M_PI/2, &point);
-    m_boxNet.difference(delHip);
+    //BoxNet delHip = RightHip(m_boxNet, 0, &point);
+    //m_rightHip = RightHip(m_boxNet, M_PI/2, &point);
+    //m_boxNet.difference(delHip);
 }
 
 /*!
@@ -778,6 +778,6 @@ void Phantom::serializeCostume()
 void Phantom::rightKneeRotate()
 {
     Point3D <int> point;
-    m_rightKnee = RightKnee(m_boxNet, M_PI/2, M_PI/2, &point);
+    //m_rightKnee = RightKnee(m_boxNet, M_PI/2, M_PI/2, &point);
     m_nymph = m_nymph + point;
 }
