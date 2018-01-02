@@ -188,6 +188,7 @@ TEST(calculationArea_test, test_modelIntersect)
     Line lineX2(30 * xyScale, 50 * xyScale, 70 * zScale, 1, 0, 0);
     std::vector <Segment> segmentsX2;
     area.costumeIntersect(lineX2, segmentsX2);
+    std::cout << segmentsX2[0].pos << std::endl;
     f = fabs(segmentsX2[0].pos - (0));
     EXPECT_LT(f, Eps);
     f = fabs(segmentsX2[0].end - (10 * xyScale));

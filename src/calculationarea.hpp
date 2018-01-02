@@ -22,6 +22,7 @@ public:
     int searchIntersect(Line & line, double * tk, unsigned char * ck, int & k);
     int searchIntersectCostume(Line & line, double * tk, unsigned char * ck, int & k);
     int prepLineOut(Line & line, float & il);
+    int findBoxInterlayer(Line const & line, float & il, float & pl);
     int prepLineIn(Line & line, float & il);
     int linePlaneIntersect(float & len, Line const & line, Vector3D const & plane);
     void startIterations(Line & line);
@@ -41,4 +42,5 @@ private:
     Point3D <float> m_boxSize;
     std::vector <Vector3D> m_planes; // Содержит 6 проскостей основной коробки
     std::vector <BoundingBox *> m_costume;
+    BoundingBox * cage;
 };

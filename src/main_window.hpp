@@ -26,6 +26,7 @@
 #include "calculationarea.hpp"
 #include <ctime>
 #include <stdio.h>
+#include "timetest.h"
 
 /*!
  * \brief Класс MainWindow - основное окно программы

@@ -15,6 +15,8 @@ CalculationArea::CalculationArea( BoxNet const & box )
     m_planes.push_back({ { 0, yLen, 0 }, { 0, -1, 0 } });
     m_planes.push_back({ { 0, 0, zLen }, { 0, 0, -1 } });
 
+    cage = new BoundingBox(0, 0, 0, xLen, yLen, zLen);
+
     CJsonSerializer::Deserialize(m_costume, "data/stdCostume.json");
 }
 
@@ -44,6 +46,15 @@ bool CalculationArea::hasInsideBox(Point3D <float> const & pt) {
 
 // Для луча снаружи основного блока
 int CalculationArea::prepLineOut(Line & line, float & il) {
+//    Segment s;
+//    int err = cage->intersect(line, s);
+//    if (!err) {
+//        il = s.pos;
+//        line.shiftPosition(s.pos);
+//        line.setMaxLen(s.end - s.pos);
+//        return 0;
+//    }
+//    return 1;
     float len = 0.0f;
     float lens[2];
     int i = 0;
@@ -71,6 +82,40 @@ int CalculationArea::prepLineOut(Line & line, float & il) {
         return 0;
     }
     return 1;
+}
+
+int CalculationArea::findBoxInterlayer(Line const & line, float & il, float & pl) {
+    Segment s;
+    int err = cage->intersect(line, s);
+    il = s.pos;
+    pl = s.end;
+    return 0;
+//    float len = 0.0f;
+//    float lens[2];
+//    int i = 0;
+//    for (auto it = m_planes.begin(); it != m_planes.end(); it++) {
+//        int err = linePlaneIntersect(len, line, *it);
+//        if (!err) {
+//            lens[i] = len;
+//            i++;
+//        }
+//    }
+//    if (i == 2) {
+//        // На данном этапе в templen и len ближняя и дальняя точки, но неизвестно где какая
+//        if (lens[1] > lens[0]) {
+//            il = lens[0];
+//            pl = lens[1]-lens[0];
+//        } else {
+//            il = lens[1];
+//            pl = lens[0]-lens[1];
+//        }
+//        return 0;
+//    } else if (i == 1) {
+//        il = 0;
+//        pl = lens[0];
+//        return 0;
+//    }
+//    return 1;
 }
 
 // Для луча внутри основного блока
@@ -240,6 +285,7 @@ void CalculationArea::startIterations(Line const & line, float interLayer, doubl
     In[0] = (Bp[0] + Dir[0] * 0.01) / m_xScale;
     In[1] = (Bp[1] + Dir[1] * 0.01) / m_yScale;
     In[2] = (Bp[2] + Dir[2] * 0.01) / m_zScale;
+//    std::cout << line;
 //    std::cout << "Index = { "  << In[0] << " " << In[1] << " " << In[2] << " }" << std::endl;
     // Установлю первоначальное значение цвета
     unsigned char color = m_boxNet.getByXyz(In[0], In[1], In[2]);
@@ -498,12 +544,28 @@ int CalculationArea::searchIntersect(Line & line, double * tk, unsigned char * c
 
 int CalculationArea::costumeIntersect(Line const & line, std::vector <Segment> & segments)
 {
+    // Проверяем отрезок на принадлежность к коробке, подрезаем в случае чего
+    float il = 0.;
+    float pl = 0.;
+    int e = findBoxInterlayer(line, il, pl);
+//    std::cout << "il = " << il << " pl = " << pl << std::endl;
+
     std::vector <Segment> _segments; // Все сегменты ( без объединения )
     for (auto it = m_costume.begin(); it != m_costume.end(); it++) {
         Segment s;
         int err = (*it)->intersect(line, s);
         if (!err) {
-            _segments.push_back(s);
+            if ( s.pos < pl && s.end > il ) {
+                if ( s.pos < il ) {
+                    s.pos = il;
+                    s.len = s.end - il;
+                }
+                if ( s.end > pl ) {
+                    s.end = pl;
+                    s.len = pl - s.pos;
+                }
+                _segments.push_back(s);
+            }
 //            std::cout << s.pos << "  " << s.end << std::endl;
         }
     }
@@ -540,6 +602,17 @@ int CalculationArea::costumeIntersect(Line const & line, std::vector <Segment> &
     } else {
         return 1; // пересечений нет
     }
+//    if ( segments[0].pos < il ) {
+//        segments[0].pos = il;
+//        segments[0].len = segments[0].end - segments[0].pos;
+//    }
+//    std::cout << (*segments.end()).pos << "  " << (*segments.end()).end << std::endl;
+//    if ( (*segments.end()).end > pl ) {
+//        (*segments.end()).end = pl;
+//        (*segments.end()).len = (*segments.end()).end - (*segments.end()).pos;
+//    }
+//    std::cout << (*segments.end()).pos << "  " << (*segments.end()).end << std::endl;
+
 
 //    for (auto it = segmentBank.begin(); it != segmentBank.end(); it++) {
 //        std::cout << (*it).pos << "  " << (*it).end << std::endl;
@@ -550,23 +623,27 @@ int CalculationArea::costumeIntersect(Line const & line, std::vector <Segment> &
 int CalculationArea::searchIntersectCostume(Line & line, double * tk, unsigned char * ck, int & k)
 {
     k = 0;
+//    std::cout << "POINT1 " << std::endl;
     // Поиск вектора пересечений с костюмом
     std::vector <Segment> segments;
     int err = costumeIntersect(line, segments);
+//    std::cout << line;
+//    std::cout << "POINT2 " << std::endl;
     if (err)
         return 1; // нет пересечений
 
     float interLayer;
     for (auto it = segments.begin(); it != segments.end(); it++) {
 //        std::cout << "IN SEGMENT LOOP PREV LINE" << std::endl;
-        if (!k) {
+        if (!k) { // Первый отрезок
             interLayer = (*it).pos;
-            line.shiftPosition( (*it).pos );
+            line.shiftPosition( (*it).pos );       
         } else {
             interLayer = (*it).pos - (*(it-1)).end;
             line.shiftPosition( (*it).pos - (*(it-1)).pos );
         }
         line.setMaxLen( (*it).len );
+
 //        std::cout << "IN SEGMENT LOOP POST LINE" << std::endl;
 //        std::cout << line << std::endl;
 //        std::cout << "interlayer = " << interLayer << std::endl;
@@ -590,6 +667,8 @@ int CalculationArea::searchIntersectCostume(Line & line, double * tk, unsigned c
             }
         } else {
 //            std::cout << "IN NOT PARALLEL" << std::endl;
+//            std::cout << line;
+//            std::cout << "POINT3 " << std::endl;
             startIterations(line, interLayer, tk, ck, k);
         }
     }

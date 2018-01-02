@@ -128,6 +128,9 @@ MainWindow::MainWindow()
 
 //    m_lineArea = new LinePaintArea(0, lines);
 
+
+// ---- TEST INTERSECT INTERVALS ---- //
+/*
     CalculationArea area(m_phantom->boxNet());
 
     std::vector <BoundingBox *> costume;
@@ -186,6 +189,68 @@ MainWindow::MainWindow()
 //        printf("k = %3d col = %3d len = %8.3f sum = %8.3f\n", i, int(ck2[i]), tk2[i], sum2 );
     }
     outputFile2.close();
+*/
+
+    // Записывал сферу в файл на проверку
+//    std::ofstream binfile("../sphere.bin", std::ios::binary);
+//    float x0 = 265.3, y0 = 387.8, z0 = 842, R = 1000;
+//    float x, y, z;
+//    timetest::initSphere(x0, y0, z0, R);
+//    for (int i = 0; i < 10000; i++) {
+//        timetest::sphere(x, y, z);
+//        binfile.write(reinterpret_cast<char const*>(&x), sizeof(x));
+//        binfile.write(reinterpret_cast<char const*>(&y), sizeof(y));
+//        binfile.write(reinterpret_cast<char const*>(&z), sizeof(z));
+//    }
+//    binfile.close();
+
+    // Проверяем пересечения
+    float x0 = 265.3, y0 = 387.8, z0 = 842, R = 1000;
+    float x, y, z;
+    float xDir, yDir, zDir;
+
+    std::cout << m_phantom->boxNet() << std::endl;
+    CalculationArea area(m_phantom->boxNet());
+    std::vector <BoundingBox *> costume;
+    CJsonSerializer::Deserialize(costume, "../sittingCostume.json");
+    area.setCostume(costume);
+    timetest::initSphere(x0, y0, z0, R);
+
+    double * tk2 = new double [1000];
+    unsigned char * ck2 = new unsigned char [1000];
+    int k2 = 0;
+
+    clock_t begin2 = clock();
+    for (int i = 0; i < 1000000; i++) {
+        timetest::sphere(x, y, z, xDir, yDir, zDir);
+//        timetest::isotropic(xDir, yDir, zDir);
+        k2 = 0;
+        Line line2(x, y, z, xDir, yDir, zDir);
+//        Line line2(266, 126, 1323.7, xDir, yDir, zDir);
+//        std::cout << line2;
+        area.searchIntersectCostume(line2, tk2, ck2, k2);
+    }
+    clock_t end2 = clock();
+    double elapsed_secs2 = double(end2 - begin2) / CLOCKS_PER_SEC;
+    std::cout << "costume seconds = " << elapsed_secs2 << std::endl;
+
+    double * tk1 = new double [1000];
+    unsigned char * ck1 = new unsigned char [1000];
+    int k1 = 0;
+
+
+    clock_t begin1 = clock();
+    for (int i = 0; i < 1000000; i++) {
+        timetest::sphere(x, y, z, xDir, yDir, zDir);
+//        timetest::isotropic(xDir, yDir, zDir);
+        k1 = 0;
+        Line line1(x, y, z, xDir, yDir, zDir);
+//        Line line1(266, 126, 1323.7, xDir, yDir, zDir);
+        area.searchIntersect(line1, tk1, ck1, k1);
+    }
+    clock_t end1 = clock();
+    double elapsed_secs1 = double(end1 - begin1) / CLOCKS_PER_SEC;
+    std::cout << "Pool seconds = " << elapsed_secs1 << std::endl;
 
     createMainArea();
 }

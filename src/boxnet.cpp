@@ -109,6 +109,7 @@ unsigned char const & BoxNet::getByXyz(int x, int y, int z) const
 {
 //    int num = z * m_xSize * m_ySize + y * m_xSize + x;
 //    return m_list[num];
+//    std::cout << "x = " << x << " y = " << y << " z = " << z << "\n";
     return m_list[x][y][z];
 }
 
