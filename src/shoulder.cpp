@@ -24,7 +24,7 @@ Shoulder::Shoulder(Point3D <float> rot, Point3D <float> p1, float dy1, float dz1
 
 BezierCoords3D * Shoulder::choose(float a1, float a2, float b1, float b2, float l1, float l2)
 {
-    if (a1 >= 1.2 && a2 >= 1.2 || b1 >= 1.2 && b2 >= 1.2)
+    if ((a1 >= 1.2 && a2 >= 1.2) || (b1 >= 1.2 && b2 >= 1.2))
         return new BezierCoords3D(0,0,-1);
     return new BezierCoords3D(a1 > 0.2 ? a1 : a2, b1 > 0.2? b1 : b2, l1/(l1+l2));
 }

@@ -180,7 +180,7 @@ BezierCoords3D * Joint::findAlpha(Point3D<float> * point, float der)
     if (t < 0)
         return startb;
     std::function<void(float * , int , float * , float ** )> func = [this, point]
-            (float * x, int n, float * fvec, float ** fjac)
+            (float * x, int, float * fvec, float ** fjac)
     {
         this->funcNewt(x,fvec,fjac,point);
     };
