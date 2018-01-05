@@ -15,7 +15,7 @@ public:
 
 private:
 
-    virtual BezierCoords3D * choose(float a1, float a2, float b1, float b2, float l1, float l2) override;
+    virtual BezierCoords3D * choose(float a1, float a2, float b1, float, float l1, float l2) override;
 };
 
 BoxNet RightKnee(BoxNet b1, float phi, float theta, Point3D <int> * coord);
