@@ -7,11 +7,6 @@
 
 using namespace std;
 
-/*!
- * \brief COEF - коэффициент при нахождении длин нормалей для плавного перехода кривых в срезы
- */
-float constexpr COEF = 0.5;
-
 void Joint::funcNewt(float * x, float * fvec, float ** fjac, Point3D<float> * point)
 {
     float a = x[0];
@@ -181,6 +176,7 @@ BezierCoords3D * Joint::findAlpha(Point3D<float> * point, float der)
     float a = startb->alpha();
     float b = startb->beta();
     float t = startb->t();
+    //std::cout << a <<" "<< b << " "<< t << "\n";
     if (t < 0)
         return startb;
     std::function<void(float * , int , float * , float ** )> func = [this, point]
