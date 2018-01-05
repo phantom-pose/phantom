@@ -50,7 +50,7 @@ public:
      * Результат:
      * bool - принадлежит ли точка области деформации
      */
-    bool getStartPoint(Point3D <float> * end, Point3D <float> * start, float der);
+    virtual bool getStartPoint(Point3D <float> * end, Point3D <float> * start, float der);
 
 protected:
 
@@ -62,10 +62,12 @@ protected:
 
     virtual BezierCoords3D * choose(float a1, float a2, float b1, float b2, float l1, float l2) = 0;
 
-    void funcNewt(float * x, float * fvec, float ** fjac, Point3D<float> * point);
+    virtual void funcNewt(float * x, float * fvec, float ** fjac, Point3D<float> * point);
 
     virtual Vector3D getNEndTop() = 0;
     virtual Vector3D getNStartTop() = 0;
+
+protected:
 
     /*!
      * \brief m_startPlane1 - плоскость 1 в недеформированном суставе, альфа вдоль E1, бета вдоль E2
@@ -83,6 +85,8 @@ protected:
      * \brief m_endPlane2 - плоскость 2 в деформированном суставе, альфа вдоль E2, бета вдоль E1
      */
     Plane m_endPlane2;
+
+    float COEF = 0.5;
 };
 
 Point3D <float> RotateX(Point3D <float> rot, Point3D <float>  start, float angle);

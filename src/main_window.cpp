@@ -284,7 +284,7 @@ void MainWindow::setBoxRightHip()
 void MainWindow::setBoxRightShoulder()
 {
     Point3D <int> point;
-    BoxNet b = RightShoulder(m_phantom->boxNet(), M_PI/30, 0, &point);
+    BoxNet b = RightShoulder(m_phantom->boxNet(), M_PI/4, 0, &point);
     m_phantom->setBox(b);
 }
 

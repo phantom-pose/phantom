@@ -152,7 +152,6 @@ void mnewt(std::function<void(float *, int, float *, float **)> func, float * x,
     float coef = 1;
     for (int i = 0; i < ntrial; i++)
     {
-        //std::cout << x[0]<<" "<<x[1]<<" "<<x[2]<<" "<<std::endl;
         float * fvec = new float[n];
         float * deltas = new float[n];
         float ** fjac = new float*[n];
