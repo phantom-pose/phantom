@@ -61,7 +61,8 @@ BoxNet GetShoulder(BoxNet b1, float phi, float theta, Point3D <int> * coord, boo
     const int ymax = SHOULDER_DY+140;
     const int zmax = 220;
     if (phi > M_PI/4 ) {
-        theta = M_PI/2;
+        theta = phi;
+        phi = M_PI/2;
     }
     Shoulder shoulder = {
         {(dx+ROT_HAND_X-(right? SHOULDER_X2 : SHOULDER_X1))*VOX_X,(ROT_HAND_Y-SHOULDER_Y+dy)*VOX_Y,(ROT_HAND_Z-SHOULDER_Z2+dz)*VOX_Z},
